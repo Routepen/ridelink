@@ -34,7 +34,7 @@ app.use(bodyParser.json());
 
 // index
 app.get('/', function (req, res) {
-	res.render('driver_maps')
+	res.render('driver_maps');
 });
 
 
@@ -55,4 +55,4 @@ app.post('/addroute/', function (req, res) {
 
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
-})
+});
