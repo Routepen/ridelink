@@ -1,0 +1,25 @@
+/*body {
+ background-image: url(bg.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-color: #464646;
+  font-family: 'Open Sans', sans-serif;
+} */
+
+#newride{
+  left-margin : 10px,
+}
+.navbar-static-top {
+  margin-bottom: 19px;
+}
+.media-object {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+.media {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
