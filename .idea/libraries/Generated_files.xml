@@ -44,7 +44,7 @@
         <item url="file://$PROJECT_DIR$/node_modules/passport-facebook/node_modules/passport-oauth2/node_modules/oauth/lib/sha1-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/passport-facebook/node_modules/passport-oauth2/node_modules/utils-merge/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/passport-facebook/node_modules/passport-oauth2/node_modules/uid2/index-compiled.js" />
-        <item url="file://$PROJECT_DIR$/configuation/database-compiled.js" />
+        <item url="file://$PROJECT_DIR$/configuation/database_initialize-compiled.js" />
         <item url="file://$PROJECT_DIR$/configuation/config-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/passport-facebook/node_modules/passport-oauth2/lib/state/session-compiled.js" />
       </sourceFilesUrls>
@@ -92,7 +92,7 @@
       <root url="file://$PROJECT_DIR$/node_modules/passport-facebook/node_modules/passport-oauth2/node_modules/oauth/lib/sha1-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/passport-facebook/node_modules/passport-oauth2/node_modules/utils-merge/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/passport-facebook/node_modules/passport-oauth2/node_modules/uid2/index-compiled.js" />
-      <root url="file://$PROJECT_DIR$/configuation/database-compiled.js" />
+      <root url="file://$PROJECT_DIR$/configuation/database_initialize-compiled.js" />
       <root url="file://$PROJECT_DIR$/configuation/config-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/passport-facebook/node_modules/passport-oauth2/lib/state/session-compiled.js" />
     </CLASSES>
