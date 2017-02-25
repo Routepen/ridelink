@@ -19,5 +19,8 @@
     "restler": "^3.4.0",
     "sequelize": "^3.29.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "ejs": "^2.5.6",
+    "passport-facebook": "^2.1.1"
+  }
 }

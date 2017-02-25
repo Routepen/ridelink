@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
 const app = express();
-var  pg = require('pg');
+var pg = require('pg');
 
 var config = {
 	user: 'ufqemniwfnsinx', //env var: PGUSER
@@ -14,45 +14,39 @@ var config = {
 	port: 5432, //env var: PGPORT
 	max: 10, // max number of clients in the pool
 	ssl: true
-//	idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
+	//	idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
 };
 var pool = new pg.Pool(config);
 
 pool.on('error', function (err, client) {
-	console.error('idle client error', err.message, err.stack)
+	console.error('idle client error', err.message, err.stack);
 });
 
-app.set('port', (process.env.PORT || 5000));
+app.set('port', process.env.PORT || 5000);
 app.set('view engine', 'ejs');
 
 app.use(express.static(__dirname + '/public'));
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
 
 // index
 app.get('/', function (req, res) {
-	res.render('driver_maps')
+	res.render('driver_maps');
 });
 
-
-
-app.post('/auth/facebook', function(req,res){
-
-});
-app.post('/auth/facebook/callback', function(req,res){
-
-});
-app.post('/logout', function(req,res){
-
-});
+app.post('/auth/facebook', function (req, res) {});
+app.post('/auth/facebook/callback', function (req, res) {});
+app.post('/logout', function (req, res) {});
 app.post('/addroute/', function (req, res) {
 
 	res.sendStatus(200);
 });
 
-app.listen(app.get('port'), function() {
-	console.log('running on port', app.get('port'))
-})
+app.listen(app.get('port'), function () {
+	console.log('running on port', app.get('port'));
+});
+
+//# sourceMappingURL=index-compiled.js.map
