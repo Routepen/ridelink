@@ -46,6 +46,7 @@
 </head>
 <body>
 <script>
+    /*
     function checkLoginState() {
         FB.getLoginStatus(function (response) {
             statusChangeCallback(response);
@@ -68,6 +69,7 @@
         js.src = "//connect.facebook.net/en_US/sdk.js";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
+*/
 </script>
 
 
@@ -87,11 +89,9 @@
                 <li><a href="#">About</a></li>
             </ul> -->
             <ul class="nav navbar-nav navbar-right">
-                <li><fb:login-button
-                            data-size="xlarge"
-                            scope="public_profile,email"
-                            onlogin="checkLoginState();">
-                    </fb:login-button></li>
+                <li>
+                    <a href="/auth/facebook" data-size="xlarge" class="btn btn-primary"><span class="fa fa-facebook"></span> Facebook</a>
+                </li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
@@ -124,29 +124,52 @@
             </tr>
         </tbody>
     </table>
-        <form class="row" action="/addroute/">
-            <div class = col-md-3>
-                <input type="text" name='origin' class="form-control" placeholder="Origin">
-            </div>
-            <div class = col-md-3>
-                <input type="text" name = 'destination' class="form-control" placeholder="Destination">
-            </div>
-            <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a>
-        </form>
 </div>
 
 <br> <br>
+<div id="pac-card" class="jumbatron">
+    <div id="title" class="row">
+        Share your route
+    </div>
+    <div class="col-md-6">
+        <form class="row" action="/addroute/">
+            <div class = "col-md-3">
+                <input id="origin" type="text" name='origin' class="form-control" placeholder="Origin">
+            </div>
+            <div class = "col-md-3">
+                <input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination">
+            </div>
+            <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a>
+        </form>
+    </div>
+</div>
 <div id="map"></div>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer>
+</script>
 <script>
     function initMap() {
-        var pointA = new google.maps.LatLng(34.41159, -119.8442),
-                pointB = new google.maps.LatLng(37.5483, -121.9886),
-                myOptions = {
-                    //zoom: 7,
-                    center: pointA
-                },
+        var inputorigin = document.getElementById('origin');
+        var inputdestination = document.getElementById('destination');
+        var autocomplete = new google.maps.places.Autocomplete(inputorigin);
+        var autocomplete2 = new google.maps.places.Autocomplete(inputdestination);
+        var card = document.getElementById('pac-card');
+
+
+        var pointA = "47520 Avalon Heights Terrace",
+                pointB= "UCSD"
+
+/*
+         var pointA = new google.maps.LatLng(34.41159, -119.8442),
+         pointB = new google.maps.LatLng(37.5483, -121.9886),
+*/
+        myOptions = {
+            //zoom: 7,
+            center: pointA
+        },
                 map = new google.maps.Map(document.getElementById('map'), myOptions),
-        // Instantiate a directions service.
+                // Instantiate a directions service.
                 directionsService = new google.maps.DirectionsService,
                 directionsDisplay = new google.maps.DirectionsRenderer({
                     map: map
@@ -165,6 +188,37 @@
                 });
         // get route from A to B
         calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB);
+
+
+        //Autocomplete on Origin and Destination
+
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
+
+        autocomplete.addListener('place_changed', function() {
+            marker.setVisible(false);
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+                // User entered the name of a Place that was not suggested and
+                // pressed the Enter key, or the Place Details request failed.
+                window.alert("No details available for input: '" + place.name + "'");
+                return;
+            }
+        });
+
+        autocomplete2.addListener('place_changed', function() {
+            marker.setVisible(false);
+            var place = autocomplete2.getPlace();
+            if (!place.geometry) {
+                // User entered the name of a Place that was not suggested and
+                // pressed the Enter key, or the Place Details request failed.
+                window.alert("No details available for input: '" + place.name + "'");
+                return;
+            }
+//            marker.setVisible(true);
+        });
+
+        //Directions and Map display
+
     }
 
     function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
@@ -186,8 +240,6 @@
     initMap();
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap"
-        async defer></script>
 
 </body>
 </html>
