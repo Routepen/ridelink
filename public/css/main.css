@@ -25,13 +25,17 @@
 }
 #title {
   color: #fff;
-  background-color: #4d90fe;
+  background-color: #4285F4 !important;
+  /*background-color: #4d90fe; */
   font-size: 25px;
   font-weight: 500;
-  padding: 6px 12px;
+  /*padding: 6px 12px;*/
 }
 #map {
   height: 100%;
+}
+.newroute{
+  margin-right: 10px;
 }
 .controls {
   margin-top: 10px;
@@ -46,7 +50,8 @@
 
 #origin-input,
 #destination-input {
-  background-color: #fff;
+  /*background-color: #4285F4 !important;*/
+  /*background-color: #fff; */
   font-family: Roboto;
   font-size: 15px;
   font-weight: 300;
@@ -59,4 +64,15 @@
 #origin-input:focus,
 #destination-input:focus {
   border-color: #4d90fe;
+}
+/* Always set the map height explicitly to define the size of the div
+      * element that contains the map. */
+#map {
+  height: 100%;
+}
+/* Optional: Makes the sample page fill the window. */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
