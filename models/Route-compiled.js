@@ -7,6 +7,7 @@ var Schema = mongoose.Schema;
 var routeSchema = new Schema({
     origin: String,
     destination: String,
+    seats: Number,
     //date: {type: Date, default: Date.now},
     driver: {
         type: Schema.ObjectId,

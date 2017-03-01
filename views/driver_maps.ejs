@@ -16,14 +16,14 @@
     <link href="css/bootstrap.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
 
     <!-- Custom styles for this template -->
     <link href="css/main.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+   <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -45,8 +45,9 @@
     </style>
 </head>
 <body>
+
 <script>
-    /*
+/*
     function checkLoginState() {
         FB.getLoginStatus(function (response) {
             statusChangeCallback(response);
@@ -133,11 +134,13 @@
     </div>
     <div class="col-md-6">
         <form class="row" action="/addroute/">
-            <div class = "col-md-3">
-                <input id="origin" type="text" name='origin' class="form-control" placeholder="Origin">
+            <div class = "col-md-6">
+                <input id="origin-input" class="controls" type="text" placeholder="Enter an origin location...">
+                <!--<input id="origin" type="text" name='origin' class="form-control" placeholder="Origin"> -->
             </div>
-            <div class = "col-md-3">
-                <input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination">
+            <div class = "col-md-6">
+                <input id="destination-input" class="controls" type="text" placeholder="Enter a destination location...">
+                <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
             </div>
             <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a>
         </form>
@@ -150,94 +153,79 @@
 </script>
 <script>
     function initMap() {
-        var inputorigin = document.getElementById('origin');
-        var inputdestination = document.getElementById('destination');
-        var autocomplete = new google.maps.places.Autocomplete(inputorigin);
-        var autocomplete2 = new google.maps.places.Autocomplete(inputdestination);
-        var card = document.getElementById('pac-card');
-
-
-        var pointA = "47520 Avalon Heights Terrace",
-                pointB= "UCSD"
-
-/*
-         var pointA = new google.maps.LatLng(34.41159, -119.8442),
-         pointB = new google.maps.LatLng(37.5483, -121.9886),
-*/
-        myOptions = {
-            //zoom: 7,
-            center: pointA
-        },
-                map = new google.maps.Map(document.getElementById('map'), myOptions),
-                // Instantiate a directions service.
-                directionsService = new google.maps.DirectionsService,
-                directionsDisplay = new google.maps.DirectionsRenderer({
-                    map: map
-                }),
-                markerA = new google.maps.Marker({
-                    position: pointA,
-                    title: "point A",
-                    label: "A",
-                    map: map
-                }),
-                markerB = new google.maps.Marker({
-                    position: pointB,
-                    title: "point B",
-                    label: "B",
-                    map: map
-                });
-        // get route from A to B
-        calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB);
-
-
-        //Autocomplete on Origin and Destination
-
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
-
-        autocomplete.addListener('place_changed', function() {
-            marker.setVisible(false);
-            var place = autocomplete.getPlace();
-            if (!place.geometry) {
-                // User entered the name of a Place that was not suggested and
-                // pressed the Enter key, or the Place Details request failed.
-                window.alert("No details available for input: '" + place.name + "'");
-                return;
-            }
+        var map = new google.maps.Map(document.getElementById('map'), {
+            mapTypeControl: false,
+            center: {lat: 34.4140, lng: -119.8489},
+            zoom: 13
         });
 
-        autocomplete2.addListener('place_changed', function() {
-            marker.setVisible(false);
-            var place = autocomplete2.getPlace();
-            if (!place.geometry) {
-                // User entered the name of a Place that was not suggested and
-                // pressed the Enter key, or the Place Details request failed.
-                window.alert("No details available for input: '" + place.name + "'");
-                return;
-            }
-//            marker.setVisible(true);
-        });
-
-        //Directions and Map display
-
+        new AutocompleteDirectionsHandler(map);
     }
 
-    function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
-        directionsService.route({
-            origin: pointA,
-            destination: pointB,
-            avoidTolls: true,
-            avoidHighways: false,
-            travelMode: google.maps.TravelMode.DRIVING
-        }, function (response, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-                directionsDisplay.setDirections(response);
+    function AutocompleteDirectionsHandler(map) {
+        this.map = map;
+        this.originPlaceId = null;
+        this.destinationPlaceId = null;
+        this.travelMode = 'DRIVING';
+        var originInput = document.getElementById('origin-input');
+        var destinationInput = document.getElementById('destination-input');
+        this.directionsService = new google.maps.DirectionsService;
+        this.directionsDisplay = new google.maps.DirectionsRenderer;
+        this.directionsDisplay.setMap(map);
+
+        var originAutocomplete = new google.maps.places.Autocomplete(
+                originInput, {placeIdOnly: true});
+        var destinationAutocomplete = new google.maps.places.Autocomplete(
+                destinationInput, {placeIdOnly: true});
+
+
+        this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
+        this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
+
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+    }
+
+
+    AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function(autocomplete, mode) {
+        var me = this;
+        autocomplete.bindTo('bounds', this.map);
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            if (!place.place_id) {
+                window.alert("Please select an option from the dropdown list.");
+                return;
+            }
+            if (mode === 'ORIG') {
+                me.originPlaceId = place.place_id;
+            } else {
+                me.destinationPlaceId = place.place_id;
+            }
+            me.route();
+        });
+
+    };
+
+    AutocompleteDirectionsHandler.prototype.route = function() {
+        if (!this.originPlaceId || !this.destinationPlaceId) {
+            return;
+        }
+        var me = this;
+
+        this.directionsService.route({
+            origin: {'placeId': this.originPlaceId},
+            destination: {'placeId': this.destinationPlaceId},
+            travelMode: this.travelMode
+        }, function(response, status) {
+            if (status === 'OK') {
+                me.directionsDisplay.setDirections(response);
             } else {
                 window.alert('Directions request failed due to ' + status);
             }
         });
-    }
-
-    initMap();
+    };
+ 
 </script>
 
 
