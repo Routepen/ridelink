@@ -15,6 +15,12 @@ var conn = mongoose.createConnection('ds161169.mlab.com:61169/heroku_9170g7ps');
 mongoose.connect('mongodb://victorcheng:victor97@ds161169.mlab.com:61169/heroku_9170g7ps');
 var db = mongoose.connection;
 
+/*
+const isAuthenticated = (req, res, next) =>
+	if (req.isAuthenticated())
+		return next();
+	res.json({});
+*/
 
 
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -32,25 +38,33 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 // parse application/json
 app.use(bodyParser.json());
+app.use(passport.initialize());
+app.use(passport.session());
 
-
-// index
-app.get('/', function (req, res) {
-	res.render('driver_maps');
+passport.serializeUser(function(user, done) {
+	console.log(user);
+	done(null, user._id);
 });
+
+passport.deserializeUser(function(id, done) {
+	User.findById(id, function(err, user) {
+		done(err, user);
+	});
+});
+
 
 passport.use(new FacebookStrategy({
 		clientID: "1122786494515943",
 		clientSecret: "f6cd89a5fe00867021469477156f95a6",
-		callbackURL: "http://localhost:3000/auth/facebook/callback",
-		profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link', 'token_for_business']
+		callbackURL: "http://localhost:5000/auth/facebook/callback",
+		profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link']
 	},
-	function(accessToken, refreshToken, profile, cb) {
+	function(accessToken, refreshToken, profile, done) {
 		process.nextTick(function(){
-			User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+			User.findOne({ facebook:{id: profile.id}}, function (err, user) {
 				if (err)
 					return done(err);
-				if (user) {
+				else if (user) {
 					return done(null, user);
 				} else {
 					var newUser = new User();
@@ -68,11 +82,26 @@ passport.use(new FacebookStrategy({
 						return done(null, newUser);
 					});
 				}
-				return cb(err, user);
+				return;
 			});
 		});
 	}
 ));
+
+app.get('/', function (req, res) {
+	res.render('landing');
+});
+app.get('/route', function (req, res) {
+	res.render('driver_maps');
+});
+
+// For testing purposes only
+app.get('/rider', function (req, res) {
+	res.render('rider_maps');
+});
+
+
+
 app.get('/profile', function(req,res){
 	res.send("hello");
 });
@@ -82,16 +111,17 @@ app.get('/auth/facebook', function(req,res,next){
 });
 
 app.get('/auth/facebook/callback', function(req,res,next) {
-	passport.authenticate('facebook', {successRedirect: '/profile', failureRedirect: '/'})(req,res,next);
+	passport.authenticate('facebook', {successRedirect: '/', failureRedirect: '/'})(req,res,next);
 });
 app.get('/logout', function(req,res){
 
 });
-app.get('/addroute/', function(req,res){
- // add into dadtabase and
+
+app.get('/rider/', function(req,res){
+
 });
 
-app.post('/route/', function (req, res) {
+app.post('/addroute:id', function (req, res) {
 	var newRoute = Route({
 		origin: req.body.origin,
 		destination: req.body.destination,

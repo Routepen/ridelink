@@ -12,6 +12,7 @@
   left-margin : 10px,
 }
 .navbar-static-top {
+  position:relative;
   margin-bottom: 19px;
 }
 .media-object {
@@ -39,6 +40,7 @@
 }
 .controls {
   margin-top: 10px;
+  margin-right: 10px;
   border: 1px solid transparent;
   border-radius: 2px 0 0 2px;
   box-sizing: border-box;
@@ -76,3 +78,17 @@ html, body {
   margin: 0;
   padding: 0;
 }
+#pac-input {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  margin-left: 12px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  width: 400px;
+}
+.first-landing{
+  background-image: url("../images/low-res.jpg");
+}
+
