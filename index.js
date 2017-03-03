@@ -116,7 +116,7 @@ app.get('/route', function (req, res) {
 
 // For testing purposes only
 app.get('/rider', function (req, res) {
-	res.render('rider_maps');
+	res.render('partials/driver_input');
 });
 
 
