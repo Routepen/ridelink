@@ -6,9 +6,12 @@ const request = require('request');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('./models/User');
 const Route = require('./models/Route');
+const _ = require("lodash");
 const app = express();
 
 mongoose.Promise = require('bluebird');
@@ -35,13 +38,20 @@ app.use(express.static(__dirname + '/public'));
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// parse cookie sessions
+app.use(session({
+	resave: true,
+	saveUninitialized: true,
+	secret: "Thisshouldbemademoresecure"
+}));
+app.use(cookieParser());
+
 // parse application/json
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function (user, done) {
-	console.log(user);
 	done(null, user._id);
 });
 
@@ -57,8 +67,9 @@ passport.use(new FacebookStrategy({
 	callbackURL: "http://localhost:5000/auth/facebook/callback",
 	profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link']
 }, function (accessToken, refreshToken, profile, done) {
+	console.log(profile);
 	process.nextTick(function () {
-		User.findOne({ facebook: { id: profile.id } }, function (err, user) {
+		User.findOne({ 'facebook.id': profile.id }, function (err, user) {
 			if (err) return done(err);else if (user) {
 				return done(null, user);
 			} else {
@@ -66,7 +77,7 @@ passport.use(new FacebookStrategy({
 				newUser.facebook.id = profile.id;
 				newUser.facebook.token = accessToken;
 				newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-				newUser.facebook.email = (profile.emails[0].value || '').toLowerCase();
+				newUser.facebook.email = _.get(profile, 'emails[0].value', '').toLowerCase();
 				newUser.facebook.photos = profile.picture;
 				newUser.facebook.gender = profile.gender;
 				newUser.facebook.link = profile.link;
@@ -82,15 +93,23 @@ passport.use(new FacebookStrategy({
 }));
 
 app.get('/', function (req, res) {
-	res.render('landing');
+	var data = {
+		user: req.user
+	};
+
+	res.render('landing', data);
 });
 app.get('/route', function (req, res) {
-	res.render('driver_maps');
+	var data = {
+		user: req.user
+	};
+
+	res.render('driver_maps', data);
 });
 
 // For testing purposes only
 app.get('/rider', function (req, res) {
-	res.render('rider_maps');
+	res.render('partials/driver_input');
 });
 
 app.get('/profile', function (req, res) {
