@@ -5,6 +5,8 @@ const request = require('request');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('./models/User');
 const Route = require('./models/Route');
@@ -36,6 +38,14 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: false}));
+
+// parse cookie sessions
+app.use(session({
+	resave: true,
+	saveUninitialized: true,
+	secret: "Thisshouldbemademoresecure"
+}));
+app.use(cookieParser());
 
 // parse application/json
 app.use(bodyParser.json());
@@ -90,10 +100,18 @@ passport.use(new FacebookStrategy({
 ));
 
 app.get('/', function (req, res) {
-	res.render('landing');
+	var data = {
+		user: req.user
+	};
+
+	res.render('landing', data);
 });
 app.get('/route', function (req, res) {
-	res.render('driver_maps');
+	var data = {
+		user: req.user
+	};
+
+	res.render('driver_maps', data);
 });
 
 // For testing purposes only
