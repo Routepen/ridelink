@@ -125,6 +125,11 @@ app.get('/profile', function(req,res){
 	res.send("hello");
 });
 
+app.get('/auth/logout', function(req, res) {
+	req.logout();
+	res.redirect("/");
+});
+
 app.get('/auth/facebook', function(req,res,next){
 	passport.authenticate('facebook', {scope:["public_profile,email"]})(req,res,next);
 });
