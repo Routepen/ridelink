@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,7 @@
     "express": "^4.13.4",
     "fs": "0.0.1-security",
     "googlemaps": "^1.12.0",
+    "lodash": "^4.17.4",
     "mongodb": "^2.2.24",
     "mongoose": "^4.8.4",
     "passport": "^0.3.2",

@@ -8,6 +8,7 @@ const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('./models/User');
 const Route = require('./models/Route');
+const _ = require("lodash");
 const app = express();
 
 mongoose.Promise = require('bluebird');
@@ -42,7 +43,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function(user, done) {
-	console.log(user);
 	done(null, user._id);
 });
 
@@ -60,8 +60,9 @@ passport.use(new FacebookStrategy({
 		profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link']
 	},
 	function(accessToken, refreshToken, profile, done) {
+		console.log(profile);
 		process.nextTick(function(){
-			User.findOne({ facebook:{id: profile.id}}, function (err, user) {
+			User.findOne({ 'facebook.id': profile.id}, function (err, user) {
 				if (err)
 					return done(err);
 				else if (user) {
@@ -71,7 +72,7 @@ passport.use(new FacebookStrategy({
 					newUser.facebook.id = profile.id;
 					newUser.facebook.token = accessToken;
 					newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-					newUser.facebook.email = (profile.emails[0].value || '').toLowerCase();
+					newUser.facebook.email = (_.get(profile, 'emails[0].value', '')).toLowerCase();
 					newUser.facebook.photos = profile.picture;
 					newUser.facebook.gender = profile.gender;
 					newUser.facebook.link = profile.link;
