@@ -12,7 +12,7 @@
   left-margin : 10px,
 }
 .navbar-static-top {
-  position:relative;
+  position:absolute;
   margin-bottom: 19px;
 }
 .media-object {
@@ -78,6 +78,12 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+body {
+  top: 0px;
+  margin: 0px;
+  padding: 0px;
+}
 #pac-input {
   background-color: #fff;
   font-family: Roboto;
@@ -91,4 +97,8 @@ html, body {
 .first-landing{
   background-image: url("../images/low-res.jpg");
 }
+.getlink{
+
+}
+
 

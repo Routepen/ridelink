@@ -71,7 +71,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">EasyDrive</a>
+            <a class="navbar-brand" href="/">EasyDrive</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <!--<a href="#" class="btn btn-primary btn-md"><span class="glyphicon glyphicon-plus" id="newride"></span> New Route!</a> -->
@@ -89,22 +89,34 @@
         </div><!--/.nav-collapse -->
     </div>
 </nav>
+<div style="margin-top:50px"></div>
 
-<div class="col-md-4" style={position:relative} >
-    <div >
-        <h2>
+<div class="col-md-4" style="position:relative" >
+    <div style="padding-left:10px; padding-top:10px; ">
+        <h3 style="padding-bottom:10px; padding-top:10px; color: #3367D6">
             Victor's Route
-        </h2>
+        </h3>
         <div>
-            <span class="glyphicon glyphicon-paperclip"> Share your route: </span> <a href="/"> https://maps.com/127 </a>
-        </div>
+            <div class="container">
+                <div class="panel panel-default">
+                    <div class="col-md-6">
+                        Get shareable link  <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-md"> Copy link </a>
+                    </div>
+                    <input class="getlink" readonly="readonly" > https://maps.com/127 </input>
+                </div>
+            </div>
+
+        <!--             <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>  Share your route:  <a href="/">  https://maps.com/127 </a>-->
         <form class="row" action="/addroute/">
-            <div class="row">
-                <i class="material-icons" style={float:left}>adjust</i><input id="origin-input" class="controls" type="text" placeholder="Enter an origin location...">
+            <div >
+                <i class="material-icons" style="padding-left:10px ">adjust</i><input id="origin-input" class="controls" type="text" placeholder="Enter an origin location...">
             </div>
                 <!--<input id="origin" type="text" name='origin' class="form-control" placeholder="Origin"> -->
-            <div class='row'>
-                <i class="material-icons" style = {float:left}>place</i><input id="destination-input" class="controls" type="text" placeholder="Enter a destination location...">
+            <div>
+                <i class="material-icons" style = "padding-left:10px">place</i><input id="destination-input" class="controls" type="text" placeholder="Enter a destination location...">
             </div>
                 <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
            <!--  <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a> -->
@@ -139,7 +151,7 @@
         </div>
     </div>
 </div>
-
+</div>
 <!--
 Rider view, use ejs to check if their facebook credentials is the original Facebook user or not
 <div class="col-md-4" >
