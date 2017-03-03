@@ -62,12 +62,12 @@
 */
 </script>
 
-<% include ./navbar %>
+<% include ./partials//navbar %>
 
 <% if (user) { %>
-  <% include ./driver_input %>
+  <% include ./partials//driver_input %>
 <% } else { %>
-  <% include ./rider_data %>
+  <% include ./partials//rider_data %>
 <% } %>
 
 <div id="map"></div>
