@@ -91,23 +91,25 @@
 </nav>
 <div style="margin-top:50px"></div>
 
-<div class="col-md-4" style="position:relative" >
-    <div style="padding-left:10px; padding-top:10px; ">
+<div class="col-md-4 core-container" >
+    <div style="padding-left:10px; padding-top:10px;">
         <h3 style="padding-bottom:10px; padding-top:10px; color: #3367D6">
             Victor's Route
         </h3>
-        <div>
-            <div class="container">
-                <div class="panel panel-default">
-                    <div class="col-md-6">
-                        Get shareable link  <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>
-                    </div>
-                    <div class="col-md-6">
-                        <a class="btn btn-md"> Copy link </a>
-                    </div>
-                    <input class="getlink" readonly="readonly" > https://maps.com/127 </input>
+
+        <div class="panel panel-default" >
+            <div class="panel-heading" id="link-panel">
+                <div class="col-md-6">
+                    Get shareable link  <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>
+                </div>
+                <div class="col-md-push-3" id="copy-link">
+                    <a class="btn btn-md"> Copy link </a>
                 </div>
             </div>
+            <div class="panel-body">
+                <input class="getlink" readonly="readonly" > https://maps.com/127 </input>
+            </div>
+        </div>
 
         <!--             <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>  Share your route:  <a href="/">  https://maps.com/127 </a>-->
         <form class="row" action="/addroute/">
@@ -150,7 +152,6 @@
             </table>
         </div>
     </div>
-</div>
 </div>
 <!--
 Rider view, use ejs to check if their facebook credentials is the original Facebook user or not
@@ -199,6 +200,7 @@ Rider view, use ejs to check if their facebook credentials is the original Faceb
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer>
 </script>
 <script>
+
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
             mapTypeControl: false,
@@ -232,7 +234,7 @@ Rider view, use ejs to check if their facebook credentials is the original Faceb
         /*this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
         this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
         this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
-    */
+*/
     }
 
 

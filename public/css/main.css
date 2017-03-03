@@ -97,8 +97,16 @@ body {
 .first-landing{
   background-image: url("../images/low-res.jpg");
 }
-.getlink{
 
+.core-container{
+  position:relative;
+  /* box-shadow: 1px 0px 2px #888888; */
+}
+#link-panel{
+  height:60px;
+}
+#copy-link{
+  position:relative
 }
 
 
