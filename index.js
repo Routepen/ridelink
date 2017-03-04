@@ -106,12 +106,27 @@ app.get('/', function (req, res) {
 
 	res.render('landing', data);
 });
+
 app.get('/route', function (req, res) {
 	var data = {
 		user: req.user
 	};
 
 	res.render('driver_maps', data);
+});
+
+app.get('/route/new', function (req, res) {
+	if (!req.user) {
+		return res.redirect("/auth/facebook")
+	}
+	var data = {
+		user: req.user
+	};
+
+	res.render('driver_maps', data);
+});
+
+app.post('/route/new', function (req, res) {
 });
 
 // For testing purposes only
