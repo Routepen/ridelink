@@ -12,7 +12,7 @@
   left-margin : 10px,
 }
 .navbar-static-top {
-  position:absolute;
+  position:relative;
   margin-bottom: 19px;
 }
 .media-object {
@@ -99,7 +99,8 @@ body {
 }
 
 .core-container{
-  position:relative;
+  position:absolute;
+  /*position:absolute; */
   /* box-shadow: 1px 0px 2px #888888; */
 }
 #link-panel{
