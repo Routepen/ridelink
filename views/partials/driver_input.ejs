@@ -8,12 +8,12 @@
         <form class="row" action="/route/new" method="POST">
             <div >
                 <i class="material-icons" style="padding-left:10px ">adjust</i>
-                <input id="origin-input" class="controls" type="text" placeholder="Enter an origin location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
+                <input id="origin-input" name="origin" class="controls" type="text" placeholder="Enter an origin location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
             </div>
                 <!--<input id="origin" type="text" name='origin' class="form-control" placeholder="Origin"> -->
             <div>
                 <i class="material-icons" style = "padding-left:10px">place</i>
-                <input id="destination-input" class="controls" type="text" placeholder="Enter a destination location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
+                <input id="destination-input" name="destination" class="controls" type="text" placeholder="Enter a destination location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
             </div>
                 <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
            <!--  <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a> -->

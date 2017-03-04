@@ -64,10 +64,14 @@
 
 <% include ./partials/navbar %>
 
-<% if (user) { %>
-  <% include ./partials/driver_input %>
+<% if (routeId) { %>
+  <% include ./partials/route_info %>
 <% } else { %>
-  <% include ./partials/rider_data %>
+  <% if (user) { %>
+    <% include ./partials/driver_input %>
+  <% } else { %>
+    <% include ./partials/rider_data %>
+  <% } %>
 <% } %>
 
 <div id="map"></div>

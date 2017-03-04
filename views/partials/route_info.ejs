@@ -2,15 +2,15 @@
 <div class="col-md-4" >
     <div >
         <h2>
-            Victor's Route
+            <%= routeData.driver.facebook.name.split(' ')[0] %>'s Route
         </h2>
         <form class="row" action="rider"></form>
 
 
         <span> <i class="material-icons">place</i> </span> <input id="pac-input" class="controls" autofocus="autofocus" type="text" placeholder="Enter dropoff address...">
         <hr>
-        <h4> Origin: <bold> UCSB </bold> </h4>
-        <h4> Destination: <bold> 47520 Avalon Heights Terrace </bold> </h4>
+        <h4> Origin: <bold> <%= routeData.origin %> </bold> </h4>
+        <h4> Destination: <bold> <%= routeData.destination %> </bold> </h4>
         <h4> Seats left: <bold> 3 </bold> </h4>
         <h4> 3/25/2017 </h4>
 
