@@ -106,6 +106,7 @@ app.get('/', function (req, res) {
 
 	res.render('landing', data);
 });
+
 app.get('/route', function (req, res) {
 	var data = {
 		user: req.user
