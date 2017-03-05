@@ -21,33 +21,72 @@
     this.directionsService = new google.maps.DirectionsService;
     this.directionsDisplay = new google.maps.DirectionsRenderer;
     this.directionsDisplay.setMap(map);
-
+    this.geocoder = new google.maps.Geocoder();
 
     var waypoints = [];
     <% for (var i = 0; i < routeData.riders.length; i++) { %>
-      waypoints.push({
-        location: "<%= routeData.dropOffs[routeData.riders[i]._id] %>",
-        stopover: true
-      });
+      <% if (false) { %> // if rider confirmed
+        waypoints.push({
+          location: "<%= routeData.dropOffs[routeData.riders[i]._id] %>",
+          stopover: true
+        });
+      <% } %>
     <% } %>
 
     me = this;
 
     this.directionsService.route({
-        origin: "<%= routeData.origin %>",
-        destination: "<%= routeData.destination %>",
-        travelMode: this.travelMode,
-        waypoints: waypoints,
-        optimizeWaypoints: true
-      }, function(response, status) {
-        if (status === 'OK') {
-          console.log(response.routes[0].warnings);
-          me.directionsDisplay.setDirections(response);
-          me.allowForPinDropping(map);
-        } else {
-          window.alert('Directions request failed due to ' + status);
-        }
-      });
+      origin: "<%= routeData.origin %>",
+      destination: "<%= routeData.destination %>",
+      travelMode: this.travelMode,
+      waypoints: waypoints,
+      optimizeWaypoints: true
+    }, function(response, status) {
+      if (status === 'OK') {
+        console.log(response.routes[0].warnings);
+        me.directionsDisplay.setDirections(response);
+        me.allowForPinDropping(map);
+        me.dropInitialPins(map);
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    });
+  }
+
+  showRoute.prototype.dropInitialPins = function(map) {
+
+    var contentString;
+
+    <% for (var i = 0; i < routeData.riders.length; i++) { %>
+        this.geocoder.geocode( { 'address': "<%= routeData.dropOffs[routeData.riders[i]._id] %>" }, function(results, status) {
+          contentString = "<div><%= routeData.riders[i].facebook.name %></div>";
+
+          <% if (user && routeData.driver._id.toString() == user._id.toString()) { %>
+            contentString += '<form action="/route/confirmrider" method="post">' +
+                              '<input type="hidden" name="userId" value="<%= routeData.riders[i]._id %>">' +
+                              '<input type="hidden" name="routeId" value="<%= routeData._id %>">' +
+                              '<input type="submit" value="Confirm">' +
+                              '</form>';
+            <% } %>
+
+
+          var infowindow = new google.maps.InfoWindow({
+            content: contentString
+          });
+
+          markers["<%= routeData.riders[i]._id %>"] = markers["<%= routeData.riders[i]._id %>"] || new google.maps.Marker({
+            map: map,
+            draggable: true,
+            position: results[0].geometry.location,
+            title: "<%= routeData.riders[i].facebook.name %>"
+          });
+
+          markers["<%= routeData.riders[i]._id %>"].addListener('click', function() {
+            infowindow.open(map, markers["<%= routeData.riders[i]._id %>"]);
+          });
+
+        });
+    <% } %>
   }
 
   showRoute.prototype.allowForPinDropping = function(map) {
@@ -55,7 +94,6 @@
     var dropOffAutocomplete = new google.maps.places.Autocomplete(
             this.dropOffInput, {placeIdOnly: true});
 
-    this.geocoder = new google.maps.Geocoder();
     this.setupPlaceChangedListener(dropOffAutocomplete)
   }
 
@@ -81,7 +119,6 @@
               });
 
               markers["<%= user._id %>"].setPosition(results[0].geometry.location);
-              console.log(markers["<%= user._id %>"].getPosition());
 
               me.route();
             } else {
@@ -96,12 +133,12 @@
 
   showRoute.prototype.route = function() {
     var waypoints = [];
-    for (user in markers) {
-      waypoints.push({
-            location: markers[user].getPosition(),
-            stopover: true
-          });
-    }
+    // for (user in markers) {
+    //   waypoints.push({
+    //         location: markers[user].getPosition(),
+    //         stopover: true
+    //       });
+    // }
 
     this.directionsService.route({
       origin: "<%= routeData.origin %>",
