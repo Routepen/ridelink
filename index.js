@@ -108,11 +108,66 @@ app.get('/', function (req, res) {
 });
 
 app.get('/route', function (req, res) {
+	Route.findById(req.query.id).populate('driver').exec(function(err, route) {
+		if (err || !route) {
+			console.log(err);
+			return res.end("404 couldn't find id " + req.query.id);
+		}
+
+		var data = {
+			routeId: req.query.id,
+			user: req.user,
+			routeData: route
+		};
+
+		console.log(JSON.stringify(route, null, 4));
+
+		res.render('route', data);
+	});
+});
+
+app.get('/route/new', function (req, res) {
+	if (!req.user) {
+		return res.redirect("/auth/facebook")
+	}
 	var data = {
-		user: req.user
+		user: req.user,
+		routeId: false
 	};
 
-	res.render('driver_maps', data);
+	res.render('route', data);
+});
+
+app.get('/route/all', function (req, res) {
+	Route.find({}, function(err, routes) {
+
+
+    var ids = routes.map(function(r) {
+      return r._id;
+    });
+
+    res.json(ids);
+  });
+});
+
+app.post('/route/new', function (req, res) {
+	if (!req.user) {
+		// TODO Allow user to be informed their session has timed out
+		return res.redirect("/youveBeenLoggedOut");
+	}
+
+	var newRoute = Route({
+		origin: req.body.origin,
+		destination: req.body.destination,
+		driver: req.user._id,
+		riders:[]
+	});
+
+	newRoute.save(function(err){
+		if(err) throw err;
+		console.log("Route created!");
+		return res.redirect("/route?id=" + newRoute._id);
+	});
 });
 
 // For testing purposes only
@@ -144,24 +199,6 @@ app.get('/logout', function(req,res){
 
 app.get('/rider/', function(req,res){
 
-});
-
-app.post('/addroute:id', function (req, res) {
-	var newRoute = Route({
-		origin: req.body.origin,
-		destination: req.body.destination,
-		driver: "58b25a4e4837cb41284df95d",
-		riders:[
-			"58b25a4e4837cb41284df95d"
-		]
-	});
-
-	newRoute.save(function(err){
-		if(err) throw err;
-		console.log("Route created!");
-	});
-	res.sendStatus(200);
-	//send res.object_id 
 });
 
 app.listen(app.get('port'), function() {
