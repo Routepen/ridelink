@@ -17,6 +17,7 @@
         <item url="file://$PROJECT_DIR$/node_modules/ejs/lib/ejs-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/debug/src/browser-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/cookie/index-compiled.js" />
+        <item url="file://$PROJECT_DIR$/models/User-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/uid-safe/node_modules/random-bytes/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/uid-safe/index-compiled.js" />
         <item url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/utils-merge/index-compiled.js" />
@@ -106,6 +107,7 @@
       <root url="file://$PROJECT_DIR$/node_modules/ejs/lib/ejs-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/debug/src/browser-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/cookie/index-compiled.js" />
+      <root url="file://$PROJECT_DIR$/models/User-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/uid-safe/node_modules/random-bytes/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/uid-safe/index-compiled.js" />
       <root url="file://$PROJECT_DIR$/node_modules/express-session/node_modules/utils-merge/index-compiled.js" />

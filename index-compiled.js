@@ -78,9 +78,9 @@ passport.use(new FacebookStrategy({
 				newUser.facebook.token = accessToken;
 				newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
 				newUser.facebook.email = _.get(profile, 'emails[0].value', '').toLowerCase();
-				newUser.facebook.photos = profile.picture;
+				newUser.facebook.photos = profile.photos;
 				newUser.facebook.gender = profile.gender;
-				newUser.facebook.link = profile.link;
+				newUser.facebook.link = profile.profileUrl;
 
 				newUser.save(function (err) {
 					if (err) throw err;
@@ -115,6 +115,11 @@ app.get('/rider', function (req, res) {
 
 app.get('/profile', function (req, res) {
 	res.send("hello");
+});
+
+app.get('/auth/logout', function (req, res) {
+	req.logout();
+	res.redirect("/");
 });
 
 app.get('/auth/facebook', function (req, res, next) {

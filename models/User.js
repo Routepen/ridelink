@@ -15,7 +15,7 @@ var usersSchema = new Schema({
         name: String,
         photos: String,
         gender: String,
-        link: String
+        profileURL: String
     },
     created_at: Date
 });
