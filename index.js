@@ -108,7 +108,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/route', function (req, res) {
-	Route.findById(req.query.id).populate('driver').exec(function(err, route) {
+	Route.findById(req.query.id).populate('driver').populate('riders').exec(function(err, route) {
 		if (err || !route) {
 			console.log(err);
 			return res.end("404 couldn't find id " + req.query.id);
@@ -151,6 +151,25 @@ app.get('/route/all', function (req, res) {
   });
 });
 
+app.post('/route/addrider', function(req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+	Route.findById(req.body.routeId, function(err, route) {
+		console.log(route);
+		route.riders.push(req.user._id);
+		route.dropOffs = route.dropOffs || {};
+		route.dropOffs[req.user._id] = req.body.address;
+
+		route.save(function(err) {
+			if (err) { return res.end(err.toString()); }
+
+			res.redirect("/route?id=" + route._id);
+		})
+	});
+});
+
 app.post('/route/new', function (req, res) {
 	if (!req.user) {
 		// TODO Allow user to be informed their session has timed out
@@ -163,7 +182,8 @@ app.post('/route/new', function (req, res) {
 		seats: req.body.seats,
 		date: new Date(req.body.date),
 		driver: req.user._id,
-		riders:[]
+		riders:[],
+		dropOffs: {},
 	});
 
 	newRoute.save(function(err){
