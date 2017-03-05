@@ -170,6 +170,36 @@ app.post('/route/addrider', function(req, res) {
 	});
 });
 
+app.post('/route/confirmrider', function(req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+	Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
+		if (err) {
+			return res.end(err.toString());
+		}
+		if (route.driver._id.toString() != req.user._id.toString()) {
+			return res.end("nice try hacker");
+		}
+
+		for (var i = 0; i < route.riders.length; i++) {
+			if (route.riders[i]._id == req.body.userId) {
+				route.riders.splice(i, 1);
+				break;
+			}
+		}
+
+		route.confirmedRiders.push(req.body.userId);
+
+		route.save(function(err) {
+			if (err) { return res.end(err.toString()); }
+
+			res.redirect("/route?id=" + route._id);
+		})
+	});
+});
+
 app.post('/route/new', function (req, res) {
 	if (!req.user) {
 		// TODO Allow user to be informed their session has timed out
@@ -183,6 +213,7 @@ app.post('/route/new', function (req, res) {
 		date: new Date(req.body.date),
 		driver: req.user._id,
 		riders:[],
+		confirmedRiders: [],
 		dropOffs: {},
 	});
 

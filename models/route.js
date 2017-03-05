@@ -18,6 +18,10 @@ var routeSchema = new Schema({
         type:Schema.ObjectId,
         ref:'users'
     }],
+    confirmedRiders:[{
+        type:Schema.ObjectId,
+        ref:'users'
+    }],
     dropOffs: Schema.Types.Mixed,
     inconvenience: {type:[Number], default: 9999},
     bailed: {type:[Boolean], default: false},
