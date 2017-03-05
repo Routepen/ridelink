@@ -6,8 +6,12 @@
         </h2>
         <form class="row" action="rider"></form>
 
-
-        <span> <i class="material-icons">place</i> </span> <input id="pac-input" class="controls" autofocus="autofocus" type="text" placeholder="Enter dropoff address...">
+        <form action="/route/addrider" method="post">
+          <span> <i class="material-icons">place</i> </span> <input id="pac-input" name="address" class="controls" autofocus="autofocus" type="text" placeholder="Enter dropoff address..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
+          <br><br>
+          <input type="hidden" name="routeId" value="<%= routeId %>">
+          <button>Confirm</button>
+        </form>
         <hr>
         <h4> Origin: <bold> <%= routeData.origin %> </bold> </h4>
         <h4> Destination: <bold> <%= routeData.destination %> </bold> </h4>
@@ -26,12 +30,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td> 1 </td>
-                    <td> Victor Cheng </td>
-                    <td> $4.35 </td>
-                    <td> 5 stars </td>
-                </tr>
+                  <% for (var i = 0; i < routeData.riders.length; i++) { %>
+                    <tr>
+                        <td> <%= i+1 %> </td>
+                        <td> <%= routeData.riders[i].facebook.name %> </td>
+                        <td> $I.dk </td>
+                        <td> Idk2 </td>
+                    </tr>
+                <% } %>
                 </tbody>
             </table>
         </div>

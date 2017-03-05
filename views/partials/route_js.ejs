@@ -1,0 +1,122 @@
+<script type="text/javascript">
+
+  function initMap() {
+      var map = new google.maps.Map(document.getElementById('map'), {
+          mapTypeControl: false,
+          center: {lat: 34.4140, lng: -119.8489},
+          zoom: 13
+      });
+
+      new showRoute(map);
+  }
+
+
+  var markers = {};
+
+  function showRoute(map) {
+    this.map = map;
+    this.originPlaceId = null;
+    this.destinationPlaceId = null;
+    this.travelMode = 'DRIVING';
+    this.directionsService = new google.maps.DirectionsService;
+    this.directionsDisplay = new google.maps.DirectionsRenderer;
+    this.directionsDisplay.setMap(map);
+
+
+    var waypoints = [];
+    <% for (var i = 0; i < routeData.riders.length; i++) { %>
+      waypoints.push({
+        location: "<%= routeData.dropOffs[routeData.riders[i]._id] %>",
+        stopover: true
+      });
+    <% } %>
+
+    me = this;
+
+    this.directionsService.route({
+        origin: "<%= routeData.origin %>",
+        destination: "<%= routeData.destination %>",
+        travelMode: this.travelMode,
+        waypoints: waypoints,
+        optimizeWaypoints: true
+      }, function(response, status) {
+        if (status === 'OK') {
+          console.log(response.routes[0].warnings);
+          me.directionsDisplay.setDirections(response);
+          me.allowForPinDropping(map);
+        } else {
+          window.alert('Directions request failed due to ' + status);
+        }
+      });
+  }
+
+  showRoute.prototype.allowForPinDropping = function(map) {
+    this.dropOffInput = document.getElementById("pac-input");
+    var dropOffAutocomplete = new google.maps.places.Autocomplete(
+            this.dropOffInput, {placeIdOnly: true});
+
+    this.geocoder = new google.maps.Geocoder();
+    this.setupPlaceChangedListener(dropOffAutocomplete)
+  }
+
+  showRoute.prototype.setupPlaceChangedListener = function(autocomplete) {
+    var map = this.map;
+    var geocoder = this.geocoder;
+    var me = this;
+
+    autocomplete.bindTo('bounds', this.map);
+    autocomplete.addListener('place_changed', function() {
+      <% if (user) { %>
+          var place = autocomplete.getPlace();
+          if (!place.place_id) {
+              window.alert("Please select an option from the dropdown list.");
+              return;
+          }
+          geocoder.geocode( { 'address': place.name }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              markers["<%= user._id %>"] = markers["<%= user._id %>"] || new google.maps.Marker({
+                  map: map,
+                  draggable: true,
+                  position: results[0].geometry.location
+              });
+
+              markers["<%= user._id %>"].setPosition(results[0].geometry.location);
+              console.log(markers["<%= user._id %>"].getPosition());
+
+              me.route();
+            } else {
+              alert("Couln't map to " + place.name + " because " + status);
+            }
+          });
+        <% } else { %>
+          alert("please log in first");
+        <% } %>
+      });
+  };
+
+  showRoute.prototype.route = function() {
+    var waypoints = [];
+    for (user in markers) {
+      waypoints.push({
+            location: markers[user].getPosition(),
+            stopover: true
+          });
+    }
+
+    this.directionsService.route({
+      origin: "<%= routeData.origin %>",
+      destination: "<%= routeData.destination %>",
+      travelMode: this.travelMode,
+      waypoints: waypoints,
+      optimizeWaypoints: true
+    }, function(response, status) {
+      if (status === 'OK') {
+        console.log(response.routes[0].warnings);
+        me.directionsDisplay.setDirections(response);
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    });
+  }
+
+</script>
