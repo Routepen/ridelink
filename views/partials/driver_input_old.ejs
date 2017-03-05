@@ -1,23 +1,34 @@
 <div class="col-md-4 core-container" >
     <div style="padding-left:10px; padding-top:10px;">
         <h3 style="padding-bottom:10px; padding-top:10px; color: #3367D6">
-            Create a Route
+            Victor's Route
         </h3>
 
+        <div class="panel panel-default" >
+            <div class="panel-heading" id="link-panel">
+                <div class="col-md-6">
+                    Get shareable link  <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>
+                </div>
+                <div class="col-md-push-3" id="copy-link">
+                    <a class="btn btn-md"> Copy link </a>
+                </div>
+            </div>
+            <div class="panel-body">
+                <input class="getlink" readonly="readonly" > https://maps.com/127 </input>
+            </div>
+        </div>
+
         <!--             <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>  Share your route:  <a href="/">  https://maps.com/127 </a>-->
-        <form class="row" action="/route/new" method="POST">
+        <form class="row" action="/addroute/">
             <div >
-                <i class="material-icons" style="padding-left:10px ">adjust</i>
-                <input id="origin-input" name="origin" class="controls" type="text" placeholder="Enter an origin location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
+                <i class="material-icons" style="padding-left:10px ">adjust</i><input id="origin-input" class="controls" type="text" placeholder="Enter an origin location...">
             </div>
                 <!--<input id="origin" type="text" name='origin' class="form-control" placeholder="Origin"> -->
             <div>
-                <i class="material-icons" style = "padding-left:10px">place</i>
-                <input id="destination-input" name="destination" class="controls" type="text" placeholder="Enter a destination location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
+                <i class="material-icons" style = "padding-left:10px">place</i><input id="destination-input" class="controls" type="text" placeholder="Enter a destination location...">
             </div>
                 <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
            <!--  <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a> -->
-
 
           <hr>
           <div class="col-md-6">

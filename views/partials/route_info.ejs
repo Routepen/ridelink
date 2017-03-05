@@ -1,0 +1,39 @@
+<!--Rider view, use ejs to check if their facebook credentials is the original Facebook user or not-->
+<div class="col-md-4" >
+    <div >
+        <h2>
+            <%= routeData.driver.facebook.name.split(' ')[0] %>'s Route
+        </h2>
+        <form class="row" action="rider"></form>
+
+
+        <span> <i class="material-icons">place</i> </span> <input id="pac-input" class="controls" autofocus="autofocus" type="text" placeholder="Enter dropoff address...">
+        <hr>
+        <h4> Origin: <bold> <%= routeData.origin %> </bold> </h4>
+        <h4> Destination: <bold> <%= routeData.destination %> </bold> </h4>
+        <h4> Seats left: <bold> 3 </bold> </h4>
+        <h4> 3/25/2017 </h4>
+
+        <br>
+        <div class="container-fluid row">
+            <table class="table table-striped table-hover ">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th> Rider </th>
+                    <th> Inconvenience cost </th>
+                    <th> Bailed </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td> 1 </td>
+                    <td> Victor Cheng </td>
+                    <td> $4.35 </td>
+                    <td> 5 stars </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
