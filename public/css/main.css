@@ -113,20 +113,13 @@ body {
   position:relative
 }
 .getlink-container{
-display:table;
-}
-#getlink{
-  display:table-cell;
+
 }
 
 
 
-/*
 
-.container {
-  width: 600px;
-  margin: 100px auto;
-}*/
+
 .progressbar {
   counter-reset: step;
 }
