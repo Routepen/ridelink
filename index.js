@@ -204,6 +204,10 @@ app.get('/rider/', function(req,res){
 
 });
 
+app.get('/test/', function(req,res){
+	res.render('')
+});
+
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
 });

@@ -125,7 +125,8 @@ app.get('/route/new', function (req, res) {
 	}
 	var data = {
 		user: req.user,
-		routeId: false
+		routeId: false,
+		routeData: false
 	};
 
 	res.render('route', data);
@@ -151,6 +152,8 @@ app.post('/route/new', function (req, res) {
 	var newRoute = Route({
 		origin: req.body.origin,
 		destination: req.body.destination,
+		seats: req.body.seats,
+		date: new Date(req.body.date),
 		driver: req.user._id,
 		riders: []
 	});
@@ -186,6 +189,10 @@ app.get('/auth/facebook/callback', function (req, res, next) {
 app.get('/logout', function (req, res) {});
 
 app.get('/rider/', function (req, res) {});
+
+app.get('/test/', function (req, res) {
+	res.render('');
+});
 
 app.listen(app.get('port'), function () {
 	console.log('running on port', app.get('port'));
