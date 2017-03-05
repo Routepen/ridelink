@@ -11,8 +11,8 @@
         <hr>
         <h4> Origin: <bold> <%= routeData.origin %> </bold> </h4>
         <h4> Destination: <bold> <%= routeData.destination %> </bold> </h4>
-        <h4> Seats left: <bold> 3 </bold> </h4>
-        <h4> 3/25/2017 </h4>
+        <h4> Seats left: <bold> <%= routeData.seats %> </bold> </h4>
+        <h4> <%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %></h4>
 
         <br>
         <div class="container-fluid row">
