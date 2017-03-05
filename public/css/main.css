@@ -99,7 +99,7 @@ body {
 }
 
 .core-container{
-  position:absolute;
+  position:relative;
   /*position:absolute; */
   /* box-shadow: 1px 0px 2px #888888; */
 }
@@ -112,5 +112,3 @@ body {
 #getlink{
 
 }
-
-
