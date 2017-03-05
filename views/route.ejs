@@ -96,7 +96,11 @@
             zoom: 13
         });
 
-        new AutocompleteDirectionsHandler(map);
+        <% if (routeId) { %>
+          showRoute(map);
+        <% } else { %>
+          new AutocompleteDirectionsHandler(map);
+        <% } %>
     }
 
     function AutocompleteDirectionsHandler(map) {
@@ -163,6 +167,29 @@
             }
         });
     };
+
+    function showRoute(map) {
+      this.map = map;
+      this.originPlaceId = null;
+      this.destinationPlaceId = null;
+      this.travelMode = 'DRIVING';
+      this.directionsService = new google.maps.DirectionsService;
+      this.directionsDisplay = new google.maps.DirectionsRenderer;
+      this.directionsDisplay.setMap(map);
+
+      directionsService.route({
+          origin: "<%= routeData.origin %>",
+          destination: "<%= routeData.destination %>",
+          travelMode: 'DRIVING'
+        }, function(response, status) {
+          if (status === 'OK') {
+            console.log(response.routes[0].warnings);
+            directionsDisplay.setDirections(response);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+        });
+    }
 
 </script>
 

@@ -132,7 +132,8 @@ app.get('/route/new', function (req, res) {
 	}
 	var data = {
 		user: req.user,
-		routeId: false
+		routeId: false,
+		routeData: false,
 	};
 
 	res.render('route', data);
@@ -159,6 +160,8 @@ app.post('/route/new', function (req, res) {
 	var newRoute = Route({
 		origin: req.body.origin,
 		destination: req.body.destination,
+		seats: req.body.seats,
+		date: new Date(req.body.date),
 		driver: req.user._id,
 		riders:[]
 	});
