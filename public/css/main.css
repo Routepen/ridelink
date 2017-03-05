@@ -120,6 +120,38 @@ body {
 
 
 
+.editable-field {
+  display: flex;
+  justify-content: space-between
+}
+.editable-input {
+  border: none;
+  font-size: inherit;
+  background: inherit;
+  color: inherit;
+  transition: .3s all linear
+}
+.editable-input:focus {
+     outline: none;
+     background: white;
+     color: #545454
+   }
+
+  .edit-button {
+    cursor: pointer;
+    font-size: 5em;
+    position: relative;
+    top: 5px ;. hide;
+    visibility: hidden !important
+  }
+.editing {
+  background: #E9F5FA;
+  color: #f1f1f1;
+  box-shadow: -2px 0px 0px #0081C6
+}
+
+
+
 .progressbar {
   counter-reset: step;
 }
