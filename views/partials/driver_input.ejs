@@ -1,3 +1,23 @@
+<div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Confirm your email</h4>
+      </div>
+      <form action="javascript:confirmEmail()">
+        <div class="modal-body">
+          Send me notifications at
+            <input type="email" class="form-control" id="emailInput" value="<%= user.facebook.email %>" placeholder="Email">
+        </div>
+        <div class="modal-footer">
+          <input type="submit" class="btn btn-primary" value="Save">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="col-md-4 core-container" >
     <div style="padding-left:10px; padding-top:10px;">
         <h3 style="padding-bottom:10px; padding-top:10px; color: #3367D6">
@@ -5,7 +25,7 @@
         </h3>
 
         <!--             <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>  Share your route:  <a href="/">  https://maps.com/127 </a>-->
-        <form class="row" action="/route/new" method="POST">
+        <form id="driver_input_form" class="row" action="javascript:submitForm()">
             <div >
                 <i class="material-icons" style="padding-left:10px ">adjust</i>
                 <input id="origin-input" name="origin" class="controls" type="text" placeholder="Enter an origin location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
@@ -24,8 +44,10 @@
               <input id="num-seats" name="seats" class="controls" type="text" placeholder="Enter number of seats...">
               <input id="date" name="date" class="controls" type="text" placeholder="Date...">
               <br><br>
-              <input type="submit" class="btn btn-md" value="Create Route"></input>
+              <input type="submit" class="btn btn-md" value="Create Route">
           </div>
+
+          <input type="hidden" name="confirmedEmail" id="confirmed_email_input">
         </form>
         <hr>
 
@@ -33,3 +55,29 @@
 
     </div>
 </div>
+
+
+<script type="text/javascript">
+
+  function confirmEmail() {
+    var form = document.getElementById("driver_input_form");
+    var email = document.getElementById("confirmed_email_input");
+    var emailInput = document.getElementById("emailInput");
+    email.value = emailInput.value;
+    form.action="/route/new";
+    form.method="post";
+    form.submit();
+  }
+
+  function submitForm() {
+    <% if (user && (!user.confirmedEmail || user.confirmedEmail == "")) { %>
+      $("#emailModal").modal('toggle');
+    <% } else { %>
+      var form = document.getElementById("driver_input_form");
+      form.action="/route/new";
+      form.method="post";
+      form.submit();
+    <% } %>
+  }
+
+</script>

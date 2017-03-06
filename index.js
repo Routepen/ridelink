@@ -138,6 +138,7 @@ app.get('/route/new', function (req, res) {
 		url: req.url
 	};
 
+console.log(JSON.stringify(req.user, null, 4));
 	res.render('route', data);
 });
 
@@ -244,6 +245,13 @@ app.post('/route/new', function (req, res) {
 		confirmedRiders: [],
 		dropOffs: {},
 	});
+
+	if (req.body.confirmedEmail) {
+		req.user.confirmedEmail = req.body.confirmedEmail;
+		req.user.save(function(err) {
+			if (err) console.log(errr);
+		});
+	}
 
 	newRoute.save(function(err){
 		if(err) throw err;

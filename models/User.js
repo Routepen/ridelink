@@ -17,6 +17,7 @@ var usersSchema = new Schema({
         gender: String,
         link: String
     },
+    confirmedEmail: String,
     created_at: Date
 });
 
