@@ -1,5 +1,17 @@
 <script type="text/javascript">
 
+  function setUpEditability() {
+    $('#originText').editable({
+        type: 'text',
+        pk: 1,
+        url: '/post',
+        title: 'Change Location',
+        mode: 'inline'
+    });
+  }
+
+  setUpEditability();
+
   var routeData = <%- routeDataString %>;
 
   function setUpTable() {
