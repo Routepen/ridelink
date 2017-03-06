@@ -200,3 +200,7 @@ body {
 .progressbar li.active + li:after {
   background-color: #55b776;
 }
+
+.width200px {
+  width: 200px !important;
+}

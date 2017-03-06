@@ -3,10 +3,16 @@
   function setUpEditability() {
     $('#originText').editable({
         type: 'text',
-        pk: 1,
-        url: '/post',
         title: 'Change Location',
-        mode: 'inline'
+        mode: 'inline',
+        inputclass: 'input-sm width200px'
+    });
+
+    $('#destinationText').editable({
+        type: 'text',
+        title: 'Change Location',
+        mode: 'inline',
+        inputclass: 'input-sm width200px'
     });
   }
 
