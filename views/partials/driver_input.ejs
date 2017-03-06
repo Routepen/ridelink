@@ -42,7 +42,7 @@
           <hr>
           <div class="col-md-6">
               <input id="num-seats" name="seats" class="controls" type="text" placeholder="Enter number of seats...">
-              <input id="date" name="date" class="controls" type="text" placeholder="Date...">
+              <input id="date" name="date" class="controls" type="text" placeholder="Date..." onPaste="" onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
               <br><br>
               <input type="submit" class="btn btn-md" value="Create Route">
           </div>

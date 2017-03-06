@@ -108,7 +108,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/route', function (req, res) {
-	Route.findById(req.query.id).populate('driver').populate('riders').exec(function(err, route) {
+	Route.findById(req.query.id).populate('driver').populate('riders').populate('confirmedRiders').exec(function(err, route) {
 		if (err || !route) {
 			console.log(err);
 			return res.end("404 couldn't find id " + req.query.id);
@@ -118,6 +118,7 @@ app.get('/route', function (req, res) {
 			routeId: req.query.id,
 			user: req.user,
 			routeData: route,
+			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,
 		};
 

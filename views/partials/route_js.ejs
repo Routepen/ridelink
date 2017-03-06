@@ -1,5 +1,38 @@
 <script type="text/javascript">
 
+  var routeData = <%- routeDataString %>;
+
+  function setUpTable() {
+    var tbody = document.getElementById("riderTable");
+    tbody.innerHTML = "";
+    for (var i = 0; i < routeData.confirmedRiders.length; i++) {
+      tbody.innerHTML += "<tr>" +
+          "<td> " + (i+1) + " </td>" +
+          "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
+          "<td> $I.dk </td>" +
+          '<td> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' +
+          "</tr>";
+    }
+
+
+    for (var i = 0; i < routeData.riders.length; i++) {
+      var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "')";
+
+      tbody.innerHTML += '<tr>' +
+          '<td>' + (i+1) + '</td>' +
+          '<td>' + routeData.riders[i].facebook.name + '</td>' +
+          '<td> $I.dk </td>' +
+          '<td>' +
+          '  <button onclick="' + onclick + '" type="button" class="btn btn-success btn-xs">Confirm</button>' +
+          '</td>' +
+        '</tr>';
+    }
+  }
+
+  setUpTable();
+
+  var mapHandler;
+
   function initMap() {
       var map = new google.maps.Map(document.getElementById('map'), {
           mapTypeControl: false,
@@ -7,7 +40,7 @@
           zoom: 13
       });
 
-      new showRoute(map);
+      mapHandler = new showRoute(map);
   }
 
 
@@ -23,19 +56,30 @@
     this.directionsDisplay.setMap(map);
     this.geocoder = new google.maps.Geocoder();
 
+    var me = this;
+    this.drawMap(function() {
+      me.setUpDropOff(map);
+      me.dropInitialPins(map);
+    });
+
+  }
+
+  showRoute.prototype.drawMap = function(callback) {
     var waypoints = [];
-    <% for (var i = 0; i < routeData.confirmedRiders.length; i++) { %>
+    for (var i = 0; i < routeData.confirmedRiders.length; i++) {
       waypoints.push({
-        location: "<%= routeData.dropOffs[routeData.confirmedRiders[i]] %>",
-        stopover: true
+        location: routeData.dropOffs[routeData.confirmedRiders[i]._id],
+        stopover: true,
       });
-    <% } %>
+    }
+
+    console.log(waypoints);
 
     me = this;
 
     this.directionsService.route({
-      origin: "<%= routeData.origin %>",
-      destination: "<%= routeData.destination %>",
+      origin: routeData.origin,
+      destination:  routeData.destination,
       travelMode: this.travelMode,
       waypoints: waypoints,
       optimizeWaypoints: true
@@ -43,8 +87,7 @@
       if (status === 'OK') {
         console.log(response.routes[0].warnings);
         me.directionsDisplay.setDirections(response);
-        me.allowForPinDropping(map);
-        me.dropInitialPins(map);
+        if (callback) callback();
       } else {
         window.alert('Directions request failed due to ' + status);
       }
@@ -54,40 +97,41 @@
   showRoute.prototype.dropInitialPins = function(map) {
 
     var contentString;
+    var me = this;
 
-    <% for (var i = 0; i < routeData.riders.length; i++) { %>
-        this.geocoder.geocode( { 'address': "<%= routeData.dropOffs[routeData.riders[i]._id] %>" }, function(results, status) {
-          contentString = "<div><%= routeData.riders[i].facebook.name %></div>";
+    for (var i = 0; i < routeData.riders.length; i++) {
+      var rider = routeData.riders[i];
+      this.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
+        contentString = "<div>" + rider.facebook.name + "</div>";
 
-          <% if (user && routeData.driver._id.toString() == user._id.toString()) { %>
-            contentString += '<form action="/route/confirmrider" method="post">' +
-                              '<input type="hidden" name="userId" value="<%= routeData.riders[i]._id %>">' +
-                              '<input type="hidden" name="routeId" value="<%= routeData._id %>">' +
-                              '<input type="submit" value="Confirm">' +
-                              '</form>';
-            <% } %>
+        <% if (user && routeData.driver._id.toString() == user._id.toString()) { %>
+
+          contentString += '<button onclick="javascript:me.confirmRider(\'' + rider._id + '\')">Confirm</button>'
+        <% } %>
 
 
-          var infowindow = new google.maps.InfoWindow({
-            content: contentString
-          });
-
-          markers["<%= routeData.riders[i]._id %>"] = markers["<%= routeData.riders[i]._id %>"] || new google.maps.Marker({
-            map: map,
-            draggable: true,
-            position: results[0].geometry.location,
-            title: "<%= routeData.riders[i].facebook.name %>"
-          });
-
-          markers["<%= routeData.riders[i]._id %>"].addListener('click', function() {
-            infowindow.open(map, markers["<%= routeData.riders[i]._id %>"]);
-          });
-
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString
         });
-    <% } %>
+
+        var riderId = rider._id;
+
+        markers[riderId] = markers[riderId] || new google.maps.Marker({
+          map: map,
+          draggable: true,
+          position: results[0].geometry.location,
+          title: rider.facebook.name
+        });
+
+        markers[riderId].addListener('click', function() {
+          infowindow.open(map, markers[riderId]);
+        });
+
+      });
+    }
   }
 
-  showRoute.prototype.allowForPinDropping = function(map) {
+  showRoute.prototype.setUpDropOff = function(map) {
     this.dropOffInput = document.getElementById("pac-input");
     var dropOffAutocomplete = new google.maps.places.Autocomplete(
             this.dropOffInput, {placeIdOnly: true});
@@ -127,5 +171,26 @@
         <% } %>
       });
   };
+
+  function confirmRider(id) {
+    console.log(id);
+
+    var post = {
+      userId: id,
+      routeId: routeData._id
+    };
+
+    $.post("/route/confirmrider", post, function(data, textStatus) {
+      for (var i = 0; i < routeData.riders.length; i++) {
+        var rider = routeData.riders[i];
+        if (rider._id == id) {
+          routeData.riders.splice(i, 1);
+          routeData.confirmedRiders.push(rider);
+        }
+      }
+      setUpTable();
+      mapHandler.drawMap();
+    });
+  }
 
 </script>
