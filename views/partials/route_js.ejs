@@ -255,7 +255,7 @@
       tbody.innerHTML += "<tr>" +
           "<td> " + (i+1) + " </td>" +
           "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
-          "<td> $I.dk </td>" +
+          "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
           '<td> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' +
           "</tr>";
     }
@@ -267,9 +267,11 @@
       tbody.innerHTML += '<tr>' +
           '<td>' + (i+1) + '</td>' +
           '<td>' + routeData.riders[i].facebook.name + '</td>' +
-          '<td> $I.dk </td>' +
+          "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
           '<td>' +
-          '  <button onclick="' + onclick + '" type="button" class="btn btn-success btn-xs">Confirm</button>' +
+          <% if (user && user._id == routeData.driver._id) { %>
+            '  <button onclick="' + onclick + '" type="button" class="btn btn-success btn-xs">Confirm</button>' +
+          <% } %>
           '</td>' +
         '</tr>';
     }

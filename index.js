@@ -132,6 +132,7 @@ app.get('/route/new', function (req, res) {
 	if (!req.user) {
 		return res.redirect("/auth/facebook?redirect=" + encodeURIComponent('/route/new'));
 	}
+
 	var data = {
 		user: req.user,
 		routeId: false,
@@ -245,6 +246,8 @@ app.post('/route/new', function (req, res) {
 		riders:[],
 		confirmedRiders: [],
 		dropOffs: {},
+		inconvenience: req.body.charge,
+		requireInitialDeposit: req.body.requireInitialDeposit == "on"
 	});
 
 	if (req.body.confirmedEmail) {
@@ -258,6 +261,34 @@ app.post('/route/new', function (req, res) {
 		if(err) throw err;
 		console.log("Route created!");
 		return res.redirect("/route?id=" + newRoute._id);
+	});
+});
+
+app.get('/testing2', function(req, res) {
+	var newUser = new User({
+    "confirmedEmail": "pmh192@gmail.com",
+    "facebook": {
+        "gender": "male",
+        "photos": "[object Object]",
+        "email": "",
+        "name": "TestUser1 McGee",
+        "token": "EAAP9KxoqCucBAN8ZAnRNvZByb0C5sYFjZAwCIRBWElaMrBTpKja18bkNeJK3kU2ZC3upoADET2hb9y9E890vIklIrZBKVvO42sqhP7oO7MjWewvC7qWsf2b0PX6sDGxRnbpxTysHKwOnfCGAuflzpSo4aBY7W25TRZAHBCPJQvhgZDZD",
+        "id": "1275391965875712"
+    }
+	});
+
+	newUser.save(function(err) {
+		if (err) console.log(err);
+		res.end("");
+	});
+});
+
+app.get('/test3', function(req, res) {
+	User.findById('58bf31629ab19796361b80d7', function(err, user) {
+		req.logIn(user, function(err) {
+      if (err) { console.log(err); }
+      return res.redirect('/');
+    });
 	});
 });
 

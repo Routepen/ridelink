@@ -24,6 +24,7 @@ var routeSchema = new Schema({
     }],
     dropOffs: Schema.Types.Mixed,
     inconvenience: {type:[Number], default: 9999},
+    requireInitialDeposit: Boolean,
     bailed: {type:[Boolean], default: false},
 
     created_at: Date

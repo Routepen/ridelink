@@ -40,16 +40,22 @@
 
 
           <hr>
-          <div class="col-md-6">
-              <input id="num-seats" name="seats" class="controls" type="text" placeholder="Enter number of seats...">
-              <input id="date" name="date" class="controls" type="text" placeholder="Date..." onPaste="" onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
-              <br><br>
-              <input type="submit" class="btn btn-md" value="Create Route">
+          <div>
+            <div class="col-md-6">
+                <input id="num-seats" name="seats" class="controls" type="text" placeholder="Enter number of seats..."><br>
+                <input id="charge" name="charge" class="controls" type="text" placeholder="Cost per seat" onPaste="" onkeydown="if (event.keyCode == 13) { submitForm(); return false; }"><br>
+                <br>
+                <input id="requireInitialDeposit" name="requireInitialDeposit" type="checkbox" checked> Require Initial Deposit <br>
+                <input id="date" name="date" class="controls" type="text" placeholder="Date..." onPaste="" onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
+
+                <br><br>
+                <input type="submit" class="btn btn-md" value="Create Route">
+            </div>
           </div>
+
 
           <input type="hidden" name="confirmedEmail" id="confirmed_email_input">
         </form>
-        <hr>
 
         <br>
 
