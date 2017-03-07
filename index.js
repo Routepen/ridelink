@@ -70,7 +70,6 @@ passport.use(new FacebookStrategy({
 		profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link']
 	},
 	function(accessToken, refreshToken, profile, done) {
-		console.log(profile);
 		process.nextTick(function(){
 			User.findOne({ 'facebook.id': profile.id}, function (err, user) {
 				if (err)
@@ -109,7 +108,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/route', function (req, res) {
-	Route.findById(req.query.id).populate('driver').populate('riders').exec(function(err, route) {
+	Route.findById(req.query.id).populate('driver').populate('riders').populate('confirmedRiders').exec(function(err, route) {
 		if (err || !route) {
 			console.log(err);
 			return res.end("404 couldn't find id " + req.query.id);
@@ -119,6 +118,7 @@ app.get('/route', function (req, res) {
 			routeId: req.query.id,
 			user: req.user,
 			routeData: route,
+			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,
 		};
 
@@ -130,7 +130,7 @@ app.get('/route', function (req, res) {
 
 app.get('/route/new', function (req, res) {
 	if (!req.user) {
-		return res.redirect("/auth/facebook")
+		return res.redirect("/auth/facebook?redirect=" + encodeURIComponent('/route/new'));
 	}
 	var data = {
 		user: req.user,
@@ -139,6 +139,7 @@ app.get('/route/new', function (req, res) {
 		url: req.url
 	};
 
+console.log(JSON.stringify(req.user, null, 4));
 	res.render('route', data);
 });
 
@@ -161,6 +162,24 @@ app.post('/route/addrider', function(req, res) {
 
 	Route.findById(req.body.routeId, function(err, route) {
 		console.log(route);
+
+		var found = false;
+		for (var i = 0; i < route.riders.length; i++) {
+			if (route.riders[i].toString() == req.user._id) {
+				found = true;
+				break;
+			}
+		}
+		for (var i = 0; i < route.confirmedRiders.length; i++) {
+			if (route.confirmedRiders[i].toString() == req.user._id) {
+				found = true;
+				break;
+			}
+		}
+
+		if (found) {
+			return res.redirect("/route?id=" + route._id + "&error=1");
+		}
 		route.riders.push(req.user._id);
 		route.dropOffs = route.dropOffs || {};
 		route.dropOffs[req.user._id] = req.body.address;
@@ -187,7 +206,6 @@ app.post('/route/confirmrider', function(req, res) {
 		}
 
 		for (var i = 0; i < route.riders.length; i++) {
-			console.log(route.riders[i].id, route.riders[i]._id);
 			if (route.riders[i].id == req.body.userId) {
 				route.riders.splice(i, 1);
 				break;
@@ -228,6 +246,13 @@ app.post('/route/new', function (req, res) {
 		confirmedRiders: [],
 		dropOffs: {},
 	});
+
+	if (req.body.confirmedEmail) {
+		req.user.confirmedEmail = req.body.confirmedEmail;
+		req.user.save(function(err) {
+			if (err) console.log(errr);
+		});
+	}
 
 	newRoute.save(function(err){
 		if(err) throw err;

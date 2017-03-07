@@ -232,6 +232,108 @@ app.post('/route/new', function (req, res) {
 	});
 });
 
+app.get('/route/all', function (req, res) {
+	Route.find({}, function (err, routes) {
+
+		var ids = routes.map(function (r) {
+			return r._id;
+		});
+
+		res.json(ids);
+	});
+});
+
+
+app.post('/route/addrider', function (req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+	Route.findById(req.body.routeId, function (err, route) {
+		console.log(route);
+		route.riders.push(req.user._id);
+		route.dropOffs = route.dropOffs || {};
+		route.dropOffs[req.user._id] = req.body.address;
+
+		route.save(function (err) {
+			if (err) {
+				return res.end(err.toString());
+			}
+
+			res.redirect("/route?id=" + route._id);
+		});
+	});
+});
+
+app.post('/route/confirmrider', function (req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+	Route.findById(req.body.routeId).populate('driver').populate('riders').populate('confirmedRiders').exec(function (err, route) {
+		if (err) {
+			return res.end(err.toString());
+		}
+		if (route.driver._id.toString() != req.user._id.toString()) {
+			return res.end("nice try hacker");
+		}
+
+		for (var i = 0; i < route.riders.length; i++) {
+			console.log(route.riders[i].id, route.riders[i]._id);
+			if (route.riders[i].id == req.body.userId) {
+				route.riders.splice(i, 1);
+				break;
+			}
+		}
+
+		var found = false;
+		for (var i = 0; i < route.confirmedRiders.length; i++) {
+			if (route.confirmedRiders[i].id == req.body.userId) {
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) route.confirmedRiders.push(req.body.userId);
+
+		route.save(function (err) {
+			if (err) {
+				return res.end(err.toString());
+			}
+
+			res.redirect("/route?id=" + route._id);
+		});
+	});
+});
+
+app.post('/route/new', function (req, res) {
+	if (!req.user) {
+		// TODO Allow user to be informed their session has timed out
+		return res.redirect("/youveBeenLoggedOut");
+	}
+
+	var newRoute = Route({
+		origin: req.body.origin,
+		destination: req.body.destination,
+		seats: req.body.seats,
+		date: new Date(req.body.date),
+		driver: req.user._id,
+		riders: [],
+		confirmedRiders: [],
+		dropOffs: {}
+	});
+
+	newRoute.save(function (err) {
+		if (err) throw err;
+		console.log("Route created!");
+		return res.redirect("/route?id=" + newRoute._id);
+	});
+});
+
+app.get('/test/', function (req, res) {
+	res.render('');
+});
+
 // For testing purposes only
 app.get('/rider', function (req, res) {
 	res.render('partials/driver_input');
@@ -262,10 +364,6 @@ app.get('/auth/facebook/callback/', function (req, res, next) {
 app.get('/logout', function (req, res) {});
 
 app.get('/rider/', function (req, res) {});
-
-app.get('/test/', function (req, res) {
-	res.render('');
-});
 
 app.listen(app.get('port'), function () {
 	console.log('running on port', app.get('port'));

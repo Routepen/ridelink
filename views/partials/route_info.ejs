@@ -15,7 +15,7 @@
         <hr>
         <h4> Origin: <bold> <%= routeData.origin %> </bold> </h4>
         <h4> Destination: <bold> <%= routeData.destination %> </bold> </h4>
-        <h4> Seats left: <bold> <%= routeData.seats %> </bold> </h4>
+        <h4> Seats left: <bold> <%= routeData.seats - routeData.confirmedRiders.length %> </bold> </h4>
         <h4> <%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %></h4>
 
         <br>
@@ -26,19 +26,10 @@
                     <th>#</th>
                     <th> Rider </th>
                     <th> Inconvenience cost </th>
-                    <th> Bailed </th>
+                    <th> Confirmed </th>
                 </tr>
                 </thead>
-                <tbody>
-                  <% for (var i = 0; i < routeData.riders.length; i++) { %>
-                    <tr>
-                        <td> <%= i+1 %> </td>
-                        <td> <%= routeData.riders[i].facebook.name %> </td>
-                        <td> $I.dk </td>
-                        <td> Idk2 </td>
-                    </tr>
-                <% } %>
-                </tbody>
+                <tbody id="riderTable"></tbody>
             </table>
         </div>
     </div>
