@@ -103,45 +103,52 @@
 
   showRoute.prototype.setUpDropOff = function(map) {
     this.dropOffInput = document.getElementById("pac-input");
-    var dropOffAutocomplete = new google.maps.places.Autocomplete(
+    var dropOffInput;
+    if (this.dropOffInput) {
+      dropOffAutocomplete = new google.maps.places.Autocomplete(
             this.dropOffInput, {placeIdOnly: true});
 
+      this.setupPlaceChangedListener(dropOffAutocomplete, function() {
+        <% if (user) { %>
+          var place = dropOffAutocomplete.getPlace();
+          if (!place.place_id) {
+              window.alert("Please select an option from the dropdown list.");
+              return;
+          }
+          geocoder.geocode( { 'address': place.name }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              markers["<%= user._id %>"] = markers["<%= user._id %>"] || new google.maps.Marker({
+                  map: map,
+                  draggable: true,
+                  position: results[0].geometry.location
+              });
+
+              markers["<%= user._id %>"].setPosition(results[0].geometry.location);
+
+            } else {
+              alert("Couln't map to " + place.name + " because " + status);
+            }
+          });
+        <% } else { %>
+          window.location.replace("/auth/facebook?redirect=" + encodeURIComponent(window.location.href));
+        <% } %>
+      });
+    }
+
     pickUpInput = document.getElementById("editOriginInput");
-    var pickUpInputAutocomplete = new google.maps.places.Autocomplete(
-            pickUpInput, {placeIdOnly: true});
+    if (pickUpInput) {
+      var pickUpInputAutocomplete = new google.maps.places.Autocomplete(
+              pickUpInput, {placeIdOnly: true});
+    }
 
     destinationInput = document.getElementById("editDestinationInput");
-    var destinationInput = new google.maps.places.Autocomplete(
-            destinationInput, {placeIdOnly: true});
+    if (destinationInput) {
+      var destinationInput = new google.maps.places.Autocomplete(
+              destinationInput, {placeIdOnly: true});
+    }
 
     var geocoder = this.geocoder;
     var me = this;
-
-    this.setupPlaceChangedListener(dropOffAutocomplete, function() {
-      <% if (user) { %>
-        var place = dropOffAutocomplete.getPlace();
-        if (!place.place_id) {
-            window.alert("Please select an option from the dropdown list.");
-            return;
-        }
-        geocoder.geocode( { 'address': place.name }, function(results, status) {
-          if (status == google.maps.GeocoderStatus.OK) {
-            markers["<%= user._id %>"] = markers["<%= user._id %>"] || new google.maps.Marker({
-                map: map,
-                draggable: true,
-                position: results[0].geometry.location
-            });
-
-            markers["<%= user._id %>"].setPosition(results[0].geometry.location);
-
-          } else {
-            alert("Couln't map to " + place.name + " because " + status);
-          }
-        });
-      <% } else { %>
-        alert("please log in first");
-      <% } %>
-    })
   }
 
   showRoute.prototype.setupPlaceChangedListener = function(autocomplete, onChanged) {
@@ -188,6 +195,22 @@
       input.focus();
       input[0].selectionStart = input[0].selectionEnd = input.val().length;
     });
+
+    $('#seatsText').click(function() {
+      $('#seatsText').hide();
+      $('#seatsTextEditable').show();
+      var input = $('#seatsTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
+
+    $('#dateText').click(function() {
+      $('#dateText').hide();
+      $('#dateTextEditable').show();
+      var input = $('#dateTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
   }
 
   function editableDone(submit, id) {
@@ -222,6 +245,10 @@
   var routeData = <%- routeDataString %>;
 
   function setUpTable() {
+    var table = document.getElementById("tableDiv");
+    if (routeData.confirmedRiders.length + routeData.riders.length == 0) {
+      $(table).hide();
+    }
     var tbody = document.getElementById("riderTable");
     tbody.innerHTML = "";
     for (var i = 0; i < routeData.confirmedRiders.length; i++) {

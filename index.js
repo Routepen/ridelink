@@ -277,11 +277,10 @@ app.post('/route/update', function(req, res) {
 		}
 
 		var updating = req.body.updating;
-		if (updating == "origin") {
-			route.origin = req.body.origin;
-		}
-		else if (updating == "destination") {
-			route.destination = req.body.destination;
+		var allowedKeys = ["origin", "destination", "seats", "date"];
+
+		if (_.includes(allowedKeys, updating)) {
+			route[updating] = req.body[updating];
 		}
 
 		route.save(function(err) {

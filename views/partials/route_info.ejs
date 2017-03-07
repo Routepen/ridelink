@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="panel-body getlink-container">
-                <input onClick="select()"  class=" form-control" readonly="readonly" value="https://maps.com/127"> </input>
+                <input onClick="select()"  class=" form-control" readonly="readonly" value="http://localhost:5000/route?id=<%= routeData._id %>"> </input>
             </div>
           </div>
         <% } else { %>
@@ -68,12 +68,53 @@
 
         <br>
 
-        <i class="material-icons" style="font-size:18px">event_seat</i><span style="font-size:18px"> Seats left: <bold> <%= routeData.seats - routeData.confirmedRiders.length %> </bold> </span><br>
-        <i class="material-icons" style="font-size:18px">event</i><span style="font-size:18px"> <%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %></span>
+
+        <div class="form-inline editableform">
+          <div id="seatsTextEditable" style="display:none">
+            <i class="material-icons" style="font-size:18px">event_seat</i>
+            <span style="">Total riders you can take:</span>
+            <input id="editSeatsInput" type="text" class="form-control input-sm" value="<%= routeData.seats %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'seats'); }">
+            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'seats')">
+              <i class="glyphicon glyphicon-ok"></i>
+            </button>
+            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'seats')">
+              <i class="glyphicon glyphicon-remove"></i>
+            </button>
+          </div>
+
+          <div id="seatsText" style="">
+            <i class="material-icons" style="font-size:18px">event_seat</i>
+            <text style="font-size:18px">Seats left: </text>
+            <span style="font-size:18px" class="<%= user ?'editableInput' : '' %>">
+              <%= routeData.seats - routeData.confirmedRiders.length %>
+            </span>
+          </div>
+        </div>
+
+
+        <div class="form-inline editableform">
+          <div id="dateTextEditable" style="display:none">
+            <i class="material-icons" style="font-size:18px">event</i>
+            <input id="editDateInput" type="text" class="form-control input-sm" value="<%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'date'); }">
+            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'date')">
+              <i class="glyphicon glyphicon-ok"></i>
+            </button>
+            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'date')">
+              <i class="glyphicon glyphicon-remove"></i>
+            </button>
+          </div>
+
+          <div id="dateText" style="">
+            <i class="material-icons" style="font-size:18px">event</i>
+            <span style="font-size:18px" class="<%= user ?'editableInput' : '' %>">
+              <%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %>
+            </span>
+          </div>
+        </div>
 
         <br><br>
-        <div class="container-fluid row">
-            <table class="table table-striped table-hover ">
+        <div id="tableDiv" class="container-fluid row">
+            <table class="table table-striped table-hover">
                 <thead>
                 <tr>
                     <th>#</th>
