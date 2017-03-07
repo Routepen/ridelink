@@ -33,6 +33,96 @@
 }
 .second-landing{
     margin-top: 10px;
+    margin-bottom: 10px;
+}
+.third-landing{
+
+}
+
+img.resize{
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+img.noshow{
+
+}
+
+
+
+
+
+section.features {
+    background: white;
+}
+
+.feature {
+    text-align: center;
+}
+
+.feature img {
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    margin-right: 50px;
+}
+
+.feature p {
+    font-size: 18px;
+    line-height: 30px;
+}
+
+.feature h3 {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+
+
+
+section .title {
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 70px;
+    font-weight: bold;
+}
+
+    /*----------------------------------------------------------------*/
+    /*----------------------------------------------------------------*/
+    /* EMAIL/LEARN MORE PAGE */
+
+section.subscribe {
+    background: #F0F8FF;
+    color: white;
+}
+
+section.subscribe .title {
+    margin-bottom: 20px;
+}
+
+section.subscribe p {
+    text-align: center;
+    font-size: 18px;
+    line-height: 30px;
+    margin-bottom: 50px;
+}
+
+section.subscribe input.email {
+    position: relative;
+    display: block;
+    width: 70%;
+    font-size: 22px;
+    padding: 20px;
+    margin: 0 auto;
+    color: #333;
+    outline: none;
+    border: none;
+    border-radius: 3px;
+}
+
+section.subscribe input:focus {
+    outline: none;
 }
 /*
 #custom-search-input{
