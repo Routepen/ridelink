@@ -173,6 +173,7 @@
           routeData.riders.splice(i, 1);
           routeData.confirmedRiders.push(rider);
         }
+        $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
       }
       setUpTable();
       mapHandler.drawMap();
