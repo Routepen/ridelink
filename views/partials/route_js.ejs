@@ -1,36 +1,5 @@
 <script type="text/javascript">
 
-  var routeData = <%- routeDataString %>;
-
-  function setUpTable() {
-    var tbody = document.getElementById("riderTable");
-    tbody.innerHTML = "";
-    for (var i = 0; i < routeData.confirmedRiders.length; i++) {
-      tbody.innerHTML += "<tr>" +
-          "<td> " + (i+1) + " </td>" +
-          "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
-          "<td> $I.dk </td>" +
-          '<td> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' +
-          "</tr>";
-    }
-
-
-    for (var i = 0; i < routeData.riders.length; i++) {
-      var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "')";
-
-      tbody.innerHTML += '<tr>' +
-          '<td>' + (i+1) + '</td>' +
-          '<td>' + routeData.riders[i].facebook.name + '</td>' +
-          '<td> $I.dk </td>' +
-          '<td>' +
-          '  <button onclick="' + onclick + '" type="button" class="btn btn-success btn-xs">Confirm</button>' +
-          '</td>' +
-        '</tr>';
-    }
-  }
-
-  setUpTable();
-
   var mapHandler;
 
   function initMap() {
@@ -77,6 +46,7 @@
 
     me = this;
 
+    console.log("routing from", routeData.origin, "to", routeData.destination);
     this.directionsService.route({
       origin: routeData.origin,
       destination:  routeData.destination,
@@ -136,40 +106,49 @@
     var dropOffAutocomplete = new google.maps.places.Autocomplete(
             this.dropOffInput, {placeIdOnly: true});
 
-    this.setupPlaceChangedListener(dropOffAutocomplete)
-  }
+    pickUpInput = document.getElementById("editOriginInput");
+    var pickUpInputAutocomplete = new google.maps.places.Autocomplete(
+            pickUpInput, {placeIdOnly: true});
 
-  showRoute.prototype.setupPlaceChangedListener = function(autocomplete) {
-    var map = this.map;
+    destinationInput = document.getElementById("editDestinationInput");
+    var destinationInput = new google.maps.places.Autocomplete(
+            destinationInput, {placeIdOnly: true});
+
     var geocoder = this.geocoder;
     var me = this;
 
-    autocomplete.bindTo('bounds', this.map);
-    autocomplete.addListener('place_changed', function() {
+    this.setupPlaceChangedListener(dropOffAutocomplete, function() {
       <% if (user) { %>
-          var place = autocomplete.getPlace();
-          if (!place.place_id) {
-              window.alert("Please select an option from the dropdown list.");
-              return;
+        var place = dropOffAutocomplete.getPlace();
+        if (!place.place_id) {
+            window.alert("Please select an option from the dropdown list.");
+            return;
+        }
+        geocoder.geocode( { 'address': place.name }, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            markers["<%= user._id %>"] = markers["<%= user._id %>"] || new google.maps.Marker({
+                map: map,
+                draggable: true,
+                position: results[0].geometry.location
+            });
+
+            markers["<%= user._id %>"].setPosition(results[0].geometry.location);
+
+          } else {
+            alert("Couln't map to " + place.name + " because " + status);
           }
-          geocoder.geocode( { 'address': place.name }, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-              markers["<%= user._id %>"] = markers["<%= user._id %>"] || new google.maps.Marker({
-                  map: map,
-                  draggable: true,
-                  position: results[0].geometry.location
-              });
+        });
+      <% } else { %>
+        alert("please log in first");
+      <% } %>
+    })
+  }
 
-              markers["<%= user._id %>"].setPosition(results[0].geometry.location);
+  showRoute.prototype.setupPlaceChangedListener = function(autocomplete, onChanged) {
 
-            } else {
-              alert("Couln't map to " + place.name + " because " + status);
-            }
-          });
-        <% } else { %>
-          alert("please log in first");
-        <% } %>
-      });
+    autocomplete.bindTo('bounds', this.map);
+    autocomplete.addListener('place_changed', onChanged);
+
   };
 
   function confirmRider(id) {
@@ -192,5 +171,86 @@
       mapHandler.drawMap();
     });
   }
+
+  function setUpEditability() {
+    $('#originText').click(function() {
+      $('#originText').hide();
+      $('#originTextEditable').show();
+      var input = $('#originTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
+
+    $('#destinationText').click(function() {
+      $('#destinationText').hide();
+      $('#destinationTextEditable').show();
+      var input = $('#destinationTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
+  }
+
+  function editableDone(submit, id) {
+    selector = "#" + id;
+    var textDiv = $(selector + 'Text');
+    var editableDiv = $(selector + 'TextEditable');
+    textDiv.show();
+    editableDiv.hide();
+
+    var span = textDiv.find('span'), input = editableDiv.find('input');
+    if (submit && span.html() != input.val()) {
+      span.html(input.val());
+      routeData[id] = input.val();
+      mapHandler.drawMap();
+
+      data = {
+        routeId: routeData._id,
+        updating: id
+      };
+
+      data[id] = input.val();
+
+      $.post("/route/update", data, function() {
+
+      });
+    }
+    else {
+      input.val(span.html());
+    }
+  }
+
+  var routeData = <%- routeDataString %>;
+
+  function setUpTable() {
+    var tbody = document.getElementById("riderTable");
+    tbody.innerHTML = "";
+    for (var i = 0; i < routeData.confirmedRiders.length; i++) {
+      tbody.innerHTML += "<tr>" +
+          "<td> " + (i+1) + " </td>" +
+          "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
+          "<td> $I.dk </td>" +
+          '<td> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' +
+          "</tr>";
+    }
+
+
+    for (var i = 0; i < routeData.riders.length; i++) {
+      var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "')";
+
+      tbody.innerHTML += '<tr>' +
+          '<td>' + (i+1) + '</td>' +
+          '<td>' + routeData.riders[i].facebook.name + '</td>' +
+          '<td> $I.dk </td>' +
+          '<td>' +
+          '  <button onclick="' + onclick + '" type="button" class="btn btn-success btn-xs">Confirm</button>' +
+          '</td>' +
+        '</tr>';
+    }
+  }
+
+  setUpTable();
+  <% if (user) { %>
+    setUpEditability();
+  <% } %>
 
 </script>

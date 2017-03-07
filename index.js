@@ -261,6 +261,36 @@ app.post('/route/new', function (req, res) {
 	});
 });
 
+app.post('/route/update', function(req, res) {
+	console.log('updating');
+	if (!req.user) {
+		// TODO Allow user to be informed their session has timed out
+		return res.redirect("/youveBeenLoggedOut");
+	}
+	console.log('updating2');
+
+
+	Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
+		if (route.driver._id.toString() != req.user._id.toString()) {
+			console.log('hacker', route.driver._id, req.user._id);
+			return res.end("nice try hacker");
+		}
+
+		var updating = req.body.updating;
+		if (updating == "origin") {
+			route.origin = req.body.origin;
+		}
+		else if (updating == "destination") {
+			route.destination = req.body.destination;
+		}
+
+		route.save(function(err) {
+			if (err) { console.log(err); }
+			res.end();
+		})
+	});
+});
+
 // For testing purposes only
 app.get('/rider', function (req, res) {
 	res.render('partials/driver_input');

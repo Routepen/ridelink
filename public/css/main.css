@@ -202,3 +202,7 @@ body {
 .progressbar li.active + li:after {
   background-color: #55b776;
 }
+
+.editableInput {
+  border-bottom: dashed 1px #0088cc;
+}
