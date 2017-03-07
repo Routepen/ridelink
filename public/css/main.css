@@ -201,6 +201,6 @@ body {
   background-color: #55b776;
 }
 
-.width200px {
-  width: 200px !important;
+.editableInput {
+  border-bottom: dashed 1px #0088cc;
 }
