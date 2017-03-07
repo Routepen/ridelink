@@ -94,7 +94,8 @@ passport.use(new FacebookStrategy({
 
 app.get('/', function (req, res) {
 	var data = {
-		user: req.user
+		user: req.user,
+		url: req.url
 	};
 
 	res.render('landing', data);
@@ -110,7 +111,8 @@ app.get('/route', function (req, res) {
 		var data = {
 			routeId: req.query.id,
 			user: req.user,
-			routeData: route
+			routeData: route,
+			url: req.url
 		};
 
 		console.log(JSON.stringify(route, null, 4));
@@ -126,7 +128,8 @@ app.get('/route/new', function (req, res) {
 	var data = {
 		user: req.user,
 		routeId: false,
-		routeData: false
+		routeData: false,
+		url: req.url
 	};
 
 	res.render('route', data);
@@ -164,6 +167,47 @@ app.post('/route/addrider', function (req, res) {
 	});
 });
 
+app.post('/route/confirmrider', function (req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+	Route.findById(req.body.routeId).populate('driver').populate('riders').populate('confirmedRiders').exec(function (err, route) {
+		if (err) {
+			return res.end(err.toString());
+		}
+		if (route.driver._id.toString() != req.user._id.toString()) {
+			return res.end("nice try hacker");
+		}
+
+		for (var i = 0; i < route.riders.length; i++) {
+			console.log(route.riders[i].id, route.riders[i]._id);
+			if (route.riders[i].id == req.body.userId) {
+				route.riders.splice(i, 1);
+				break;
+			}
+		}
+
+		var found = false;
+		for (var i = 0; i < route.confirmedRiders.length; i++) {
+			if (route.confirmedRiders[i].id == req.body.userId) {
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) route.confirmedRiders.push(req.body.userId);
+
+		route.save(function (err) {
+			if (err) {
+				return res.end(err.toString());
+			}
+
+			res.redirect("/route?id=" + route._id);
+		});
+	});
+});
+
 app.post('/route/new', function (req, res) {
 	if (!req.user) {
 		// TODO Allow user to be informed their session has timed out
@@ -177,6 +221,7 @@ app.post('/route/new', function (req, res) {
 		date: new Date(req.body.date),
 		driver: req.user._id,
 		riders: [],
+		confirmedRiders: [],
 		dropOffs: {}
 	});
 
@@ -202,11 +247,17 @@ app.get('/auth/logout', function (req, res) {
 });
 
 app.get('/auth/facebook', function (req, res, next) {
-	passport.authenticate('facebook', { scope: ["public_profile,email"] })(req, res, next);
+	console.log('/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect));
+	passport.authenticate('facebook', { callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect) }, { scope: ["public_profile,email"] })(req, res, next);
 });
 
-app.get('/auth/facebook/callback', function (req, res, next) {
-	passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/' })(req, res, next);
+app.get('/auth/facebook/callback/', function (req, res, next) {
+	console.log('/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect));
+	passport.authenticate('facebook', {
+		callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect),
+		successRedirect: req.query.redirect,
+		failureRedirect: '/'
+	})(req, res, next);
 });
 app.get('/logout', function (req, res) {});
 
