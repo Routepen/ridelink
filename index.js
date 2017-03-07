@@ -120,6 +120,7 @@ app.get('/route', function (req, res) {
 			routeData: route,
 			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,
+			isDriver: req.user && route.driver._id.toString() == req.user._id.toString()
 		};
 
 		console.log(JSON.stringify(route, null, 4));

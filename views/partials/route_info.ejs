@@ -6,7 +6,7 @@
         </h2>
         <form class="row" action="rider"></form>
 
-        <% if (user._id == routeData.driver._id) { %>
+        <% if (isDriver) { %>
           <div class="panel panel-default" >
             <div class="panel-heading" id="link-panel">
                 <div class="col-md-6">
@@ -43,7 +43,7 @@
           </div>
           <div id="originText" style="font-size:18px">
             <i class="material-icons" style="font-size:18px">my_location</i>
-            <span class="<%= user ?'editableInput' : '' %>"><%= routeData.origin %></span>
+            <span class="<%= isDriver ?'editableInput' : '' %>"><%= routeData.origin %></span>
           </div>
         </div>
 
@@ -62,7 +62,7 @@
           </div>
           <div id="destinationText" style="font-size:18px">
             <i class="material-icons" style="font-size:18px">place</i>
-            <span class="<%= user ?'editableInput' : '' %>"><%= routeData.destination %></span>
+            <span class="<%= isDriver ?'editableInput' : '' %>"><%= routeData.destination %></span>
           </div>
         </div>
 
@@ -85,7 +85,7 @@
           <div id="seatsText" style="">
             <i class="material-icons" style="font-size:18px">event_seat</i>
             <text style="font-size:18px">Seats left: </text>
-            <span style="font-size:18px" class="<%= user ?'editableInput' : '' %>">
+            <span style="font-size:18px" class="<%= isDriver ?'editableInput' : '' %>">
               <%= routeData.seats - routeData.confirmedRiders.length %>
             </span>
           </div>
@@ -106,7 +106,7 @@
 
           <div id="dateText" style="">
             <i class="material-icons" style="font-size:18px">event</i>
-            <span style="font-size:18px" class="<%= user ?'editableInput' : '' %>">
+            <span style="font-size:18px" class="<%= isDriver ?'editableInput' : '' %>">
               <%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %>
             </span>
           </div>

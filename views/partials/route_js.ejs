@@ -269,7 +269,7 @@
           '<td>' + routeData.riders[i].facebook.name + '</td>' +
           "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
           '<td>' +
-          <% if (user && user._id == routeData.driver._id) { %>
+          <% if (isDriver) { %>
             '  <button onclick="' + onclick + '" type="button" class="btn btn-success btn-xs">Confirm</button>' +
           <% } %>
           '</td>' +
@@ -278,7 +278,7 @@
   }
 
   setUpTable();
-  <% if (user) { %>
+  <% if (isDriver) { %>
     setUpEditability();
   <% } %>
 
