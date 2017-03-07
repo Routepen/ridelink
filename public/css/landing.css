@@ -41,6 +41,7 @@
 
 img.resize{
     width: 80%;
+    height: 200%;
     margin: 0 auto;
     margin-bottom: 20px;
 }
@@ -64,7 +65,10 @@ section.features {
     width: 80%;
     margin: 0 auto;
     margin-bottom: 20px;
-    margin-right: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+    justify-content: space-between;
 }
 
 .feature p {
@@ -77,6 +81,7 @@ section.features {
     font-weight: bold;
     margin-bottom: 10px;
 }
+
 
 
 
@@ -105,20 +110,30 @@ section.subscribe p {
     text-align: center;
     font-size: 18px;
     line-height: 30px;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 }
 
 section.subscribe input.email {
     position: relative;
-    display: block;
-    width: 70%;
+    margin: 0 auto;
+    display: inline-block;
+    width: 100%;
     font-size: 22px;
     padding: 20px;
-    margin: 0 auto;
     color: #333;
     outline: none;
     border: none;
     border-radius: 3px;
+    margin-left: 120px;
+}
+section.subscribe input.btn{
+    display: inline-block;
+    padding: 20px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 3px;
+    margin-left: 120px;
 }
 
 section.subscribe input:focus {
