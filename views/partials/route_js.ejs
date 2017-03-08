@@ -110,6 +110,8 @@
           infowindow.open(map, markers[riderId]);
         });
 
+        google.maps.event.addListener(infowindow, 'closeclick', unHighlightTable);
+
       });
     }
   }
@@ -342,6 +344,12 @@
         $(elem).removeClass("highlighted");
         console.log("removing");
       }
+    });
+  }
+
+  function unHighlightTable() {
+    $("#riderTable").find("tr").each(function(i, elem) {
+      $(elem).removeClass("highlighted");
     });
   }
 
