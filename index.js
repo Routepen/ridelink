@@ -66,7 +66,7 @@ passport.deserializeUser(function(id, done) {
 passport.use(new FacebookStrategy({
 		clientID: "1122786494515943",
 		clientSecret: "f6cd89a5fe00867021469477156f95a6",
-		callbackURL: "http://localhost:5000/auth/facebook/callback",
+		callbackURL: process.env.callbackURL || "http://localhost:5000/auth/facebook/callback",
 		profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link']
 	},
 	function(accessToken, refreshToken, profile, done) {
@@ -358,18 +358,11 @@ app.get('/auth/facebook/callback/', function(req,res,next) {
 		}
 	)(req,res,next);
 });
-app.get('/logout', function(req,res){
-
-});
-
-app.get('/rider/', function(req,res){
-
-});
-
+/*
 app.get('/test/', function(req,res){
 	res.render('')
 });
-
+*/
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
 });
