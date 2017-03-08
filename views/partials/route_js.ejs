@@ -125,6 +125,11 @@
 
               markers["<%= user._id %>"].setPosition(results[0].geometry.location);
 
+              var text = $('#dropOffText'), editable = $('#dropOffTextEditable');
+              text.show();
+              editable.hide();
+              text.find('span').html(editable.find('input').val());
+
             } else {
               alert("Couln't map to " + place.name + " because " + status);
             }
@@ -181,37 +186,57 @@
   }
 
   function setUpEditability() {
-    $('#originText').click(function() {
-      $('#originText').hide();
-      $('#originTextEditable').show();
-      var input = $('#originTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
-    });
+    <% if (isDriver) { %>
+      $('#originText').click(function() {
+        $('#originText').hide();
+        $('#originTextEditable').show();
+        var input = $('#originTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
 
-    $('#destinationText').click(function() {
-      $('#destinationText').hide();
-      $('#destinationTextEditable').show();
-      var input = $('#destinationTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
-    });
+      $('#destinationText').click(function() {
+        $('#destinationText').hide();
+        $('#destinationTextEditable').show();
+        var input = $('#destinationTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
 
-    $('#seatsText').click(function() {
-      $('#seatsText').hide();
-      $('#seatsTextEditable').show();
-      var input = $('#seatsTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
-    });
+      $('#seatsText').click(function() {
+        $('#seatsText').hide();
+        $('#seatsTextEditable').show();
+        var input = $('#seatsTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
 
-    $('#dateText').click(function() {
-      $('#dateText').hide();
-      $('#dateTextEditable').show();
-      var input = $('#dateTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
-    });
+      $('#dateText').click(function() {
+        $('#dateText').hide();
+        $('#dateTextEditable').show();
+        var input = $('#dateTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
+    <% } else { %>
+
+      <% if (isRider) { %>
+        $("#dropOffText").show();
+      <% } else { %>
+        $("#dropOffTextEditable").show();
+      <% } %>
+
+    <% } %>
+
+    <% if (!confirmedRider) { %>
+      $('#dropOffText').click(function() {
+        $('#dropOffText').hide();
+        $('#dropOffTextEditable').show();
+        var input = $('#dropOffTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
+    <% } %>
   }
 
   function editableDone(submit, id) {
@@ -279,8 +304,6 @@
   }
 
   setUpTable();
-  <% if (isDriver) { %>
-    setUpEditability();
-  <% } %>
+  setUpEditability();
 
 </script>

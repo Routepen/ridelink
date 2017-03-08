@@ -114,16 +114,34 @@ app.get('/route', function (req, res) {
 			return res.end("404 couldn't find id " + req.query.id);
 		}
 
+		var isRider = false, confirmedRider = false;
+		if (req.user) {
+			route.riders.forEach(function(rider) {
+				if (rider._id.toString() == req.user._id.toString()) {
+					isRider = true;
+				}
+			});
+
+			route.confirmedRiders.forEach(function(rider) {
+				if (rider._id.toString() == req.user._id.toString()) {
+					isRider = true;
+					confirmedRider = true;
+				}
+			});
+		}
+
 		var data = {
 			routeId: req.query.id,
 			user: req.user,
 			routeData: route,
 			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,
-			isDriver: req.user && route.driver._id.toString() == req.user._id.toString()
+			isDriver: req.user != undefined && route.driver._id.toString() == req.user._id.toString(),
+			isRider: isRider,
+			confirmedRider: confirmedRider
 		};
 
-		console.log(JSON.stringify(route, null, 4));
+		console.log(JSON.stringify(data, null, 4));
 
 		res.render('route', data);
 	});
