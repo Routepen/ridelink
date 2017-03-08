@@ -21,12 +21,32 @@
             </div>
           </div>
         <% } else { %>
-          <form action="/route/addrider" method="post">
-            <span> <i class="material-icons">place</i> </span> <input id="pac-input" name="address" class="controls" autofocus="autofocus" type="text" placeholder="Enter dropoff address..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
-            <br><br>
-            <input type="hidden" name="routeId" value="<%= routeId %>">
-            <button>Confirm</button>
-          </form>
+          <% var location = ""; %>
+          <% if (user && routeData.dropOffs) { %>
+           <% location = routeData.dropOffs[user._id] %>
+          <% } %>
+          <div id="dropOffTextEditable" style="display:none">
+            <form action="javascript:return false">
+              <span> <i class="material-icons">place</i> </span> <input id="pac-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter dropoff address..." value="<%=location %>">
+              <input type="hidden" name="routeId" value="<%= routeId %>">
+              <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'dropOff')">
+                <i class="glyphicon glyphicon-ok"></i>
+              </button>
+              <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'dropOff')">
+                <i class="glyphicon glyphicon-remove"></i>
+              </button>
+              <br><br>
+            </form>
+          </div>
+          <div id="dropOffText" style="display:none">
+            <% if (confirmedRider) { %>
+              <text>You've got a ride to</text>
+            <% } else { %>
+              <text>You've requested a ride to</text>
+            <% } %>
+
+            <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
+          </div>
         <% } %>
         <hr>
 

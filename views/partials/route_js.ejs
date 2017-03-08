@@ -69,14 +69,27 @@
     var contentString;
     var me = this;
 
+    var allRiders = [];
     for (var i = 0; i < routeData.riders.length; i++) {
       var rider = routeData.riders[i];
+      rider.confirmed = false;
+      allRiders.push(rider);
+    }
+    for (var i = 0; i < routeData.confirmedRiders.length; i++) {
+      var rider = routeData.confirmedRiders[i];
+      rider.confirmed = true;
+      allRiders.push(rider);
+    }
+
+    for (var i = 0; i < allRiders.length; i++) {
+      var rider = allRiders[i];
       this.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
         contentString = "<div>" + rider.facebook.name + "</div>";
 
         <% if (user && routeData.driver._id.toString() == user._id.toString()) { %>
-
-          contentString += '<button onclick="javascript:me.confirmRider(\'' + rider._id + '\')">Confirm</button>'
+          if (!rider.confirmed) {
+            contentString += '<button onclick="javascript:me.confirmRider(\'' + rider._id + '\')">Confirm</button>'
+          }
         <% } %>
 
 
@@ -88,14 +101,16 @@
 
         markers[riderId] = markers[riderId] || new google.maps.Marker({
           map: map,
-          draggable: true,
           position: results[0].geometry.location,
           title: rider.facebook.name
         });
 
         markers[riderId].addListener('click', function() {
+          hightlightInTable(rider._id);
           infowindow.open(map, markers[riderId]);
         });
+
+        google.maps.event.addListener(infowindow, 'closeclick', unHighlightTable);
 
       });
     }
@@ -124,6 +139,22 @@
               });
 
               markers["<%= user._id %>"].setPosition(results[0].geometry.location);
+
+              var text = $('#dropOffText'), editable = $('#dropOffTextEditable');
+              text.show();
+              editable.hide();
+              var address = editable.find('input').val();
+              text.find('span').html(address);
+
+              data = {
+                routeId: "<%= routeData._id %>",
+                address: address
+              };
+
+              console.log("posting");
+              $.post("/route/addrider", data, function(data, text) {
+                console.log(data, text);
+              });
 
             } else {
               alert("Couln't map to " + place.name + " because " + status);
@@ -181,37 +212,57 @@
   }
 
   function setUpEditability() {
-    $('#originText').click(function() {
-      $('#originText').hide();
-      $('#originTextEditable').show();
-      var input = $('#originTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
-    });
+    <% if (isDriver) { %>
+      $('#originText').click(function() {
+        $('#originText').hide();
+        $('#originTextEditable').show();
+        var input = $('#originTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
 
-    $('#destinationText').click(function() {
-      $('#destinationText').hide();
-      $('#destinationTextEditable').show();
-      var input = $('#destinationTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
-    });
+      $('#destinationText').click(function() {
+        $('#destinationText').hide();
+        $('#destinationTextEditable').show();
+        var input = $('#destinationTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
 
-    $('#seatsText').click(function() {
-      $('#seatsText').hide();
-      $('#seatsTextEditable').show();
-      var input = $('#seatsTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
-    });
+      $('#seatsText').click(function() {
+        $('#seatsText').hide();
+        $('#seatsTextEditable').show();
+        var input = $('#seatsTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
 
-    $('#dateText').click(function() {
-      $('#dateText').hide();
-      $('#dateTextEditable').show();
-      var input = $('#dateTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
-    });
+      $('#dateText').click(function() {
+        $('#dateText').hide();
+        $('#dateTextEditable').show();
+        var input = $('#dateTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
+    <% } else { %>
+
+      <% if (isRider) { %>
+        $("#dropOffText").show();
+      <% } else { %>
+        $("#dropOffTextEditable").show();
+      <% } %>
+
+    <% } %>
+
+    <% if (!confirmedRider) { %>
+      $('#dropOffText').click(function() {
+        $('#dropOffText').hide();
+        $('#dropOffTextEditable').show();
+        var input = $('#dropOffTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
+    <% } %>
   }
 
   function editableDone(submit, id) {
@@ -223,7 +274,12 @@
 
     var span = textDiv.find('span'), input = editableDiv.find('input');
     if (submit && span.html() != input.val()) {
-      span.html(input.val());
+      if (id == "seats") {
+        span.html(input.val() - (routeData.confirmedRiders.length + routeData.riders.length));
+      }
+      else {
+        span.html(input.val());
+      }
       routeData[id] = input.val();
       mapHandler.drawMap();
 
@@ -253,7 +309,7 @@
     var tbody = document.getElementById("riderTable");
     tbody.innerHTML = "";
     for (var i = 0; i < routeData.confirmedRiders.length; i++) {
-      tbody.innerHTML += "<tr>" +
+      tbody.innerHTML += '<tr id="rider' + routeData.confirmedRiders[i]._id + '">' +
           "<td> " + (i+1) + " </td>" +
           "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
           "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
@@ -265,7 +321,7 @@
     for (var i = 0; i < routeData.riders.length; i++) {
       var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "')";
 
-      tbody.innerHTML += '<tr>' +
+      tbody.innerHTML += '<tr id="rider' + routeData.riders[i]._id + '">' +
           '<td>' + (i+1) + '</td>' +
           '<td>' + routeData.riders[i].facebook.name + '</td>' +
           "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
@@ -278,9 +334,26 @@
     }
   }
 
+  function hightlightInTable(riderId) {
+    $("#riderTable").find("tr").each(function(i, elem) {
+      if (elem.id == "rider" + riderId) {
+        $(elem).addClass("highlighted");
+        console.log("ading");
+      }
+      else {
+        $(elem).removeClass("highlighted");
+        console.log("removing");
+      }
+    });
+  }
+
+  function unHighlightTable() {
+    $("#riderTable").find("tr").each(function(i, elem) {
+      $(elem).removeClass("highlighted");
+    });
+  }
+
   setUpTable();
-  <% if (isDriver) { %>
-    setUpEditability();
-  <% } %>
+  setUpEditability();
 
 </script>

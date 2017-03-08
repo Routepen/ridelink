@@ -114,16 +114,32 @@ app.get('/route', function (req, res) {
 			return res.end("404 couldn't find id " + req.query.id);
 		}
 
+		var isRider = false, confirmedRider = false;
+		if (req.user) {
+			route.riders.forEach(function(rider) {
+				if (rider._id.toString() == req.user._id.toString()) {
+					isRider = true;
+				}
+			});
+
+			route.confirmedRiders.forEach(function(rider) {
+				if (rider._id.toString() == req.user._id.toString()) {
+					isRider = true;
+					confirmedRider = true;
+				}
+			});
+		}
+
 		var data = {
 			routeId: req.query.id,
 			user: req.user,
 			routeData: route,
 			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,
-			isDriver: req.user && route.driver._id.toString() == req.user._id.toString()
+			isDriver: req.user != undefined && route.driver._id.toString() == req.user._id.toString(),
+			isRider: isRider,
+			confirmedRider: confirmedRider
 		};
-
-		console.log(JSON.stringify(route, null, 4));
 
 		res.render('route', data);
 	});
@@ -141,7 +157,6 @@ app.get('/route/new', function (req, res) {
 		url: req.url
 	};
 
-console.log(JSON.stringify(req.user, null, 4));
 	res.render('route', data);
 });
 
@@ -165,31 +180,37 @@ app.post('/route/addrider', function(req, res) {
 	Route.findById(req.body.routeId, function(err, route) {
 		console.log(route);
 
-		var found = false;
+		var rider = false, confirmedRider = false;
 		for (var i = 0; i < route.riders.length; i++) {
 			if (route.riders[i].toString() == req.user._id) {
-				found = true;
+				rider = true;
 				break;
 			}
 		}
 		for (var i = 0; i < route.confirmedRiders.length; i++) {
 			if (route.confirmedRiders[i].toString() == req.user._id) {
-				found = true;
+				confirmedRider = true;
+				rider = true;
 				break;
 			}
 		}
 
-		if (found) {
+
+		if (confirmedRider) {
 			return res.redirect("/route?id=" + route._id + "&error=1");
 		}
-		route.riders.push(req.user._id);
-		route.dropOffs = route.dropOffs || {};
-		route.dropOffs[req.user._id] = req.body.address;
+		if (!rider) {
+			route.riders.push(req.user._id);
+		}
+		var dropOffs = route.dropOffs || {};
+		dropOffs[req.user._id] = req.body.address;
+		route.dropOffs = dropOffs;
+		route.markModified('dropOffs');
 
 		route.save(function(err) {
-			if (err) { return res.end(err.toString()); }
+			if (err) { console.log(err); return res.end(err.toString()); }
 
-			res.redirect("/route?id=" + route._id);
+			res.end("");
 		})
 	});
 });
