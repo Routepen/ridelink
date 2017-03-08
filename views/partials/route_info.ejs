@@ -5,48 +5,51 @@
             <%= routeData.driver.facebook.name.split(' ')[0] %>'s Route
         </h2>
         <form class="row" action="rider"></form>
-
-        <% if (isDriver) { %>
-          <div class="panel panel-default" >
-            <div class="panel-heading" id="link-panel">
-                <div class="col-md-6">
-                    Get shareable link  <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px; padding-top:10px"> </span>
-                </div>
-                <div class="col-md-push-3" id="copy-link">
-                    <a class="btn btn-md"> Copy link </a>
-                </div>
+        <% if (user) { %>
+          <% if (isDriver) { %>
+            <div class="panel panel-default" >
+              <div class="panel-heading" id="link-panel">
+                  <div class="col-md-6">
+                      Get shareable link  <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px; padding-top:10px"> </span>
+                  </div>
+                  <div class="col-md-push-3" id="copy-link">
+                      <a class="btn btn-md"> Copy link </a>
+                  </div>
+              </div>
+              <div class="panel-body getlink-container">
+                  <input onClick="select()"  class=" form-control" readonly="readonly" value="http://localhost:5000/route?id=<%= routeData._id %>"> </input>
+              </div>
             </div>
-            <div class="panel-body getlink-container">
-                <input onClick="select()"  class=" form-control" readonly="readonly" value="http://localhost:5000/route?id=<%= routeData._id %>"> </input>
-            </div>
-          </div>
-        <% } else { %>
-          <% var location = ""; %>
-          <% if (user && routeData.dropOffs) { %>
-           <% location = routeData.dropOffs[user._id] %>
-          <% } %>
-          <div id="dropOffTextEditable" style="display:none">
-            <form action="javascript:return false">
-              <span> <i class="material-icons">place</i> </span> <input id="pac-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter dropoff address..." value="<%=location %>">
-              <input type="hidden" name="routeId" value="<%= routeId %>">
-              <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'dropOff')">
-                <i class="glyphicon glyphicon-ok"></i>
-              </button>
-              <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'dropOff')">
-                <i class="glyphicon glyphicon-remove"></i>
-              </button>
-              <br><br>
-            </form>
-          </div>
-          <div id="dropOffText" style="display:none">
-            <% if (confirmedRider) { %>
-              <text>You've got a ride to</text>
-            <% } else { %>
-              <text>You've requested a ride to</text>
+          <% } else { %>
+            <% var location = ""; %>
+            <% if (user && routeData.dropOffs) { %>
+             <% location = routeData.dropOffs[user._id] %>
             <% } %>
+            <div id="dropOffTextEditable" style="display:none">
+              <form action="javascript:return false">
+                <span> <i class="material-icons">place</i> </span> <input id="pac-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter dropoff address..." value="<%=location %>">
+                <input type="hidden" name="routeId" value="<%= routeId %>">
+                <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:riderLocationChanged()">
+                  <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'dropOff')">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </button>
+                <br><br>
+              </form>
+            </div>
+            <div id="dropOffText" style="display:none">
+              <% if (confirmedRider) { %>
+                <text>You've got a ride to</text>
+              <% } else { %>
+                <text>You've requested a ride to</text>
+              <% } %>
 
-            <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
-          </div>
+              <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
+            </div>
+          <% } %>
+        <% } else {  %>
+          <a href="/auth/facebook?redirect=<%= encodeURIComponent('/route?id=' + routeData._id) %>")>Login to Facebook to request a ride</a>
         <% } %>
         <hr>
 
