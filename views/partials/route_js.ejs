@@ -88,7 +88,7 @@
 
         <% if (isDriver) { %>
           if (!rider.confirmed) {
-            contentString += '<button onclick="javascript:confirmRider(\'' + rider._id + '\')">Confirm</button>'
+            contentString += '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
           }
         <% } %>
 
@@ -175,13 +175,15 @@
 
   };
 
-  function confirmRider(id, closeAllWindows) {
+  function confirmRider(id, btn) {
     console.log(id);
 
     var post = {
       userId: id,
       routeId: routeData._id
     };
+
+    $(btn).button('loading');
 
     $.post("/route/confirmrider", post, function(data, textStatus) {
       for (var i = 0; i < routeData.riders.length; i++) {
@@ -195,6 +197,7 @@
         mapHandler.drawMap(function() {
           mapHandler.setMarkers();
         });
+        $(btn).button('reset');
       }
     });
   }
@@ -241,7 +244,7 @@
 
   function setUpEditability() {
     <% if (isDriver) { %>
-      $('#originText').click(function() {
+      $('#originText>span').click(function() {
         $('#originText').hide();
         $('#originTextEditable').show();
         var input = $('#originTextEditable').find('input');
@@ -249,7 +252,7 @@
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
 
-      $('#destinationText').click(function() {
+      $('#destinationText>span').click(function() {
         $('#destinationText').hide();
         $('#destinationTextEditable').show();
         var input = $('#destinationTextEditable').find('input');
@@ -257,7 +260,7 @@
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
 
-      $('#seatsText').click(function() {
+      $('#seatsText>span').click(function() {
         $('#seatsText').hide();
         $('#seatsTextEditable').show();
         var input = $('#seatsTextEditable').find('input');
@@ -265,10 +268,18 @@
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
 
-      $('#dateText').click(function() {
+      $('#dateText>span').click(function() {
         $('#dateText').hide();
         $('#dateTextEditable').show();
         var input = $('#dateTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
+
+      $('#timeText>span').click(function() {
+        $('#timeText').hide();
+        $('#timeTextEditable').show();
+        var input = $('#timeTextEditable').find('input');
         input.focus();
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
@@ -301,14 +312,18 @@
     editableDiv.hide();
 
     var span = textDiv.find('span'), input = editableDiv.find('input');
-    if (submit && span.html() != input.val()) {
+    console.log(submit, span.html().trim(), input.val())
+    if (submit && (span.html() != input.val() || id == "seats")) {
       if (id == "seats") {
-        span.html(input.val() - (routeData.confirmedRiders.length + routeData.riders.length));
+        console.log("trimming " + (routeData.confirmedRiders.length + routeData.riders.length));
+        var seatsLeft = input.val() - (routeData.confirmedRiders.length + routeData.riders.length);
+        var s = "" + seatsLeft
+        span.html(s.trim());
       }
       else {
-        span.html(input.val());
+        span.html(input.val().trim());
       }
-      routeData[id] = input.val();
+      routeData[id] = input.val().trim();
       mapHandler.drawMap();
 
       data = {
@@ -323,7 +338,13 @@
       });
     }
     else {
-      input.val(span.html());
+      var html = span.html().trim();
+      if (id == "seats"){
+        input.val(parseInt(html) + 1);
+      }
+      else {
+        input.val(html);
+      }
     }
   }
 
@@ -345,13 +366,13 @@
           "<td> " + (i+1) + " </td>" +
           "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
           "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
-          '<td> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' +
+          '<td> <span class="glyphicon glyphicon-ok" style="color:green" aria-hidden="true"></span></td>' +
           "</tr>";
     }
 
 
     for (var i = 0; i < routeData.riders.length; i++) {
-      var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "')";
+      var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "', this)";
 
       tbody.innerHTML += '<tr id="rider' + routeData.riders[i]._id + '">' +
           '<td>' + (i+1) + '</td>' +
@@ -383,7 +404,28 @@
     });
   }
 
+  function showFBModal() {
+    $('#selfLink').html(window.location.href);
+    $('#selfLink')[0].href = window.location.href;
+    $("#facebookModal").modal('toggle');
+  }
+
+  var shareableLinkStatus = 0;
+  function toggleShareableLink() {
+    if (shareableLinkStatus == 0) {
+        $('#shareableLink').show();
+        shareableLinkStatus = 1;
+    }
+    else {
+      $('#shareableLink').hide();
+      shareableLinkStatus = 0;
+    }
+  }
+
   setUpTable();
   setUpEditability();
+  <% if (!opened && isDriver) { %>
+    showFBModal()
+  <% } %>
 
 </script>

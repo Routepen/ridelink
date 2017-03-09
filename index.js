@@ -114,7 +114,7 @@ app.get('/route', function (req, res) {
 			return res.end("404 couldn't find id " + req.query.id);
 		}
 
-		var isRider = false, confirmedRider = false;
+		var isRider = false, confirmedRider = false, isDriver, opened;
 		if (req.user) {
 			route.riders.forEach(function(rider) {
 				if (rider._id.toString() == req.user._id.toString()) {
@@ -130,15 +130,26 @@ app.get('/route', function (req, res) {
 			});
 		}
 
+		isDriver = req.user != undefined && route.driver._id.toString() == req.user._id.toString();
+
+		var opened = route.opened == true;
+		if (isDriver && !opened) {
+			route.opened = true;
+			route.save(function(err) {
+				if (err) console.log(err);
+			});
+		}
+
 		var data = {
 			routeId: req.query.id,
 			user: req.user,
 			routeData: route,
 			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,
-			isDriver: req.user != undefined && route.driver._id.toString() == req.user._id.toString(),
+			isDriver: isDriver,
 			isRider: isRider,
-			confirmedRider: confirmedRider
+			confirmedRider: confirmedRider,
+			opened: opened
 		};
 
 		res.render('route', data);
@@ -263,7 +274,8 @@ app.post('/route/new', function (req, res) {
 		origin: req.body.origin,
 		destination: req.body.destination,
 		seats: req.body.seats,
-		date: new Date(req.body.date),
+		date: new Date(req.body.date + " " + req.body.time),
+		time: req.body.time,
 		driver: req.user._id,
 		riders:[],
 		confirmedRiders: [],
@@ -320,7 +332,6 @@ app.post('/route/update', function(req, res) {
 		// TODO Allow user to be informed their session has timed out
 		return res.redirect("/youveBeenLoggedOut");
 	}
-	console.log('updating2');
 
 
 	Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
@@ -330,7 +341,7 @@ app.post('/route/update', function(req, res) {
 		}
 
 		var updating = req.body.updating;
-		var allowedKeys = ["origin", "destination", "seats", "date"];
+		var allowedKeys = ["origin", "destination", "seats", "date", "time"];
 
 		if (_.includes(allowedKeys, updating)) {
 			route[updating] = req.body[updating];
