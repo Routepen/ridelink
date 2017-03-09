@@ -362,11 +362,19 @@
     var tbody = document.getElementById("riderTable");
     tbody.innerHTML = "";
     for (var i = 0; i < routeData.confirmedRiders.length; i++) {
-      tbody.innerHTML += '<tr id="rider' + routeData.confirmedRiders[i]._id + '">' +
+      var rider = routeData.confirmedRiders[i];
+      var color = "green", title="confirmed";
+
+      if (routeData.requireInitialDeposit && !routeData.riderStatus[rider._id].paid) {
+        color = "purple";
+        title="Awaiting payment";
+      }
+
+      tbody.innerHTML += '<tr onclick="console.log(\'hi\');" id="rider' + rider._id + '">' +
           "<td> " + (i+1) + " </td>" +
-          "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
+          "<td> " + rider.facebook.name + "</td>" +
           "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
-          '<td> <span class="glyphicon glyphicon-ok" style="color:green" aria-hidden="true"></span></td>' +
+          '<td> <span title="' + title + '" class="glyphicon glyphicon-ok" style="color:' + color + '" aria-hidden="true"></span></td>' +
           "</tr>";
     }
 
@@ -422,8 +430,15 @@
     }
   }
 
+  function setUpTextInfo() {
+    if (routeData.requireInitialDeposit) {
+      $('#infoText').html("Initial Deposit is Required");
+    }
+  }
+
   setUpTable();
   setUpEditability();
+  setUpTextInfo();
   <% if (!opened && isDriver) { %>
     showFBModal()
   <% } %>

@@ -7,10 +7,11 @@
       </div>
       <div class="modal-body">
         <% days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] %>
-
-        <div>Driving to <%= routeData.destination %> on <%= days[routeData.date.getDay()] + " " + (routeData.date.getMonth() + 1) + "/" + routeData.date.getDate() %> around <%= routeData.time %>. <%= routeData.seats %> spots available, $<%= routeData.inconvenience %> per seat.</div>
-        <br>
-        <div>To all interested riders, enter your drop-off location in the link below! I’m picking people based on convenience of my route and if there’s a tie, it’s first come first serve!</div>
+        <div>
+          <div>Driving to <%= routeData.destination %> on <%= days[routeData.date.getDay()] + " " + (routeData.date.getMonth() + 1) + "/" + routeData.date.getDate() %> around <%= routeData.time %>. <%= routeData.seats %> spots available, $<%= routeData.inconvenience %> per seat.</div>
+          <br>
+          <div>To all interested riders, enter your drop-off location in the link below. PM me if you have any questions!</div>
+        </div>
         <a id="selfLink"></a>
       </div>
       <div class="modal-footer">
@@ -41,7 +42,7 @@
                   </div>
               </div>
               <div id="shareableLink" class="panel-body getlink-container" style="display:none">
-                  <input onClick="select()"  class=" form-control" readonly="readonly" value="http://localhost:5000/route?id=<%= routeData._id %>"> </input>
+                  <input onClick="select()"  class=" form-control" readonly="readonly" value="http://localhost:5000/route?id=<%= routeData.shortId || routeData._id %>"> </input>
               </div>
             </div>
           <% } else { %>
@@ -66,14 +67,17 @@
               <% if (confirmedRider) { %>
                 <text>You've got a ride to</text>
               <% } else { %>
-                <text>You've requested a ride to</text>
+                <text>You've requested a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
               <% } %>
 
               <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
             </div>
+            <% if (confirmedRider && !routeData.riderStatus[user._id].paid) { %>
+              <button type="button" class="btn btn-primary">Pay initial deposit</button>
+            <% } %>
           <% } %>
         <% } else {  %>
-          <a href="/auth/facebook?redirect=<%= encodeURIComponent('/route?id=' + routeData._id) %>")>Login to Facebook to request a ride</a>
+          <a href="/auth/facebook?redirect=<%= encodeURIComponent('/route?id=' + (routeData.shortId || routeData._id)) %>")>Login to Facebook to request a ride</a>
         <% } %>
         <hr>
 
@@ -178,6 +182,8 @@
             </span>
           </div>
         </div>
+
+        <div id="infoText" style="font-size:18px; padding-left: 20px; font-weight: bold"></div>
 
         <br><br>
         <div id="tableDiv" class="container-fluid row">

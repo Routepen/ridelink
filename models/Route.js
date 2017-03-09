@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var routeSchema = new Schema({
+    shortId: {type: String, unique: true},
     origin: String,
     destination: String,
     seats: Number,
@@ -23,6 +24,7 @@ var routeSchema = new Schema({
         ref:'users'
     }],
     dropOffs: Schema.Types.Mixed,
+    riderStatus: Schema.Types.Mixed,
     inconvenience: {type:[Number], default: 9999},
     requireInitialDeposit: Boolean,
     bailed: {type:[Boolean], default: false},

@@ -108,7 +108,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/route', function (req, res) {
-	Route.findById(req.query.id).populate('driver').populate('riders').populate('confirmedRiders').exec(function(err, route) {
+	var handleRequest = function(err, route) {
 		if (err || !route) {
 			console.log(err);
 			return res.end("404 couldn't find id " + req.query.id);
@@ -153,7 +153,15 @@ app.get('/route', function (req, res) {
 		};
 
 		res.render('route', data);
-	});
+	}
+
+	var id = req.query.id;
+	if (id.length != 24) {
+		Route.findOne({'shortId': id}).populate('driver').populate('riders').populate('confirmedRiders').exec(handleRequest);
+	}
+	else {
+		Route.findById(id).populate('driver').populate('riders').populate('confirmedRiders').exec(handleRequest);
+	}
 });
 
 app.get('/route/new', function (req, res) {
@@ -206,17 +214,23 @@ app.post('/route/addrider', function(req, res) {
 			}
 		}
 
-
+		var userId = req.user._id;
 		if (confirmedRider) {
-			return res.redirect("/route?id=" + route._id + "&error=1");
+			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=1");
 		}
 		if (!rider) {
-			route.riders.push(req.user._id);
+			route.riders.push(userId);
 		}
 		var dropOffs = route.dropOffs || {};
 		dropOffs[req.user._id] = req.body.address;
 		route.dropOffs = dropOffs;
+
+		route.riderStatus = route.riderStatus || {};
+		route.riderStatus[userId] = route.riderStatus[userId] || {
+			paid: false
+		};
 		route.markModified('dropOffs');
+		route.markModified('riderStatus');
 
 		route.save(function(err) {
 			if (err) { console.log(err); return res.end(err.toString()); }
@@ -259,7 +273,7 @@ app.post('/route/confirmrider', function(req, res) {
 		route.save(function(err) {
 			if (err) { return res.end(err.toString()); }
 
-			res.redirect("/route?id=" + route._id);
+			res.redirect("/route?id=" + (route.shortId || route._id));
 		})
 	});
 });
@@ -271,6 +285,7 @@ app.post('/route/new', function (req, res) {
 	}
 
 	var newRoute = Route({
+		shortId: random(5),
 		origin: req.body.origin,
 		destination: req.body.destination,
 		seats: req.body.seats,
@@ -278,6 +293,7 @@ app.post('/route/new', function (req, res) {
 		time: req.body.time,
 		driver: req.user._id,
 		riders:[],
+		riderStatus: {},
 		confirmedRiders: [],
 		dropOffs: {},
 		inconvenience: req.body.charge,
@@ -294,7 +310,7 @@ app.post('/route/new', function (req, res) {
 	newRoute.save(function(err){
 		if(err) throw err;
 		console.log("Route created!");
-		return res.redirect("/route?id=" + newRoute._id);
+		return res.redirect("/route?id=" + (newRoute.shortId || newRoute._id));
 	});
 });
 
@@ -359,6 +375,22 @@ app.get('/rider', function (req, res) {
 	res.render('partials/driver_input');
 });
 
+function random(len) {
+	var a = new Array(len);
+	var ranges = [[48, 10], [65, 26], [97, 26]], total = 62;
+	for (var i = 0; i < len; i++) {
+		var random = parseInt(Math.random() * total);
+		for (var n = 0; n < ranges.length; n++) {
+			if (random < ranges[n][1]) {
+				a[i] = String.fromCharCode(ranges[n][0] + random);
+				break;
+			}
+			random -= ranges[n][1];
+		}
+	}
+
+	return a.join('');
+}
 
 
 app.get('/profile', function(req,res){
