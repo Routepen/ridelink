@@ -13,7 +13,7 @@
   }
 
 
-  var markers = {};
+  var markers = {}, infoWindows = {};
 
   function showRoute(map) {
     this.map = map;
@@ -28,7 +28,7 @@
     var me = this;
     this.drawMap(function() {
       me.setUpDropOff(map);
-      me.dropInitialPins(map);
+      me.setMarkers();
     });
 
   }
@@ -64,8 +64,8 @@
     });
   }
 
-  showRoute.prototype.dropInitialPins = function(map) {
-
+  showRoute.prototype.setMarkers = function(map) {
+    var map = this.map;
     var contentString;
     var me = this;
 
@@ -86,9 +86,9 @@
       this.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
         contentString = "<div>" + rider.facebook.name + "</div>";
 
-        <% if (user && routeData.driver._id.toString() == user._id.toString()) { %>
+        <% if (isDriver) { %>
           if (!rider.confirmed) {
-            contentString += '<button onclick="javascript:me.confirmRider(\'' + rider._id + '\')">Confirm</button>'
+            contentString += '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
           }
         <% } %>
 
@@ -99,16 +99,27 @@
 
         var riderId = rider._id;
 
+        var markerExists = markers[riderId] != undefined;
+
         markers[riderId] = markers[riderId] || new google.maps.Marker({
           map: map,
           position: results[0].geometry.location,
           title: rider.facebook.name
         });
 
-        markers[riderId].addListener('click', function() {
-          hightlightInTable(rider._id);
-          infowindow.open(map, markers[riderId]);
-        });
+        markers[riderId].setPosition(results[0].geometry.location);
+
+        if (!markerExists) {
+          infoWindows[riderId] = infowindow;
+          markers[riderId].addListener('click', function() {
+            hightlightInTable(rider._id);
+            infowindow.open(map, markers[riderId]);
+          });
+        }
+        else {
+          infoWindows[riderId].setContent(contentString);
+        }
+
 
         google.maps.event.addListener(infowindow, 'closeclick', unHighlightTable);
 
@@ -123,6 +134,7 @@
       dropOffAutocomplete = new google.maps.places.Autocomplete(
             this.dropOffInput, {placeIdOnly: true});
 
+      var me = this;
       this.setupPlaceChangedListener(dropOffAutocomplete, function() {
         <% if (user) { %>
           var place = dropOffAutocomplete.getPlace();
@@ -130,36 +142,10 @@
               window.alert("Please select an option from the dropdown list.");
               return;
           }
-          geocoder.geocode( { 'address': place.name }, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-              markers["<%= user._id %>"] = markers["<%= user._id %>"] || new google.maps.Marker({
-                  map: map,
-                  draggable: true,
-                  position: results[0].geometry.location
-              });
 
-              markers["<%= user._id %>"].setPosition(results[0].geometry.location);
+          riderLocationChanged(place);
+          setUpTable();
 
-              var text = $('#dropOffText'), editable = $('#dropOffTextEditable');
-              text.show();
-              editable.hide();
-              var address = editable.find('input').val();
-              text.find('span').html(address);
-
-              data = {
-                routeId: "<%= routeData._id %>",
-                address: address
-              };
-
-              console.log("posting");
-              $.post("/route/addrider", data, function(data, text) {
-                console.log(data, text);
-              });
-
-            } else {
-              alert("Couln't map to " + place.name + " because " + status);
-            }
-          });
         <% } else { %>
           window.location.replace("/auth/facebook?redirect=" + encodeURIComponent(window.location.href));
         <% } %>
@@ -189,13 +175,15 @@
 
   };
 
-  function confirmRider(id) {
+  function confirmRider(id, btn) {
     console.log(id);
 
     var post = {
       userId: id,
       routeId: routeData._id
     };
+
+    $(btn).button('loading');
 
     $.post("/route/confirmrider", post, function(data, textStatus) {
       for (var i = 0; i < routeData.riders.length; i++) {
@@ -205,15 +193,58 @@
           routeData.confirmedRiders.push(rider);
         }
         $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
+        setUpTable();
+        mapHandler.drawMap(function() {
+          mapHandler.setMarkers();
+        });
+        $(btn).button('reset');
       }
-      setUpTable();
-      mapHandler.drawMap();
     });
+  }
+
+  function riderLocationChanged() {
+    var user = <%- user ? JSON.stringify(user) : '{}'%>
+    var userId = user._id;
+
+    var text = $('#dropOffText'), editable = $('#dropOffTextEditable');
+    text.show();
+    editable.hide();
+    var address = editable.find('input').val();
+    text.find('span').html(address);
+
+
+    var found = false;
+    for (var i = 0; i < routeData.riders.length; i++) {
+      if (routeData.riders[i]._id == userID) {
+        found = true;
+        break;
+      }
+    }
+    if (found) {
+      routeData.dropOffs[userId] = address;
+    }
+    else {
+      routeData.riders.push(user);
+      routeData.dropOffs = routeData.dropOffs || {};
+      routeData.dropOffs[userId] = address;
+    }
+
+
+    data = {
+      routeId: "<%= routeData._id %>",
+      address: address
+    };
+
+    $.post("/route/addrider", data, function(data, text) {
+      console.log(data, text);
+    });
+
+    mapHandler.setMarkers();
   }
 
   function setUpEditability() {
     <% if (isDriver) { %>
-      $('#originText').click(function() {
+      $('#originText>span').click(function() {
         $('#originText').hide();
         $('#originTextEditable').show();
         var input = $('#originTextEditable').find('input');
@@ -221,7 +252,7 @@
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
 
-      $('#destinationText').click(function() {
+      $('#destinationText>span').click(function() {
         $('#destinationText').hide();
         $('#destinationTextEditable').show();
         var input = $('#destinationTextEditable').find('input');
@@ -229,7 +260,7 @@
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
 
-      $('#seatsText').click(function() {
+      $('#seatsText>span').click(function() {
         $('#seatsText').hide();
         $('#seatsTextEditable').show();
         var input = $('#seatsTextEditable').find('input');
@@ -237,10 +268,18 @@
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
 
-      $('#dateText').click(function() {
+      $('#dateText>span').click(function() {
         $('#dateText').hide();
         $('#dateTextEditable').show();
         var input = $('#dateTextEditable').find('input');
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
+
+      $('#timeText>span').click(function() {
+        $('#timeText').hide();
+        $('#timeTextEditable').show();
+        var input = $('#timeTextEditable').find('input');
         input.focus();
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
@@ -273,14 +312,18 @@
     editableDiv.hide();
 
     var span = textDiv.find('span'), input = editableDiv.find('input');
-    if (submit && span.html() != input.val()) {
+    console.log(submit, span.html().trim(), input.val())
+    if (submit && (span.html() != input.val() || id == "seats")) {
       if (id == "seats") {
-        span.html(input.val() - (routeData.confirmedRiders.length + routeData.riders.length));
+        console.log("trimming " + (routeData.confirmedRiders.length + routeData.riders.length));
+        var seatsLeft = input.val() - (routeData.confirmedRiders.length + routeData.riders.length);
+        var s = "" + seatsLeft
+        span.html(s.trim());
       }
       else {
-        span.html(input.val());
+        span.html(input.val().trim());
       }
-      routeData[id] = input.val();
+      routeData[id] = input.val().trim();
       mapHandler.drawMap();
 
       data = {
@@ -295,7 +338,13 @@
       });
     }
     else {
-      input.val(span.html());
+      var html = span.html().trim();
+      if (id == "seats"){
+        input.val(parseInt(html) + 1);
+      }
+      else {
+        input.val(html);
+      }
     }
   }
 
@@ -306,6 +355,10 @@
     if (routeData.confirmedRiders.length + routeData.riders.length == 0) {
       $(table).hide();
     }
+    else {
+      $(table).show();
+    }
+
     var tbody = document.getElementById("riderTable");
     tbody.innerHTML = "";
     for (var i = 0; i < routeData.confirmedRiders.length; i++) {
@@ -313,13 +366,13 @@
           "<td> " + (i+1) + " </td>" +
           "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
           "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
-          '<td> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></td>' +
+          '<td> <span class="glyphicon glyphicon-ok" style="color:green" aria-hidden="true"></span></td>' +
           "</tr>";
     }
 
 
     for (var i = 0; i < routeData.riders.length; i++) {
-      var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "')";
+      var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "', this)";
 
       tbody.innerHTML += '<tr id="rider' + routeData.riders[i]._id + '">' +
           '<td>' + (i+1) + '</td>' +
@@ -338,11 +391,9 @@
     $("#riderTable").find("tr").each(function(i, elem) {
       if (elem.id == "rider" + riderId) {
         $(elem).addClass("highlighted");
-        console.log("ading");
       }
       else {
         $(elem).removeClass("highlighted");
-        console.log("removing");
       }
     });
   }
@@ -353,7 +404,28 @@
     });
   }
 
+  function showFBModal() {
+    $('#selfLink').html(window.location.href);
+    $('#selfLink')[0].href = window.location.href;
+    $("#facebookModal").modal('toggle');
+  }
+
+  var shareableLinkStatus = 0;
+  function toggleShareableLink() {
+    if (shareableLinkStatus == 0) {
+        $('#shareableLink').show();
+        shareableLinkStatus = 1;
+    }
+    else {
+      $('#shareableLink').hide();
+      shareableLinkStatus = 0;
+    }
+  }
+
   setUpTable();
   setUpEditability();
+  <% if (!opened && isDriver) { %>
+    showFBModal()
+  <% } %>
 
 </script>

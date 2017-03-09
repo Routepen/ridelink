@@ -9,7 +9,7 @@ var routeSchema = new Schema({
     destination: String,
     seats: Number,
     date: Date,
-    //date: {type: Date, default: Date.now},
+    time: String,
     driver: {
         type:Schema.ObjectId,
         ref:'users'
@@ -26,6 +26,7 @@ var routeSchema = new Schema({
     inconvenience: {type:[Number], default: 9999},
     requireInitialDeposit: Boolean,
     bailed: {type:[Boolean], default: false},
+    opened: {type: Boolean, default: false},
 
     created_at: Date
 });
