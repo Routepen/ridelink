@@ -239,3 +239,7 @@ footer a{
 .highlighted {
   background-color: lightblue !important;
 }
+
+.on{
+  background-color: transparent !important;
+}

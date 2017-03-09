@@ -28,12 +28,12 @@
         <form id="driver_input_form" class="row" action="javascript:submitForm()">
             <div >
                 <i class="material-icons" style="padding-left:10px ">adjust</i>
-                <input id="origin-input" name="origin" class="controls" type="text" placeholder="Enter an origin location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
+                <input autofocus id="origin-input" name="origin" class="controls" type="text" placeholder="Enter an origin location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
             </div>
                 <!--<input id="origin" type="text" name='origin' class="form-control" placeholder="Origin"> -->
             <div>
                 <i class="material-icons" style = "padding-left:10px">place</i>
-                <input id="destination-input" name="destination" class="controls" type="text" placeholder="Enter a destination location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
+                <input  id="destination-input" name="destination" class="controls" type="text" placeholder="Enter a destination location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
             </div>
                 <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
            <!--  <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a> -->
@@ -51,7 +51,7 @@
                 <input id="time" name="time" class="controls" type="text" placeholder="Time..." onPaste="" onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
                 <br><br>
-                <input type="submit" class="btn btn-md" value="Create Route">
+                <input id="create-route" type="submit" class="on btn btn-md" value="Create Route" disabled>
             </div>
           </div>
 
@@ -66,6 +66,34 @@
 
 
 <script type="text/javascript">
+
+var inputs = document.querySelectorAll('input[name="origin"], input[name="destination"], input[name="seats"], input[name="date"], input[name="num-seats"]');
+var button = document.querySelector('#create-route');
+
+[].forEach.call(inputs, function (e) {
+    e.addEventListener('input', function () {
+        var disabled = false;
+        [].forEach.call(inputs, function (inputElem) {
+            if(inputElem.value==''){
+                disabled = true;
+            }
+        });
+        // Change button if called
+        if (disabled) {
+            button.setAttribute('disabled', '');
+
+        } else {
+            button.removeAttribute('disabled');
+        }
+    });
+});
+document.getElementById("date")
+        .addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode == 13) {
+                document.getElementById("create-route").click();
+            }
+        });
 
   function confirmEmail() {
     var form = document.getElementById("driver_input_form");
