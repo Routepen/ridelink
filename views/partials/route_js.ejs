@@ -202,6 +202,12 @@
     });
   }
 
+  showRoute.prototype.userClicked = function(riderId) {
+    var marker = markers[riderId];
+    this.map.setCenter(marker.getPosition());
+    infoWindows[riderId].open(this.map, marker);
+  }
+
   function riderLocationChanged() {
     var user = <%- user ? JSON.stringify(user) : '{}'%>
     var userId = user._id;
@@ -362,21 +368,30 @@
     var tbody = document.getElementById("riderTable");
     tbody.innerHTML = "";
     for (var i = 0; i < routeData.confirmedRiders.length; i++) {
-      tbody.innerHTML += '<tr id="rider' + routeData.confirmedRiders[i]._id + '">' +
+      var rider = routeData.confirmedRiders[i];
+      var color = "green", title="confirmed";
+
+      if (routeData.requireInitialDeposit && !routeData.riderStatus[rider._id].paid) {
+        color = "purple";
+        title="Awaiting payment";
+      }
+
+      tbody.innerHTML += '<tr class="riderElement" onclick="console.log(\'hi\');" id="rider' + rider._id + '">' +
           "<td> " + (i+1) + " </td>" +
-          "<td> " + routeData.confirmedRiders[i].facebook.name + "</td>" +
+          "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
           "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
-          '<td> <span class="glyphicon glyphicon-ok" style="color:green" aria-hidden="true"></span></td>' +
+          '<td> <span title="' + title + '" class="glyphicon glyphicon-ok" style="color:' + color + '" aria-hidden="true"></span></td>' +
           "</tr>";
     }
 
 
     for (var i = 0; i < routeData.riders.length; i++) {
-      var onclick = "javascript:confirmRider('" + routeData.riders[i]._id + "', this)";
+      var rider = routeData.riders[i];
+      var onclick = "javascript:confirmRider('" + rider._id + "', this)";
 
-      tbody.innerHTML += '<tr id="rider' + routeData.riders[i]._id + '">' +
+      tbody.innerHTML += '<tr class="riderElement" id="rider' + routeData.riders[i]._id + '">' +
           '<td>' + (i+1) + '</td>' +
-          '<td>' + routeData.riders[i].facebook.name + '</td>' +
+          "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
           "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
           '<td>' +
           <% if (isDriver) { %>
@@ -422,8 +437,15 @@
     }
   }
 
+  function setUpTextInfo() {
+    if (routeData.requireInitialDeposit) {
+      $('#infoText').html("Initial Deposit is Required");
+    }
+  }
+
   setUpTable();
   setUpEditability();
+  setUpTextInfo();
   <% if (!opened && isDriver) { %>
     showFBModal()
   <% } %>

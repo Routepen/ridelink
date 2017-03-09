@@ -243,3 +243,7 @@ footer a{
 .on{
   background-color: transparent !important;
 }
+
+.riderElement:hover {
+  background-color: lightgray !important;
+}
