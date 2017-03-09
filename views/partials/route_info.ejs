@@ -65,7 +65,7 @@
             </div>
             <div id="dropOffText" style="display:none">
               <% if (confirmedRider) { %>
-                <text>You've got a ride to</text>
+                <text>You've got a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
               <% } else { %>
                 <text>You've requested a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
               <% } %>

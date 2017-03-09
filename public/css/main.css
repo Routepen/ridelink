@@ -239,3 +239,7 @@ footer a{
 .highlighted {
   background-color: lightblue !important;
 }
+
+.riderElement:hover {
+  background-color: lightgray !important;
+}
