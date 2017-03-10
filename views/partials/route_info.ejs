@@ -23,6 +23,40 @@
   </div>
 </div>
 
+<div class="modal fade" id="setUpPaymentModal" tabindex="-1" role="dialog" aria-labelledby="setUpPaymentModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Set up payment methods</h4>
+      </div>
+      <div class="modal-body">
+        Stuff for setting up deposit
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Modal for paying</h4>
+      </div>
+      <div class="modal-body">
+        payment methods here
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
+      </div>
+    </div>
+  </div>
+</div>
+
 <!--Rider view, use ejs to check if their facebook credentials is the original Facebook user or not-->
 <div class="col-md-4" >
     <div >
@@ -75,12 +109,17 @@
               <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
             </div>
             <% if (confirmedRider && !routeData.riderStatus[user._id].paid) { %>
-              <button type="button" class="btn btn-primary">Pay initial deposit</button>
+              <button type="button" class="btn btn-primary" onclick="showPaymentModal()">Pay initial deposit</button>
             <% } %>
           <% } %>
         <% } else {  %>
           <a href="/auth/facebook?redirect=<%= encodeURIComponent('/route?id=' + (routeData.shortId || routeData._id)) %>")>Login to Facebook to request a ride</a>
         <% } %>
+
+        <div id="rideIsFull" style="display:none">
+          <button class="info btn <%= isDriver ? 'btn-success' : 'btn-danger'; %>">Ride is FULL</button>
+        </div>
+
         <hr>
 
         <div class="form-inline editableform">
@@ -200,6 +239,7 @@
                 </thead>
                 <tbody id="riderTable"></tbody>
             </table>
+            <p style="display:none" id="tableMessage"></p>
         </div>
     </div>
 </div>

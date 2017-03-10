@@ -202,6 +202,16 @@
     });
   }
 
+  function checkSeatsLeft() {
+    var seatsLeft = routeData.seats - routeData.confirmedRiders.length;
+    if (seatsLeft <= 0) {
+      $("#rideIsFull").show();
+    }
+    else {
+      $("#rideIsFull").hide();
+    }
+  }
+
   showRoute.prototype.userClicked = function(riderId) {
     var marker = markers[riderId];
     this.map.setCenter(marker.getPosition());
@@ -330,7 +340,11 @@
         span.html(input.val().trim());
       }
       routeData[id] = input.val().trim();
-      mapHandler.drawMap();
+      if (id == "destination" || id == "origin") {
+        mapHandler.drawMap();
+        mapHandler.setMarkers();
+      }
+      checkSeatsLeft();
 
       data = {
         routeId: routeData._id,
@@ -359,10 +373,14 @@
   function setUpTable() {
     var table = document.getElementById("tableDiv");
     if (routeData.confirmedRiders.length + routeData.riders.length == 0) {
-      $(table).hide();
+      //$(table).hide();
+      $('#tableMessage').html("No riders have signed up yet");
+      $('#tableMessage').show();
     }
     else {
-      $(table).show();
+      //$(table).show();
+      $('#tableMessage').html("");
+      $('#tableMessage').hide();
     }
 
     var tbody = document.getElementById("riderTable");
@@ -423,6 +441,16 @@
     $('#selfLink').html(window.location.href);
     $('#selfLink')[0].href = window.location.href;
     $("#facebookModal").modal('toggle');
+    $('#facebookModal').on('hidden.bs.modal', showAvaliableModals);
+  }
+
+  function showsetUpPaymentModal() {
+    $("#setUpPaymentModal").modal('toggle');
+    $('#setUpPaymentModal').on('hidden.bs.modal', showAvaliableModals);
+  };
+
+  function showPaymentModal() {
+    $("#paymentModal").modal('toggle');
   }
 
   var shareableLinkStatus = 0;
@@ -437,6 +465,7 @@
     }
   }
 
+
   function setUpTextInfo() {
     if (routeData.requireInitialDeposit) {
       $('#infoText').html("Initial Deposit is Required");
@@ -446,8 +475,23 @@
   setUpTable();
   setUpEditability();
   setUpTextInfo();
-  <% if (!opened && isDriver) { %>
-    showFBModal()
+  checkSeatsLeft();
+
+  modals = [];
+  <% if (isDriver && !user.paymentSetup) { %>
+    modals.push(showsetUpPaymentModal);
   <% } %>
+  <% if (!opened && isDriver) { %>
+    modals.push(showFBModal);
+  <% } %>
+
+  function showAvaliableModals() {
+    if (modals.length > 0) {
+      modals[0].call();
+      modals.splice(0, 1);
+    }
+  }
+
+  showAvaliableModals();
 
 </script>

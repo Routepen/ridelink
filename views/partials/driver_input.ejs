@@ -25,7 +25,7 @@
         </h3>
 
         <!--             <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>  Share your route:  <a href="/">  https://maps.com/127 </a>-->
-        <form id="driver_input_form" class="row" action="javascript:submitForm()">
+        <form id="driver_input_form" class="row" action="javascript:submitForm();">
             <div >
                 <i class="material-icons" style="padding-left:10px ">adjust</i>
                 <input autofocus id="origin-input" name="origin" class="controls" type="text" placeholder="Enter an origin location..." onPaste="" onkeydown="if (event.keyCode == 13) { return false;}">
@@ -51,7 +51,7 @@
                 <input id="time" name="time" class="controls" type="text" placeholder="Time..." onPaste="" onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
                 <br><br>
-                <input id="create-route" type="submit" class="on btn btn-md" value="Create Route" disabled>
+                <button id="create-route" onclick="submitForm()" class="on btn btn-md" value="Create Route" disabled>Create Route</button>
             </div>
           </div>
 
