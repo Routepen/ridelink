@@ -32,7 +32,7 @@ var routeSchema = new Schema({
 
     created_at: Date
 });
-
+/*
 routeSchema.pre('save', function(next) {
     // if created_at doesn't exist, add to that field
     if (!this.created_at)
@@ -41,7 +41,7 @@ routeSchema.pre('save', function(next) {
 
     next();
 });
-
+*/
 var Route = mongoose.model('routes', routeSchema);
 module.exports = Route;
 

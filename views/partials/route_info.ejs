@@ -3,7 +3,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Copy and paste to facebook</h4>
+        <h4 class="modal-title">Copy and paste Facebook Post</h4>
+          <hr>
       </div>
       <div class="modal-body">
         <% days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] %>
@@ -14,6 +15,7 @@
         </div>
         <a id="selfLink"></a>
       </div>
+        <hr>
       <div class="modal-footer">
         <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
       </div>
@@ -34,7 +36,7 @@
               <div class="panel-heading" id="link-panel">
                   <div class="col-md-6">
                       <a class="btn btn-md" onclick="toggleShareableLink()" href="javascript:void(0);">
-                        Get link  <span class="glyphicon glyphicon-paperclip" > </span>
+                        Copy link  <span class="glyphicon glyphicon-paperclip" > </span>
                       </a>
                   </div>
                   <div class="col-md-6" id="copy-link" align="right">
