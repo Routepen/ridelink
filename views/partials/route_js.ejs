@@ -331,14 +331,19 @@
     console.log(submit, span.html().trim(), input.val())
     if (submit && (span.html() != input.val() || id == "seats")) {
       if (id == "seats") {
-        console.log("trimming " + (routeData.confirmedRiders.length + routeData.riders.length));
-        var seatsLeft = input.val() - (routeData.confirmedRiders.length + routeData.riders.length);
+        var seatsLeft = input.val() - routeData.confirmedRiders.length;
+        if (seatsLeft < 0) {
+          $("#lessThanZeroSeats").modal('show');
+          input.val(routeData.confirmedRiders.length);
+          seatsLeft = 0;
+        }
         var s = "" + seatsLeft
         span.html(s.trim());
       }
       else {
         span.html(input.val().trim());
       }
+
       routeData[id] = input.val().trim();
       if (id == "destination" || id == "origin") {
         mapHandler.drawMap();
@@ -360,7 +365,7 @@
     else {
       var html = span.html().trim();
       if (id == "seats"){
-        input.val(parseInt(html) + 1);
+        input.val(parseInt(html) + routeData.confirmedRiders.length);
       }
       else {
         input.val(html);
@@ -389,16 +394,19 @@
       var rider = routeData.confirmedRiders[i];
       var color = "green", title="confirmed";
 
-      if (routeData.requireInitialDeposit && !routeData.riderStatus[rider._id].paid) {
-        color = "purple";
-        title="Awaiting payment";
+      if (routeData.requireInitialDeposit) {
+        if (routeData.riderStatus[rider._id].paid) {
+          status="Confirmed";
+        }
+        else {
+          status="Awaiting payment"
+        }
       }
 
       tbody.innerHTML += '<tr class="riderElement" onclick="console.log(\'hi\');" id="rider' + rider._id + '">' +
           "<td> " + (i+1) + " </td>" +
           "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
-          "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
-          '<td> <span title="' + title + '" class="glyphicon glyphicon-ok" style="color:' + color + '" aria-hidden="true"></span></td>' +
+          '<td> <span style="color:' + color + '" aria-hidden="true">' + status + '</span></td>' +
           "</tr>";
     }
 
@@ -457,10 +465,12 @@
   function toggleShareableLink() {
     if (shareableLinkStatus == 0) {
         $('#shareableLink').show();
+        $('#getLinkText').html("Hide link");
         shareableLinkStatus = 1;
     }
     else {
       $('#shareableLink').hide();
+      $('#getLinkText').html("Copy link");
       shareableLinkStatus = 0;
     }
   }

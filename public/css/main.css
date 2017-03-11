@@ -8,6 +8,10 @@
   font-family: 'Open Sans', sans-serif;
 } */
 
+body {
+  overflow: hidden;
+}
+
 #newride{
   left-margin : 10px,
 }
@@ -253,4 +257,14 @@ footer a{
 }
 .info:hover {
   cursor: default;
+}
+
+.fill {
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    width: auto;
+    height: auto;
 }

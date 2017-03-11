@@ -12,6 +12,7 @@ const _ = require("lodash");
 const app = express();
 
 const auth = require("./auth");
+const mail = require("./mail");
 
 mongoose.Promise = require('bluebird');
 var conn = mongoose.createConnection('ds161169.mlab.com:61169/heroku_9170g7ps');
@@ -311,6 +312,17 @@ app.get('/test3', function(req, res) {
       return res.redirect('/');
     });
 	});
+});
+
+app.get('/test4', function(req, res) {
+	console.log(mail);
+	mail.sendMail({
+		notifyDriver: {
+			riderAdded: true
+		},
+		to: 'pmh192@gmail.com'
+	});
+	res.end();
 });
 
 app.post('/route/update', function(req, res) {

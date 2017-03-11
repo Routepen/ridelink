@@ -57,9 +57,27 @@
   </div>
 </div>
 
+
+<div class="modal fade" id="lessThanZeroSeats" tabindex="-1" role="dialog" aria-labelledby="lessThanZeroSeats">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="lessThanZeroSeatsTitle">You've already confirmed <%= routeData.confirmedRiders.length %> riders</h4>
+      </div>
+      <div class="modal-body">
+        If you can no longer take some riders, please let them know ASAP.
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
+      </div>
+    </div>
+  </div>
+</div>
+
 <!--Rider view, use ejs to check if their facebook credentials is the original Facebook user or not-->
-<div class="col-md-4" >
-    <div >
+<div class="col-md-4" style="overflow: scroll; height:100%">
+    <div>
         <h2>
             <%= routeData.driver.facebook.name.split(' ')[0] %>'s Route
         </h2>
@@ -70,7 +88,7 @@
               <div class="panel-heading" id="link-panel">
                   <div class="col-md-6">
                       <a class="btn btn-md" onclick="toggleShareableLink()" href="javascript:void(0);">
-                        Copy link  <span class="glyphicon glyphicon-paperclip" > </span>
+                        <span id="getLinkText">Copy link</span>  <span class="glyphicon glyphicon-paperclip" > </span>
                       </a>
                   </div>
                   <div class="col-md-6" id="copy-link" align="right">
@@ -113,14 +131,18 @@
             <% } %>
           <% } %>
         <% } else {  %>
-          <a href="/auth/facebook?redirect=<%= encodeURIComponent('/route?id=' + (routeData.shortId || routeData._id)) %>")>Login to Facebook to request a ride</a>
+          <a href="/auth/facebook?redirect=<%= encodeURIComponent('/route?id=' + (routeData.shortId || routeData._id)) %>")>
+            Login to Facebook to <%= routeData.confirmedRiders.length >= routeData.seats ? "join the waitlist" : "request a ride" %>
+          </a>
         <% } %>
 
-        <div id="rideIsFull" style="display:none">
-          <button class="info btn <%= isDriver ? 'btn-success' : 'btn-danger'; %>">Ride is FULL</button>
-        </div>
+        <br>
+        <hr style="height: 3px; background-color: gray">
 
-        <hr>
+        <div id="rideIsFull" style="display:none">
+          <button class="info btn <%= isDriver ? 'btn-success' : 'btn-danger'; %>" style="background-color:black">Ride is FULL</button>
+        </div>
+        <br>
 
         <div class="form-inline editableform">
           <div id="originTextEditable" style="display:none">
@@ -233,8 +255,7 @@
                 <tr>
                     <th>#</th>
                     <th> Rider </th>
-                    <th> Inconvenience cost </th>
-                    <th> Confirmed </th>
+                    <th> Status </th>
                 </tr>
                 </thead>
                 <tbody id="riderTable"></tbody>
