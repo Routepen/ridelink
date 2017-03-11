@@ -79,15 +79,15 @@
         <div class="row">
             <div class="col-xs-12">
                 <h1>
-                    Carpool made simple.
+                    Carpool made simple for drivers.
                 </h1>
-                <h2 class="about">EasyDrive makes carpooling easy for drivers. No more last minute bailing and ride with students that best fit your route. </h2>
+                <h2 class="about">No more last minute bailing and ride with students that best fit your route. </h2>
                 <!-- <a href="/" class="action-btn btn">Join the Waitlist</a> -->
                 <div class="process row">
-                    <div class="col-xs-3"><span>1</span>Create editable route</div>
-                    <div class="col-xs-3"><span>2</span>Share route with<br> Facebook post</div>
-                    <div class="col-xs-3"><span>3</span>Riders add<br> dropoff location</div>
-                    <div class="col-xs-3"><span>4</span>Drive students most<br> convenient for you.</div>
+                    <div class="col-xs-4"><span>1</span>Create and share route with your Facebook post</div>
+                    <!--<div class="col-xs-3"><span>2</span>Share route with<br> Facebook post</div> -->
+                    <div class="col-xs-4"><span>2</span>Riders add dropoff<br> location + pay initial deposit</div>
+                    <div class="col-xs-4"><span>3</span>Drive students based on<br> route convenience.</div>
                     <!-- <li></li>
                     <li>Share route with Facebook post</li>
                     <li>Riders add dropoff location</li>
@@ -149,9 +149,9 @@
                 <h2 class="title">For Riders</h2>
                 <p> Limited 100 spot waitlist for riders. Are you a rider interested in our new notifications feature? Receive instant notifications when a new shared ride is relevant to you.
                     Our smart algorithm finds rides on the way or to your location. Just turn it on when you're looking for rides.</p>
-                <form action="" method="post" >
-                    <input class="email" type="text" name= "inputText" placeholder="email">
-                    <input class="btn" type="submit" name= "SubmitButton" value="Subscribe">
+                <form id="emailsubscribe" action="/emailsubscribe" method="post" >
+                    <input id="email" class="email" type="text" name= "email" placeholder="email">
+                    <input onClick="document.getElementById('emailsubscribe').submit();" id="submit" class="btn" type="submit" name= "SubmitButton" value="Subscribe">
                 </form>
             </div>
         </div>
@@ -194,12 +194,14 @@
         <div class="block"><p>&#169; EasyDrive, LLC All rights reserved.</p></div>
     </div>
     <div id="social">
-        <a href="#"><img src="../public_2/images/facebook.png">
-            <a href="#"><img  src="../public_2/images/youtube.png">
-                <a href="#"><img src="../public_2/images/twitter.png">
+        <a href="#"><img src="/images/facebook.png">
+            <a href="#"><img  src="/images/youtube.png">
+                <a href="#"><img src="/images/twitter.png">
     </div>
 </footer>
 <script>
+
+
     $('.next').click(function(){
 
         var nextId = $(this).parents('.tab-pane').next().attr("id");

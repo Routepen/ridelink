@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const User = require('./models/User');
 const Route = require('./models/Route');
+const EmailSubscribe = require('./models/EmailSubscribe')
 const _ = require("lodash");
 const app = express();
 
@@ -366,6 +367,18 @@ function random(len) {
 
 	return a.join('');
 }
+
+app.post('/emailsubscribe', function(req,res){
+	console.log(req.body);
+	var subscriber = EmailSubscribe({
+		email: req.body.email
+	});
+
+	subscriber.save(function(err){
+		if(err) throw err;
+		return res.redirect("/");
+	});
+});
 
 
 app.listen(app.get('port'), function() {
