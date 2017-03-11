@@ -303,6 +303,10 @@ app.get('/test3', function(req, res) {
 	});
 });
 
+app.get('/profile', function(req, res){
+	res.render('profile');
+});
+
 app.post('/route/update', function(req, res) {
 	console.log('updating');
 	if (!req.user) {
@@ -352,11 +356,6 @@ function random(len) {
 
 	return a.join('');
 }
-
-
-app.get('/profile', function(req,res){
-	res.send("hello");
-});
 
 
 app.listen(app.get('port'), function() {
