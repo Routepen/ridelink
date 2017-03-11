@@ -245,12 +245,22 @@ app.post('/route/new', function (req, res) {
 		return res.redirect("/youveBeenLoggedOut");
 	}
 
+	var rightNow = new Date(Date.now());
+	var date = new Date(req.body.date);
+
+	if (date.getMonth() < rightNow.getMonth()) {
+		date.setYear(rightNow.getYear() + 1901);
+	}
+	else {
+		date.setYear(rightNow.getYear() + 1900);
+	}
+
 	var newRoute = Route({
 		shortId: random(5),
 		origin: req.body.origin,
 		destination: req.body.destination,
 		seats: req.body.seats,
-		date: new Date(req.body.date + " " + req.body.time),
+		date: date,
 		time: req.body.time,
 		driver: req.user._id,
 		riders:[],

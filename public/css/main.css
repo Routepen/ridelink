@@ -247,3 +247,10 @@ footer a{
 .riderElement:hover {
   background-color: lightgray !important;
 }
+
+.info {
+  width: 100%;
+}
+.info:hover {
+  cursor: default;
+}
