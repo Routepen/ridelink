@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'> -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700,900" rel="stylesheet">
+
+
+    <link rel="icon" href="../../favicon.ico">
+    <title>EasyDrive</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/new_landing.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
+
+    <!-- Custom styles for this template -->
+    <link href="/css/main.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">EasyDrive</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <!--<a href="#" class="btn btn-primary btn-md"><span class="glyphicon glyphicon-plus" id="newride"></span> New Route!</a> -->
+            <!--<ul class="nav navbar-nav">
+                <li><a href="#">About</a></li>
+            </ul> -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="/route/new" class="btn newroute btn-md">
+                        <span class="glyphicon glyphicon-plus" id="newride"></span> Create Route
+                    </a>
+                </li>
+                <!-- <% if (user) { %> -->
+                <!-- <li><a href="/auth/logout" data-size="xlarge" class="btn "><span class="fa fa-facebook"></span> Logout</a></li> -->
+                <!-- <% } else { %> -->
+                <li><a href="/auth/facebook?redirect=<%= encodeURI(url) %>" data-size="xlarge" class="loginbtn btn "><span class="fa fa-facebook"></span> Login Facebook</a></li>
+                <!-- <% } %> -->
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div style="margin-top:100px"></div>
+
+
+<div class="first-landing">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>
+                    Carpool made simple.
+                </h1>
+                <h2 class="about">EasyDrive makes carpooling easy for drivers. No more last minute bailing and ride with students that best fit your route. </h2>
+                <!-- <a href="/" class="action-btn btn">Join the Waitlist</a> -->
+                <div class="process row">
+                    <div class="col-xs-3"><span>1</span>Create editable route</div>
+                    <div class="col-xs-3"><span>2</span>Share route with<br> Facebook post</div>
+                    <div class="col-xs-3"><span>3</span>Riders add<br> dropoff location</div>
+                    <div class="col-xs-3"><span>4</span>Drive students most<br> convenient for you.</div>
+                    <!-- <li></li>
+                    <li>Share route with Facebook post</li>
+                    <li>Riders add dropoff location</li>
+                    <li>Drive students most convenient for you </li> -->
+                </div>
+                <!--                <div id="custom-search-input">
+                                    <div class="input-group col-md-12">
+                                        <input type="text" class="form-control input-lg" placeholder="Browse drivers..." />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info btn-lg" type="button">
+                                            <i class="glyphicon glyphicon-search"></i>
+                                        </button>
+                                    </span>
+                                    </div>
+                                    -->
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--
+<div class="navbar wizard">
+    <div class="col-md-4"></div>
+    <div class="navbar-inner">
+
+        <ul class="nav nav-pills wizard">
+            <li class="active"><a href="#step1" data-toggle="tab" data-step="1">1</a></li>
+            <li><a href="#step2" data-toggle="tab" data-step="2">2</a></li>
+            <li><a href="#step3" data-toggle="tab" data-step="3">3</a></li>
+        </ul>
+    </div>
+</div>
+
+-->
+<section class="features">
+    <h1>Features</h1>
+    <div class="container">
+        <div class="row">
+            <div class="feature col-xs-12 col-sm-6 col-md-6">
+                <img src="/images/landing-feature-payment.jpg" alt="">
+                <h3>Preventing No-shows</h3>
+                <p>Preventing no-shows by having riders put up an initial deposit.</p>
+            </div>
+            <div class="feature feature-waitlist col-xs-12 col-sm-6 col-md-6">
+                <img src="images/landing-feature-map.jpg" alt="">
+                <h3> More exposure and more convenient riders </h3>
+                <p>Riders can place their dropoff location anywhere on the your editable route and we auto-rank the most convenient riders for you!
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="subscribe" class="subscribe">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <h2 class="title">For Riders</h2>
+                <p> Limited 100 spot waitlist for riders. Are you a rider interested in our new notifications feature? Receive instant notifications when a new shared ride is relevant to you.
+                    Our smart algorithm finds rides on the way or to your location. Just turn it on when you're looking for rides.</p>
+                <form action="" method="post" >
+                    <input class="email" type="text" name= "inputText" placeholder="email">
+                    <input class="btn" type="submit" name= "SubmitButton" value="Subscribe">
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<!--
+<div id="postModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                Update Status
+            </div>
+            <div class="modal-body">
+                <form class="form center-block">
+                    <div class="form-group">
+                        <textarea class="form-control input-lg" autofocus="" placeholder="What do you want to share?"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <button class="btn btn-primary btn-sm" data-dismiss="modal" aria-hidden="true">Post</button>
+                    <ul class="pull-left list-inline"><li><a href=""><i class="glyphicon glyphicon-upload"></i></a></li><li><a href=""><i class="glyphicon glyphicon-camera"></i></a></li><li><a href=""><i class="glyphicon glyphicon-map-marker"></i></a></li></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+-->
+<!--
+<div class="container-fluid">
+    <h3> ho </h3>
+</div>
+-->
+<footer>
+    <div id="policy">
+        <div class="block"><a href="#">About</a><a href="#">Policy</a><a href="#">FAQ</a></div>
+        <div class="block"><p>&#169; EasyDrive, LLC All rights reserved.</p></div>
+    </div>
+    <div id="social">
+        <a href="#"><img src="../public_2/images/facebook.png">
+            <a href="#"><img  src="../public_2/images/youtube.png">
+                <a href="#"><img src="../public_2/images/twitter.png">
+    </div>
+</footer>
+<script>
+    $('.next').click(function(){
+
+        var nextId = $(this).parents('.tab-pane').next().attr("id");
+        $('[href=#'+nextId+']').tab('show');
+        return false;
+
+    })
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+
+        //update progress
+        var step = $(e.target).data('step');
+        var percent = (parseInt(step) / 3) * 100;
+
+        $('.progress-bar').css({width: percent + '%'});
+        $('.progress-bar').text("Step " + step + " of 3");
+
+        //e.relatedTarget // previous tab
+
+    })
+
+    $('.first').click(function(){
+
+        $('#myWizard a:first').tab('show')
+
+    })
+</script>
+</body>
+</html>

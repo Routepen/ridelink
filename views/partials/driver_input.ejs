@@ -51,7 +51,7 @@
                 <input id="time" name="time" class="controls" type="text" placeholder="Time..." onPaste="" onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
                 <br><br>
-                <button id="create-route" onclick="submitForm()" class="on btn btn-md" value="Create Route" disabled>Create Route</button>
+                <button id="create-route" onclick="submitForm()" class=" btn btn-md" value="Create Route" >Create Route</button>
             </div>
           </div>
 
@@ -66,7 +66,12 @@
 
 
 <script type="text/javascript">
+    $( function() {
+        $( "#date" ).datepicker();
+    } );
+    //$("#time").timepicker();
 
+    /*
 var inputs = document.querySelectorAll('input[name="origin"], input[name="destination"], input[name="seats"], input[name="date"], input[name="num-seats"]');
 var button = document.querySelector('#create-route');
 
@@ -94,7 +99,7 @@ document.getElementById("date")
                 document.getElementById("create-route").click();
             }
         });
-
+*/
   function confirmEmail() {
     var form = document.getElementById("driver_input_form");
     var email = document.getElementById("confirmed_email_input");

@@ -65,7 +65,7 @@ app.get('/', function (req, res) {
 		url: req.url
 	};
 
-	res.render('landing', data);
+	res.render('new_landing', data);
 });
 
 app.get('/route', function (req, res) {
