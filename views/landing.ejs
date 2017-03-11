@@ -112,10 +112,10 @@
                 <h2 class="title">For Riders</h2>
                 <p> Limited 100 spot waitlist for riders. Are you a rider interested in our new notifications feature? Receive instant notifications when a new shared ride is relevant to you.
                 Our smart algorithm finds rides on the way or to your location. Just turn it on when you're looking for rides.</p>
-                <form action="" method="post" >
-                    <div class = " col-md-8" >
-                        <input class="email" type="text" name = "inputText" placeholder="email">
-                        <input class="btn" type="submit" name= "SubmitButton" value="Subscribe me">
+                <form id="emailsubscribe" action="/emailsubscribe" method="post" >
+                    <div class="col-md-8">
+                        <input id="email" class="email" type="text" name= "email" placeholder="email">
+                        <input onClick="document.getElementById('emailsubscribe').submit();" id="submit" class="btn" type="submit" name= "SubmitButton" value="Subscribe">
                     </div>
                 </form>
             </div>
