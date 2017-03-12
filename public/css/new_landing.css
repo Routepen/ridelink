@@ -225,4 +225,8 @@ section.subscribe input.email:focus {
 }
 */
 
+.show-on-hover:hover > ul.dropdown-menu {
+    display: block;
+}
+
 
