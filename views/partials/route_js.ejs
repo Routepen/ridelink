@@ -176,8 +176,6 @@
   };
 
   function confirmRider(id, btn) {
-    console.log(id);
-
     var post = {
       userId: id,
       routeId: routeData._id
@@ -192,13 +190,38 @@
           routeData.riders.splice(i, 1);
           routeData.confirmedRiders.push(rider);
         }
-        $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
-        setUpTable();
-        mapHandler.drawMap(function() {
-          mapHandler.setMarkers();
-        });
-        $(btn).button('reset');
       }
+      $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
+      setUpTable();
+      mapHandler.drawMap(function() {
+        mapHandler.setMarkers();
+      });
+      $(btn).button('reset');
+    });
+  }
+
+  function removeRider(id, btn) {
+    var post = {
+      userId: id,
+      routeId: routeData._id
+    };
+
+    $(btn).button('loading');
+
+    $.post("/route/removerider", post, function(data, textStatus) {
+      for (var i = 0; i < routeData.confirmedRiders.length; i++) {
+        var rider = routeData.confirmedRiders[i];
+        if (rider._id == id) {
+          routeData.riders.push(rider);
+          routeData.confirmedRiders.splice(i, 1);
+        }
+      }
+      $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
+      setUpTable();
+      mapHandler.drawMap(function() {
+        mapHandler.setMarkers();
+      });
+      $(btn).button('reset');
     });
   }
 
@@ -375,6 +398,56 @@
 
   var routeData = <%- routeDataString %>;
 
+  function getTdElement(rider, status) {
+
+    var innerButton = "";
+    var cancelButton =
+      '<button type="button" class="btn btn-default btn-xs editable-cancel" style="margin-left: 10px" onclick="restoreTdElement(\'' + rider._id + '\')">' +
+        'Cancel' +
+      '</button>';
+
+    if (status == "Awaiting payment") {
+      innerButton =
+      '<button type="button" class="btn btn-primary btn-xs editable-submit" onclick="removeRider(\'' + rider._id + '\', this)">' +
+        'Remove Rider' +
+      '</button>';
+    }
+    if (status == "Ride Requested") {
+      innerButton =
+      '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
+    }
+
+    var spanClass = "<%= isDriver ? "editableInput" : "" %>";
+    if (status == "Confirmed") { spanClass = ""; }
+
+    return '<div class="form-inline editableform">' +
+      '<div id="tr' + rider._id + 'TextEditable" style="display:none">' +
+        innerButton +
+        cancelButton +
+      '</div>' +
+
+      '<div id="tr' + rider._id + 'Text" style="">' +
+        '<span class=' + spanClass + ' aria-hidden="true">' + status + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function initializeTdElement(rider, status) {
+    var divId = 'tr' + rider._id + 'Text';
+    var editableId = divId + 'Editable';
+    $('#' + divId + '>span').click(function() {
+      $('#' + divId).hide();
+      $('#' + editableId).show();
+    });
+  }
+
+  function restoreTdElement(riderId, status) {
+    var divId = 'tr' + riderId + 'Text';
+    var editableId = divId + 'Editable';
+    $('#' + divId).show();
+    $('#' + editableId).hide();
+  }
+
   function setUpTable() {
     var table = document.getElementById("tableDiv");
     if (routeData.confirmedRiders.length + routeData.riders.length == 0) {
@@ -390,9 +463,11 @@
 
     var tbody = document.getElementById("riderTable");
     tbody.innerHTML = "";
+
     for (var i = 0; i < routeData.confirmedRiders.length; i++) {
       var rider = routeData.confirmedRiders[i];
       var color = "green", title="confirmed";
+      var status = "";
 
       if (routeData.requireInitialDeposit) {
         if (routeData.riderStatus[rider._id].paid) {
@@ -406,25 +481,30 @@
       tbody.innerHTML += '<tr class="riderElement" onclick="console.log(\'hi\');" id="rider' + rider._id + '">' +
           "<td> " + (i+1) + " </td>" +
           "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
-          '<td> <span style="color:' + color + '" aria-hidden="true">' + status + '</span></td>' +
+          '<td> ' + getTdElement(rider, status) + '</td>' +
           "</tr>";
+
+        <% if (isDriver) { %> initializeTdElement(rider, status); <% } %>
+    }
+
+    if (routeData.seats <= routeData.confirmedRiders.length && routeData.riders.length == 0) {
+      tbody.innerHTML += "<hr/>";
     }
 
 
     for (var i = 0; i < routeData.riders.length; i++) {
       var rider = routeData.riders[i];
-      var onclick = "javascript:confirmRider('" + rider._id + "', this)";
+      var status = "Ride Requested"
 
       tbody.innerHTML += '<tr class="riderElement" id="rider' + routeData.riders[i]._id + '">' +
           '<td>' + (i+1) + '</td>' +
           "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
-          "<td> $" + routeData.inconvenience[0].toFixed(2) + " </td>" +
           '<td>' +
-          <% if (isDriver) { %>
-            '  <button onclick="' + onclick + '" type="button" class="btn btn-success btn-xs">Confirm</button>' +
-          <% } %>
+            getTdElement(rider, status) +
           '</td>' +
         '</tr>';
+
+      <% if (isDriver) { %> initializeTdElement(rider, status); <% } %>
     }
   }
 
@@ -482,10 +562,61 @@
     }
   }
 
+  function submitPayment() {
+    $.post('/route/riderpaid', {routeId: "<%= routeId %>"}, function(error, message) {
+
+    });
+  }
+
+  function msToTime(ms) {
+    s = 1000;
+    m = s * 60;
+    h = m*60;
+
+    var sc, mc, hc;
+    sc = mc = hc = 0;
+
+    while (ms >= h) {
+      hc++;
+      ms -= h;
+    }
+
+    while (ms >= m) {
+      mc++;
+      ms -= m;
+    }
+
+    while (ms >= s) {
+      sc++;
+      ms -= s;
+    }
+
+    if (mc < 10) {
+      mc = "0" + mc;
+    }
+    if (sc < 10) {
+      sc = "0" + sc;
+    }
+
+    return hc + ":" + mc + ":" + sc;
+  }
+
+  function updateClock() {
+    <% if (confirmedRider) { %>
+      var d = new Date(routeData.riderStatus["<%= user._id %>"].confirmedOn);
+      d.setDate(d.getDate() + 1);
+      var ms = d - Date.now();
+
+      $("#countDown").html(msToTime(ms));
+      setTimeout(updateClock, 1000);
+    <% } %>
+  }
+
   setUpTable();
   setUpEditability();
   setUpTextInfo();
   checkSeatsLeft();
+  updateClock();
 
   modals = [];
   <% if (isDriver && !user.paymentSetup) { %>

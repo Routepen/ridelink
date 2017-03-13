@@ -49,6 +49,7 @@
       </div>
       <div class="modal-body">
         payment methods here
+        <button onclick="submitPayment()" class="btn btn-success">Pay</button>
       </div>
       <div class="modal-footer">
         <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
@@ -119,15 +120,18 @@
             </div>
             <div id="dropOffText" style="display:none">
               <% if (confirmedRider) { %>
-                <text>You've got a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
+                <!--<text>You've got a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
+                <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>-->
               <% } else { %>
                 <text>You've requested a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
+                <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
               <% } %>
 
-              <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
             </div>
             <% if (confirmedRider && !routeData.riderStatus[user._id].paid) { %>
               <button type="button" class="btn btn-primary" onclick="showPaymentModal()">Pay initial deposit</button>
+              <div style="font-size:18px" id="countDown">2hr</div>
+              <div>The driver may drop you if you don't put up the intial deposit on time</div>
             <% } %>
           <% } %>
         <% } else {  %>

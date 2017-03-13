@@ -103,7 +103,7 @@ app.get('/route', function (req, res) {
 		}
 
 		var data = {
-			routeId: req.query.id,
+			routeId: route._id,
 			user: req.user,
 			routeData: route,
 			routeDataString: JSON.stringify(route, null, 4),
@@ -154,12 +154,12 @@ app.get('/route/all', function (req, res) {
 });
 
 app.post('/route/addrider', function(req, res) {
+	console.log("adding rider");
 	if (!req.user) {
 		return res.end("please log in ");
 	}
 
 	Route.findById(req.body.routeId, function(err, route) {
-		console.log(route);
 
 		var rider = false, confirmedRider = false;
 		for (var i = 0; i < route.riders.length; i++) {
@@ -178,6 +178,7 @@ app.post('/route/addrider', function(req, res) {
 
 		var userId = req.user._id;
 		if (confirmedRider) {
+			console.log("already confirmed");
 			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=1");
 		}
 		if (!rider) {
@@ -188,7 +189,57 @@ app.post('/route/addrider', function(req, res) {
 		route.dropOffs = dropOffs;
 
 		route.riderStatus = route.riderStatus || {};
-		route.riderStatus[userId] = route.riderStatus[userId] || {
+		route.riderStatus[userId] = {
+			paid: false
+		};
+		route.markModified('dropOffs');
+		route.markModified('riderStatus');
+
+		console.log('saving', route);
+
+		route.save(function(err) {
+			if (err) { console.log(err); return res.end(err.toString()); }
+
+			res.end("");
+		})
+	});
+});
+
+app.post('/route/removerider', function(req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+
+	var removingId = req.body.userId;
+
+	Route.findById(req.body.routeId, function(err, route) {
+
+		if (req.user._id.toString() != route.driver.toString()) {
+			console.log("hacking");
+			return res.end("failure");
+		}
+
+		var removed = false;
+		for (var i = 0; i < route.confirmedRiders.length; i++) {
+			var rider = route.confirmedRiders[i];
+			if (rider.toString() == removingId) {
+				removed = true;
+				route.riders.push(rider);
+				route.confirmedRiders.splice(i, 1);
+				break;
+			}
+		}
+
+		if (!removed) {
+			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=2");
+		}
+		var dropOffs = route.dropOffs || {};
+		delete dropOffs[req.user._id]
+		route.dropOffs = dropOffs;
+
+		route.riderStatus = route.riderStatus || {};
+		route.riderStatus[removingId] = route.riderStatus[removingId] || {
 			paid: false
 		};
 		route.markModified('dropOffs');
@@ -197,7 +248,7 @@ app.post('/route/addrider', function(req, res) {
 		route.save(function(err) {
 			if (err) { console.log(err); return res.end(err.toString()); }
 
-			res.end("");
+			res.end("success");
 		})
 	});
 });
@@ -211,6 +262,7 @@ app.post('/route/confirmrider', function(req, res) {
 		if (err) {
 			return res.end(err.toString());
 		}
+
 		if (route.driver._id.toString() != req.user._id.toString()) {
 			return res.end("nice try hacker");
 		}
@@ -230,13 +282,39 @@ app.post('/route/confirmrider', function(req, res) {
 			}
 		}
 
-		if (!found) route.confirmedRiders.push(req.body.userId);
+		if (!found) {
+			route.confirmedRiders.push(req.body.userId);
+			route.riderStatus[req.body.userId].confirmedOn = new Date(Date.now());
+			route.markModified('riderStatus');
+		}
 
 		route.save(function(err) {
 			if (err) { return res.end(err.toString()); }
 
 			res.redirect("/route?id=" + (route.shortId || route._id));
-		})
+		});
+	});
+});
+
+app.post('/route/riderpaid', function(req, res) {
+	if (!req.user) {
+		// TODO Allow user to be informed their session has timed out
+		return res.redirect("/youveBeenLoggedOut");
+	}
+
+	console.log(req.body.routeId);
+	Route.findById(req.body.routeId, function(err, route) {
+		if (!route) { return res.end("404"); }
+
+		route.riderStatus = route.riderStatus || {};
+		route.riderStatus[req.user._id] = route.riderStatus[req.user._id] || {}
+		route.riderStatus[req.user._id].paid = true;
+		route.markModified('riderStatus');
+
+		route.save(function (error) {
+			if (error) { console.log(error); return res.end(error.toString()); }
+			res.end("success");
+		});
 	});
 });
 
