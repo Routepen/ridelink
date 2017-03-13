@@ -34,12 +34,25 @@ body {
     margin-top: 20px;
 }
 
+.newroute {
+    margin-right: 10px;
+}
+
+nav li > a.btn.newroute:hover,
+nav li > a.btn.newroute:focus {
+    background: #f36663;
+}
+
+nav li > a.btn.newroute:active {
+    background: #cc4d4a;
+}
+
 .nav .loginbtn {
     background: #3B5998 !important;
     color: white !important;
 }
 
-.nav .newroute {
+nav li > a.btn.newroute {
     background: #F0413D;
     color: white !important;
     font-weight: bold;
