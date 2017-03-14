@@ -21,7 +21,7 @@
 </div>
 
 <div class="col-md-4 core-container">
-    <div style="padding-left:10px; padding-top:10px;">
+    <div style="padding-left:10px;">
         <div id="header-color-box" class="color-box">
             <h3 class="color-header">
                 Create a Route
@@ -51,7 +51,7 @@
 
             <hr>
             <div>
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <input id="num-seats" name="seats" class="controls" type="text"
                            placeholder="Enter number of seats..."><br>
                     <input id="charge" name="charge" class="controls" type="text" placeholder="$ Cost per seat" onPaste=""
@@ -59,9 +59,12 @@
                     <br>
                     <input id="requireInitialDeposit" name="requireInitialDeposit" type="checkbox" checked> Require
                     Initial Deposit <br>
+                    <div font-size="8px" id="initialDepositNotes">Initial deposits requires a 2 or 3 dollar additional charge for each rider</div>
+                    <br>
                     <input id="date" name="date" class="controls" type="text" placeholder="Date..." onPaste=""
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
+                    <br>
                     <input id="time" name="time" class="controls" type="text" placeholder="Time..." onPaste=""
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 

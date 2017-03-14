@@ -12,6 +12,8 @@ const transporter = nodemailer.createTransport({
 function sendMail(options) {
 
   var subject = "", text = "";
+
+
   if (options.notifyRider) {
     if (options.notifyRider.confirmed) {
       subject = text = "You've been confirmed";
@@ -21,12 +23,27 @@ function sendMail(options) {
       subject = text = (driversName + " has made some changes")
     }
     if (options.notifyRider.offWaitlist) {
-      subject = text = "You've made it off the waitlist";
+      subject = "You've made it off the waitlist";
+      text = "Congrats"
+    }
+    if (options.notifyRider.rideOver) {
+      subject = "You've made it off the waitlist";
+      text = "Congrats"
+    }
+    if (options.notifyRider.signedUp) {
+      subject = text = "Thanks for signing up with Easy Drive";
     }
   }
   if (options.notifyDriver) {
     if (options.notifyDriver.riderAdded) {
-      subject = text = "A rider has joined"
+      subject = text = "A rider has joined";
+    }
+    if (options.notifyDriver.riderPaid) {
+      subject = text = "A rider has paid";
+    }
+    if (options.notifyRider.rideOver) {
+      subject = "You've made it off the waitlist";
+      text = "Congrats"
     }
   }
 
