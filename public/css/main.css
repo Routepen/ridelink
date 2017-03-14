@@ -8,6 +8,7 @@
   font-family: 'Open Sans', sans-serif;
 } */
 
+
 #newride {
     left-margin: 10px,
 }
@@ -15,6 +16,10 @@
 .navbar-static-top {
     position: relative;
     margin-bottom: 19px;
+}
+
+body {
+  overflow: hidden;
 }
 
 nav .btn,
@@ -380,4 +385,14 @@ footer a {
 
 .info:hover {
     cursor: default;
+}
+
+.fill {
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    width: auto;
+    height: auto;
 }
