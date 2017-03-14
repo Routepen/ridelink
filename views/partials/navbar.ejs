@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-no-landing navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -15,35 +15,24 @@
                 <li><a href="#">About</a></li>
             </ul> -->
             <ul class="nav navbar-nav navbar-right">
-                <!--
+                <% if (user) { %>
                 <li>
-                    <div class="btn-group show-on-hover">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            Drivers <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="#">R</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">Separated link</a></li>
-                        </ul>
-                    </div>
+                    <a href="/route/mine" class="btn newroute btn-md">My Routes</a>
                 </li>
--->
+                <% } %>
                 <li>
                     <a href="/route/new" class="btn newroute btn-md">
                         <span class="glyphicon glyphicon-plus" id="newride"></span> Create Route
                     </a>
                 </li>
                 <% if (user) { %>
-                  <li><a href="/auth/logout" data-size="xlarge" class="btn "><span class="fa fa-facebook"></span> Logout</a></li>
+                 <li><a href="/auth/logout" data-size="xlarge" class="btn "><span class="fa fa-facebook"></span> Logout</a></li>
                 <% } else { %>
-                    <li><a href="/auth/facebook?redirect=<%= encodeURI(url) %>" data-size="xlarge" class="btn "><span class="fa fa-facebook"></span> Login Facebook</a></li>
+                <li><a href="/auth/facebook?redirect=<%= encodeURI(url) %>" data-size="xlarge" class="loginbtn btn "><span class="fa fa-facebook"></span> Login Facebook</a></li>
                 <% } %>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
 </nav>
 
-<div style="margin-top:50px"></div>
+<div style="margin-top:100px"></div>

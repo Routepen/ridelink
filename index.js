@@ -442,6 +442,15 @@ app.get('/profile', function(req, res){
 	res.render('profile');
 });
 
+app.get('/route/mine', function(req, res){
+	var data = {
+		user: req.user || false,
+		url: req.url
+	};
+
+	res.render('userRoutes', data);
+});
+
 app.get('/test4', function(req, res) {
 	console.log(mail);
 	mail.sendMail({
