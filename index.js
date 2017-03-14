@@ -160,7 +160,7 @@ app.post('/route/addrider', function(req, res) {
 		return res.end("please log in ");
 	}
 
-	Route.findById(req.body.routeId, function(err, route) {
+	Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
 
 		var rider = false, confirmedRider = false;
 		for (var i = 0; i < route.riders.length; i++) {
@@ -196,7 +196,25 @@ app.post('/route/addrider', function(req, res) {
 		route.markModified('dropOffs');
 		route.markModified('riderStatus');
 
-		console.log('saving', route);
+		mail.sendMail({
+			to: route.driver.facebook.email,
+			driver: route.driver,
+			options: {
+				notifyDriver: {
+					riderAdded: true
+				}
+			}
+		});
+
+		mail.sendMail({
+			to: route.driver.facebook.email,
+			driver: route.driver,
+			options: {
+				notifyRider: {
+					signedUp: true
+				}
+			}
+		});
 
 		route.save(function(err) {
 			if (err) { console.log(err); return res.end(err.toString()); }
@@ -289,6 +307,16 @@ app.post('/route/confirmrider', function(req, res) {
 			route.markModified('riderStatus');
 		}
 
+		mail.sendMail({
+			to: route.driver.facebook.email,
+			driver: route.driver,
+			options: {
+				notifyRider: {
+					confirmed: true
+				}
+			}
+		});
+
 		route.save(function(err) {
 			if (err) { return res.end(err.toString()); }
 
@@ -311,6 +339,16 @@ app.post('/route/riderpaid', function(req, res) {
 		route.riderStatus[req.user._id] = route.riderStatus[req.user._id] || {}
 		route.riderStatus[req.user._id].paid = true;
 		route.markModified('riderStatus');
+
+		mail.sendMail({
+			to: route.driver.facebook.email,
+			driver: route.driver,
+			options: {
+				notifyDriver: {
+					riderPaid: true
+				}
+			}
+		});
 
 		route.save(function (error) {
 			if (error) { console.log(error); return res.end(error.toString()); }
@@ -361,6 +399,12 @@ app.post('/route/new', function (req, res) {
 	newRoute.save(function(err){
 		if(err) throw err;
 		console.log("Route created!");
+		mail.sendMail({
+			notifyDriver: {
+				rotueCreated: true
+			},
+			to: 'pmh192@gmail.com'
+		});
 		return res.redirect("/route?id=" + (newRoute.shortId || newRoute._id));
 	});
 });
@@ -396,6 +440,15 @@ app.get('/test3', function(req, res) {
 
 app.get('/profile', function(req, res){
 	res.render('profile');
+});
+
+app.get('/route/mine', function(req, res){
+	var data = {
+		user: req.user || false,
+		url: req.url
+	};
+
+	res.render('userRoutes', data);
 });
 
 app.get('/test4', function(req, res) {

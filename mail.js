@@ -12,21 +12,48 @@ const transporter = nodemailer.createTransport({
 function sendMail(options) {
 
   var subject = "", text = "";
+
+
   if (options.notifyRider) {
     if (options.notifyRider.confirmed) {
+      // TODO add oneclick payment button
       subject = text = "You've been confirmed";
     }
     if (options.notifyRider.infoChanged) {
+      // TODO link to view to see changes
       var dirversName = options.driver.facebook.name.split(' ')[0];
       subject = text = (driversName + " has made some changes")
     }
     if (options.notifyRider.offWaitlist) {
-      subject = text = "You've made it off the waitlist";
+      // TODO add oneclick payment button
+      subject = "You've made it off the waitlist";
+      text = "Congrats"
+    }
+    if (options.notifyRider.rideOver) {
+      // TODO: Ask if ride happend and for driver ratings
+      subject = "You've made it off the waitlist";
+      text = "Congrats"
+    }
+    if (options.notifyRider.signedUp) {
+      // tell them to wait for confirmations and look for other rides
+      // sign up for waitlist to be the first for our new features
+      subject = text = "Thanks for signing up with Easy Drive";
     }
   }
   if (options.notifyDriver) {
     if (options.notifyDriver.riderAdded) {
-      subject = text = "A rider has joined"
+      // TODO add confirm buttons
+      subject = text = "A rider has joined";
+    }
+    if (options.notifyDriver.riderPaid) {
+      // We'll send you an email once the rider is completed,
+      // and you'll recieve your payment then
+      subject = text = "A rider has paid";
+    }
+    if (options.notifyRider.rideOver) {
+      //
+      subject = "Thanks";
+      text = "Congrats";
     }
   }
 
