@@ -393,3 +393,31 @@ footer a {
     width: auto;
     height: auto;
 }
+
+.riderElement-inverse>td, .riderElement-inverse>th {
+    color: white;
+}
+
+.riderElement-inverse:hover {
+  background-color: darkgray !important;
+}
+
+.clickable:hover {
+  cursor: pointer;
+}
+
+.core-container {
+  box-shadow: none !important;
+}
+
+select.form-control>option {
+  height: 30px;
+  padding-top: 5px;
+  padding-left: 15px;
+  width: 100%;
+  border-radius: 15px;
+}
+
+select.form-control>option:hover {
+  background-color: lightblue;
+}

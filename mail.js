@@ -3,8 +3,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'pmh192@gmail.com',
-        pass: 'pass'
+        user: 'EasyRideShareNoReply@gmail.com',
+        pass: 'Poutea46'
     }
 });
 
@@ -50,7 +50,7 @@ function sendMail(options) {
       // and you'll recieve your payment then
       subject = text = "A rider has paid";
     }
-    if (options.notifyRider.rideOver) {
+    if (options.notifyDriver.rideOver) {
       //
       subject = "Thanks";
       text = "Congrats";

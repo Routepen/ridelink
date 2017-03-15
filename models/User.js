@@ -18,7 +18,11 @@ var usersSchema = new Schema({
         profileURL: String
     },
     confirmedEmail: String,
-    created_at: Date
+    created_at: Date,
+    routes:[{
+        type:Schema.ObjectId,
+        ref:'routes'
+    }]
 });
 
 usersSchema.pre('save', function(next) {

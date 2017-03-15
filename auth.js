@@ -41,6 +41,8 @@ module.exports = {
               newUser.facebook.gender = profile.gender;
               newUser.facebook.link = profile.profileUrl;
 
+              newUser.routes = [];
+
               newUser.save(function(err) {
                 if (err)
                   throw err;

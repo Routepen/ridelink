@@ -216,11 +216,17 @@ app.post('/route/addrider', function(req, res) {
 			}
 		});
 
+		req.user.routes = req.user.routes || [];
+		req.user.routes.push(route);
+
 		route.save(function(err) {
 			if (err) { console.log(err); return res.end(err.toString()); }
+			req.user.save(function(err) {
+				if (err) { console.log(err); return res.end(err.toString()); }
+				res.end("");
+			});
+		});
 
-			res.end("");
-		})
 	});
 });
 
@@ -391,10 +397,11 @@ app.post('/route/new', function (req, res) {
 
 	if (req.body.confirmedEmail) {
 		req.user.confirmedEmail = req.body.confirmedEmail;
-		req.user.save(function(err) {
-			if (err) console.log(errr);
-		});
 	}
+	req.user.routes.push(newRoute);
+	req.user.save(function(err) {
+		if (err) console.log(err);
+	});
 
 	newRoute.save(function(err){
 		if(err) throw err;
@@ -443,12 +450,20 @@ app.get('/profile', function(req, res){
 });
 
 app.get('/route/mine', function(req, res){
-	var data = {
-		user: req.user || false,
-		url: req.url
-	};
+	if (!req.user) {
+		return res.redirect("/auth/facebook?redirect=" + encodeURIComponent('/route/mine'));
+	}
 
-	res.render('userRoutes', data);
+	console.log(req.user.routes);
+	Route.find({ _id: {$in:req.user.routes}}, function(err, routes) {
+		var data = {
+			user: req.user || false,
+			url: req.url,
+			routes: routes
+		};
+
+		res.render('userRoutes', data);
+	});
 });
 
 app.get('/test4', function(req, res) {
