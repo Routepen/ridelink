@@ -17,14 +17,14 @@
             <ul class="nav navbar-nav navbar-right">
                 <% if (user) { %>
                 <li>
-                    <a href="/route/mine" class="btn newroute btn-md">My Routes</a>
-                </li>
-                <% } %>
-                <li>
                     <a href="/route/new" class="btn newroute btn-md">
                         <span class="glyphicon glyphicon-plus" id="newride"></span> Create Route
                     </a>
                 </li>
+                <li>
+                    <a href="/route/mine" class="btn newroute btn-md">My Routes</a>
+                </li>
+                <% } %>
                 <% if (user) { %>
                  <li><a href="/auth/logout" data-size="xlarge" class="btn "><span class="fa fa-facebook"></span> Logout</a></li>
                 <% } else { %>
