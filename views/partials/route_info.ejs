@@ -179,9 +179,17 @@
 <!--Rider view, use ejs to check if their facebook credentials is the original Facebook user or not-->
 <div class="col-md-4" style="overflow: scroll; height:100%">
     <div>
-        <h2>
+        <div style="background-color:#c5d9f9; border-radius: 5px">
+          <h2>
+            <a href="<%= routeData.driver.facebook.link %>">
+              <% var src = "" %>
+              <% if (routeData.driver.facebook.photos && routeData.driver.facebook.photos.length > 0 && routeData.driver.facebook.photos[0].value) { src = routeData.driver.facebook.photos[0].value; } %>
+              <img align="middle" src="<%= src %>"></img>
+            </a>
             <%= routeData.driver.facebook.name.split(' ')[0] %>'s Route
-        </h2>
+          </h2>
+        </div>
+
         <form class="row" action="rider"></form>
         <% if (user) { %>
           <% if (isDriver) { %>

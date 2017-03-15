@@ -4,6 +4,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var photoSchema = new Schema({
+  value: String
+});
+
 var usersSchema = new Schema({
     firstname: String,
     lastname: String,
@@ -13,9 +17,9 @@ var usersSchema = new Schema({
         token: String,
         email: String,
         name: String,
-        photos: String,
+        photos: [photoSchema],
         gender: String,
-        profileURL: String
+        link: String
     },
     confirmedEmail: String,
     created_at: Date,

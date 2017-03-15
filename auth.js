@@ -1,6 +1,7 @@
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('./models/User');
+const _ = require("lodash");
 
 module.exports = {
   setUpAuth: function(app) {
