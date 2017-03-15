@@ -61,7 +61,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 auth.setUpAuth(app);
-payment.setUp(app);
+payment.setUp(app, Route);
 
 app.get('/', function (req, res) {
 	var data = {

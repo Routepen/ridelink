@@ -9,28 +9,42 @@ var gateway = braintree.connect({
 });
 
 module.exports = {
-  setUp: function(app) {
+  setUp: function(app, Route) {
+
     app.get("/client_token", function (req, res) {
+      if (!req.user) { return res.end(""); }
       gateway.clientToken.generate({}, function (err, response) {
         res.send(response.clientToken);
       });
     });
 
     app.post("/checkout", function (req, res) {
-      var nonceFromTheClient = req.body.payment_method_nonce;
-      gateway.transaction.sale({
-        amount: req.body.amount,
-        paymentMethodNonce: nonceFromTheClient,
-        options: {
-          submitForSettlement: true
-        }
-      }, function (err, result) {
-        if (!err && result.success) {
-          res.end("success");
-        }
-        else {
-          res.end("failure");
-        }
+      if (!req.user) { return res.end(""); }
+
+      Route.findById(req.body.routeId, function(err, route) {
+        if (err || !route) { return res.end("route not found"); }
+
+        var nonceFromTheClient = req.body.payment_method_nonce;
+        gateway.transaction.sale({
+          amount: req.body.amount,
+          paymentMethodNonce: nonceFromTheClient,
+          options: {
+            submitForSettlement: true
+          }
+        }, function (err, result) {
+          if (!err && result.success) {
+
+            route.riderStatus[req.user._id.toString()].paid = true;
+            route.markModified("riderStatus");
+            route.save(function(err) {
+              if (err) { return res.end(err.toString()); }
+              res.end("success");
+            })
+          }
+          else {
+            res.end("failure");
+          }
+        });
       });
     });
   }

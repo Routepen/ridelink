@@ -63,7 +63,6 @@
           <input type="hidden" name="payment_method_nonce">
           <input type="hidden" name="amount">
           <input type="hidden" name="routeId" value="<%= routeId %>">
-          <% if (user) { %><input type="hidden" name="userId" value="<%= user._id %>"><% } %>
           <input id="payButton" type="submit" value="Pay $10" disabled>
         </form>
 

@@ -418,7 +418,7 @@
     }
 
     var spanClass = "<%= isDriver ? "editableInput" : "" %>";
-    if (status == "Confirmed") { spanClass = ""; }
+    if (status == "Confirmed" || status == "Paid") { spanClass = ""; }
 
     return '<div class="form-inline editableform">' +
       '<div id="tr' + rider._id + 'TextEditable" style="display:none">' +
@@ -471,7 +471,7 @@
 
       if (routeData.requireInitialDeposit) {
         if (routeData.riderStatus[rider._id].paid) {
-          status="Confirmed";
+          status="Paid";
         }
         else {
           status="Awaiting payment"
@@ -484,7 +484,11 @@
           '<td> ' + getTdElement(rider, status) + '</td>' +
           "</tr>";
 
-        <% if (isDriver) { %> initializeTdElement(rider, status); <% } %>
+        <% if (isDriver) { %>
+          if (status != "Paid") {
+            initializeTdElement(rider, status);
+          }
+        <% } %>
     }
 
     if (routeData.seats <= routeData.confirmedRiders.length && routeData.riders.length == 0) {
