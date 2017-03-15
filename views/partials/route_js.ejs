@@ -242,6 +242,7 @@
   }
 
   function riderLocationChanged() {
+    console.log("changed");
     var user = <%- user ? JSON.stringify(user) : '{}'%>
     var userId = user._id;
 
@@ -254,7 +255,7 @@
 
     var found = false;
     for (var i = 0; i < routeData.riders.length; i++) {
-      if (routeData.riders[i]._id == userID) {
+      if (routeData.riders[i]._id == userId) {
         found = true;
         break;
       }
@@ -531,8 +532,8 @@
   }
 
   function showFBModal() {
-    $('#selfLink').html(window.location.href);
-    $('#selfLink')[0].href = window.location.href;
+    $('#selfLink').html(window.location.hostname + "/route?id=<%= routeData.shortId || routeData._id %>");
+    $('#selfLink')[0].href = window.location.hostname + "/route?id=<%= routeData.shortId || routeData._id %>";
     $("#facebookModal").modal('toggle');
     $('#facebookModal').on('hidden.bs.modal', showAvaliableModals);
   }
@@ -548,6 +549,7 @@
 
   var shareableLinkStatus = 0;
   function toggleShareableLink() {
+    $('#shareableLink>input').val(window.location.hostname + "/route?id=<%= routeData.shortId || routeData._id %>");
     if (shareableLinkStatus == 0) {
         $('#shareableLink').show();
         $('#getLinkText').html("Hide link");
