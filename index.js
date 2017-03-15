@@ -14,6 +14,7 @@ const app = express();
 
 const auth = require("./auth");
 const mail = require("./mail");
+const payment = require("./payments");
 
 mongoose.Promise = require('bluebird');
 var conn = mongoose.createConnection('ds161169.mlab.com:61169/heroku_9170g7ps');
@@ -60,6 +61,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 auth.setUpAuth(app);
+payment.setUp(app);
 
 app.get('/', function (req, res) {
 	var data = {
