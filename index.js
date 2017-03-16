@@ -184,11 +184,10 @@ app.post('/route/addrider', function(req, res) {
 			console.log("already confirmed");
 			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=1");
 		}
+
 		if (!rider) {
-      console.log("already added");
-			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=2");
+      route.riders.push(userId);
 		}
-    route.riders.push(userId);
 		var dropOffs = route.dropOffs || {};
 		dropOffs[req.user._id] = req.body.address;
 		route.dropOffs = dropOffs;
@@ -202,39 +201,35 @@ app.post('/route/addrider', function(req, res) {
 		route.markModified('dropOffs');
 		route.markModified('riderStatus');
 
-    if (onWaitlist) {
-      mail.sendMail({
-        recipient: req.user,
-
-        options: {
+    if (!rider) { // rider added
+      if (onWaitlist) {
+        mail.sendMail({
+          recipient: req.user,
           notifyRider: {
             onWaitlist: true
           }
-        }
-      });
-    }
-    else {
-      mail.sendMail({
-        recipient: req.user,
-        route: route,
-
-        options: {
+        });
+      }
+      else {
+        mail.sendMail({
+          recipient: req.user,
+          route: route,
           notifyDriver: {
             riderAdded: true
           }
-        }
-      });
+        });
 
-      mail.sendMail({
-        recipient: req.user,
-        route: route,
-
-        options: {
+        mail.sendMail({
+          recipient: req.user,
+          route: route,
           notifyRider: {
             signedUp: true
           }
-        }
-      });
+        });
+      }
+    }
+    else {// info edited
+
     }
 
 		req.user.routes = req.user.routes || [];
@@ -340,10 +335,8 @@ app.post('/route/confirmrider', function(req, res) {
       mail.sendMail({
         recipient: req.user,
         route: route,
-        options: {
-          notifyRider: {
-            offWaitlist: true
-          }
+        notifyRider: {
+          offWaitlist: true
         }
       });
     }
@@ -351,10 +344,8 @@ app.post('/route/confirmrider', function(req, res) {
       mail.sendMail({
         recipient: req.user,
         route: route,
-        options: {
-          notifyRider: {
-            confirmed: true
-          }
+        notifyRider: {
+          confirmed: true
         }
       });
     }
@@ -385,10 +376,8 @@ app.post('/route/riderpaid', function(req, res) {
 
 		mail.sendMail({
 			recipient: route.driver,
-			options: {
-				notifyDriver: {
-					riderPaid: true
-				}
+			notifyDriver: {
+				riderPaid: true
 			}
 		});
 
@@ -442,13 +431,17 @@ app.post('/route/new', function (req, res) {
 	newRoute.save(function(err){
 		if(err) throw err;
 		console.log("Route created!");
-		mail.sendMail({
-			notifyDriver: {
-				routeCreated: true
-			},
-			recipient: req.user
-		});
-		return res.redirect("/route?id=" + (newRoute.shortId || newRoute._id));
+    User.findById(newRoute.driver, function(err, driver) {
+      newRoute.driver = driver;
+      mail.sendMail({
+  			notifyDriver: {
+  				routeCreated: true
+  			},
+  			recipient: req.user,
+        route: newRoute
+  		});
+      return res.redirect("/route?id=" + (newRoute.shortId || newRoute._id));
+    });
 	});
 });
 
@@ -654,10 +647,8 @@ app.post('/route/update', function(req, res) {
       recipient: req.user,
       route: route,
       changed: updating,
-      options: {
-        notifyRider: {
-          infoChanged: true
-        }
+      notifyRider: {
+        infoChanged: true
       }
     });
 

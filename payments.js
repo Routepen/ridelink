@@ -26,7 +26,7 @@ module.exports = {
 
         var nonceFromTheClient = req.body.payment_method_nonce;
         gateway.transaction.sale({
-          amount: req.body.amount,
+          amount: "10",
           paymentMethodNonce: nonceFromTheClient,
           options: {
             submitForSettlement: true
