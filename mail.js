@@ -12,6 +12,7 @@ var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "S
 
 function sendMail(options) {
 
+  return;
   var subject = "", text = "";
 
 
