@@ -115,7 +115,9 @@ app.get('/route', function (req, res) {
 			isRider: isRider,
 			confirmedRider: confirmedRider,
 			opened: opened,
-      view: req.query.view
+      view: req.query.view || "",
+      action: req.query.action || "",
+      riderId: req.query.riderId || ""
 		};
 
 		res.render('route', data);
@@ -207,6 +209,9 @@ app.post('/route/addrider', function(req, res) {
 		route.markModified('riderStatus');
 
     if (!riderFound) { // rider added
+      req.user.routes = req.user.routes || [];
+  		req.user.routes.push(route);
+
       if (onWaitlist) {
         mail.sendMail({
           route: route,
@@ -241,9 +246,6 @@ app.post('/route/addrider', function(req, res) {
     else {// info edited
 
     }
-
-		req.user.routes = req.user.routes || [];
-		req.user.routes.push(route);
 
 		route.save(function(err) {
 			if (err) { console.log(err); return res.end(err.toString()); }
@@ -375,7 +377,6 @@ app.post('/route/riderpaid', function(req, res) {
 		return res.redirect("/youveBeenLoggedOut");
 	}
 
-	console.log(req.body.routeId);
 	Route.findById(req.body.routeId, function(err, route) {
 		if (!route) { return res.end("404"); }
 
@@ -614,7 +615,6 @@ app.get('/testing2', function(req, res) {
 
 app.get('/test3', function(req, res) {
 	User.findById('58c8ec46ceda60e82de5f850', function(err, user) {
-		console.log(user);
 		req.logIn(user, function(err) {
       if (err) { console.log(err); }
       return res.redirect('/');
@@ -632,7 +632,6 @@ app.get('/route/mine', function(req, res){
 		return res.redirect("/auth/facebook?redirect=" + encodeURIComponent('/route/mine'));
 	}
 
-	console.log(req.user.routes);
 	Route.find({ _id: {$in:req.user.routes}}, function(err, routes) {
 		var data = {
 			user: req.user || false,
@@ -645,7 +644,6 @@ app.get('/route/mine', function(req, res){
 });
 
 app.get('/test4', function(req, res) {
-	console.log(mail);
 	mail.sendMail({
 		notifyDriver: {
 			riderAdded: true
@@ -744,7 +742,6 @@ function random(len) {
 }
 
 app.post('/emailsubscribe', function(req,res){
-	console.log(req.body);
 	var subscriber = EmailSubscribe({
 		email: req.body.email
 	});

@@ -120,8 +120,14 @@
           infoWindows[riderId].setContent(contentString);
         }
 
-
         google.maps.event.addListener(infowindow, 'closeclick', unHighlightTable);
+
+        <% if (action == "confirm") { %>
+          if ("<%= riderId %>" == riderId) {
+            hightlightInTable(rider._id);
+            infoWindows[riderId].open(map, markers[riderId]);
+          }
+        <% } %>
 
       });
     }
@@ -184,9 +190,11 @@
     $(btn).button('loading');
 
     $.post("/route/confirmrider", post, function(data, textStatus) {
+      var addedRider;
       for (var i = 0; i < routeData.riders.length; i++) {
         var rider = routeData.riders[i];
         if (rider._id == id) {
+          addedRider = rider;
           routeData.riders.splice(i, 1);
           routeData.confirmedRiders.push(rider);
         }
@@ -197,6 +205,18 @@
         mapHandler.setMarkers();
       });
       $(btn).button('reset');
+      if (addedRider) {
+        if (addedRider.facebook.gender.toLowerCase() == "male") {
+          $('#riderPronounHeShe').html('he');
+          $('#riderPronounHisHer').html('his');
+        }
+        else {
+          $('#riderPronounHeShe').html('she');
+          $('#riderPronounHisHer').html('her');
+        }
+        $('#addedRider').html(addedRider.facebook.name.split(' ')[0]);
+        $('#tellDriverToWait').modal('show');
+      }
     });
   }
 
@@ -594,6 +614,9 @@
   function showPaymentModal() {
     $("#paymentModal").modal('toggle');
   }
+  <% if (action == "pay" && isRider) { %>
+    setTimeout(showPaymentModal, 300);
+  <% } %>
 
   var shareableLinkStatus = 0;
   function toggleShareableLink() {
