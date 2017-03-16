@@ -12,17 +12,19 @@ var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "S
 
 function sendMail(options) {
 
+  return;
   var subject = "", text = "";
 
 
   var recipientName = options.recipient.facebook.name.split(' ')[0];
   var driversName = options.route.driver.facebook.name.split(' ')[0];
-  var date = days[routeData.date.getDay()] + " " + (options.route.date.getMonth() + 1) + "/" + options.route.date.getDate();
+  var date = days[options.route.date.getDay()] + " " + (options.route.date.getMonth() + 1) + "/" + options.route.date.getDate();
   var time = options.route.time;
 
 
 
   if (options.notifyRider) {
+    console.log("notify)");
     if (options.notifyRider.confirmed) {
       // TODO add oneclick payment button
 
@@ -42,6 +44,7 @@ function sendMail(options) {
       "Routepen Team";
     }
     if (options.notifyRider.infoChanged) {
+      console.log("changed)");
       // TODO link to view to see changes
       var itemChanged = options.changed;
       subject = driversName + " has made some changes";
@@ -51,6 +54,7 @@ function sendMail(options) {
       "If you're not interested anymore, click here to tell him that you're no longer interested.\n\n" +
       "Best,\n"+
       "Routepen Team";
+      console.log(subject, text);
     }
     if (options.notifyRider.onWaitlist) {
       // TODO add oneclick payment button
@@ -101,8 +105,8 @@ function sendMail(options) {
     }
   }
   if (options.notifyDriver) {
-    var riderName = options.rider.facebook.name.split(' ')[0];
     if (options.notifyDriver.riderAdded) {
+      var riderName = options.rider.facebook.name.split(' ')[0];
       // TODO add confirm buttons
       subject = "A rider has joined";
       text = "Hi " + driversName + ",\n\n" +
@@ -114,10 +118,11 @@ function sendMail(options) {
       "Routepen Team";
     }
     if (options.notifyDriver.riderPaid) {
+      var riderName = options.rider.facebook.name.split(' ')[0];
       // We'll send you an email once the rider is completed,
       // and you'll recieve your payment then
       subject = text = "A rider has paid";
-      text = "Hi {Driver},\n\n" +
+      text = "Hi " + driversName + ",\n\n" +
       "We have some awesome news. " + riderName + " has paid his initial deposit and he's locked in for the ride. On the day of the ride, we'll send you an email confirming that you have taken him/her and you'll get your money then!\n\n" +
       "If interested, visit " + riderName + "'s Facebook profile on your map here and send him a quick message with details of the ride.\n\n" +
       "Best,\n" +
@@ -137,7 +142,7 @@ function sendMail(options) {
     }
     if (options.notifyDriver.routeCreated) {
       subject = "Route Created";
-      text = "Welcome to Routepen!\n\n"+
+      text = "Welcome to Routepen!,\n\n"+
       "You're not apart of the team. We're here for you to help you make some serious money without worrying about last minute bailing! Now all you have to do is to post on the Fb Rideshare post with your link included. Keep in mind your route is only useful if you share it!\n\n"+
       "Then just sit back and wait for riders to enter their dropoff locations on the map and confirm the ones you like. We'll even help you by giving you an email every time a rider signs up. (Excess riders will automatically be added to the waitlist) :)\n\n"+
       "Best,\n" +
@@ -147,7 +152,7 @@ function sendMail(options) {
 
   var mailOptions = {
       from: 'pmh192@gmail.com', // sender address
-      to: options.to, // list of receivers
+      to: options.recipient.confirmedEmail, // list of receivers
       subject: subject, // Subject line
       text: text, // plain text body
       //html: html // html body
@@ -157,7 +162,8 @@ function sendMail(options) {
       if (error) {
           return console.log(error);
       }
-      console.log('Message %s sent: %s', info.messageId, info.response);
+      console.log(options);
+      console.log('Message %s sent: %s to %s', info.messageId, info.response, options.recipient.confirmedEmail);
   });
 }
 

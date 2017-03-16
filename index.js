@@ -61,7 +61,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 auth.setUpAuth(app);
-payment.setUp(app, Route);
+payment.setUp(app, mail, Route);
 
 app.get('/', function (req, res) {
 	var data = {
@@ -184,39 +184,54 @@ app.post('/route/addrider', function(req, res) {
 			console.log("already confirmed");
 			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=1");
 		}
+
 		if (!rider) {
-			route.riders.push(userId);
+      route.riders.push(userId);
 		}
 		var dropOffs = route.dropOffs || {};
 		dropOffs[req.user._id] = req.body.address;
 		route.dropOffs = dropOffs;
 
+    var onWaitlist = route.confirmedRiders.length == route.seats;
 		route.riderStatus = route.riderStatus || {};
 		route.riderStatus[userId] = {
-			paid: false
+			paid: false,
+      onWaitlist: onWaitlist
 		};
 		route.markModified('dropOffs');
 		route.markModified('riderStatus');
 
-		mail.sendMail({
-			to: route.driver.facebook.email,
-			driver: route.driver,
-			options: {
-				notifyDriver: {
-					riderAdded: true
-				}
-			}
-		});
+    if (!rider) { // rider added
+      if (onWaitlist) {
+        mail.sendMail({
+          route: route,
+          recipient: req.user,
+          notifyRider: {
+            onWaitlist: true
+          }
+        });
+      }
+      else {
+        mail.sendMail({
+          recipient: req.user,
+          route: route,
+          notifyDriver: {
+            riderAdded: true
+          }
+        });
 
-		mail.sendMail({
-			to: route.driver.facebook.email,
-			driver: route.driver,
-			options: {
-				notifyRider: {
-					signedUp: true
-				}
-			}
-		});
+        mail.sendMail({
+          recipient: req.user,
+          route: route,
+          notifyRider: {
+            signedUp: true
+          }
+        });
+      }
+    }
+    else {// info edited
+
+    }
 
 		req.user.routes = req.user.routes || [];
 		req.user.routes.push(route);
@@ -309,21 +324,33 @@ app.post('/route/confirmrider', function(req, res) {
 			}
 		}
 
+    var onWaitlist = route.riderStatus[req.body.userId].onWaitlist;
 		if (!found) {
 			route.confirmedRiders.push(req.body.userId);
 			route.riderStatus[req.body.userId].confirmedOn = new Date(Date.now());
+      route.riderStatus[req.body.userId].onWaitlist = false;
 			route.markModified('riderStatus');
 		}
 
-		mail.sendMail({
-			to: route.driver.facebook.email,
-			driver: route.driver,
-			options: {
-				notifyRider: {
-					confirmed: true
-				}
-			}
-		});
+    if (onWaitlist) {
+      mail.sendMail({
+        recipient: req.user,
+        route: route,
+        notifyRider: {
+          offWaitlist: true
+        }
+      });
+    }
+    else {
+      mail.sendMail({
+        recipient: req.user,
+        route: route,
+        notifyRider: {
+          confirmed: true
+        }
+      });
+    }
+
 
 		route.save(function(err) {
 			if (err) { return res.end(err.toString()); }
@@ -349,12 +376,9 @@ app.post('/route/riderpaid', function(req, res) {
 		route.markModified('riderStatus');
 
 		mail.sendMail({
-			to: route.driver.facebook.email,
-			driver: route.driver,
-			options: {
-				notifyDriver: {
-					riderPaid: true
-				}
+			recipient: route.driver,
+			notifyDriver: {
+				riderPaid: true
 			}
 		});
 
@@ -408,13 +432,17 @@ app.post('/route/new', function (req, res) {
 	newRoute.save(function(err){
 		if(err) throw err;
 		console.log("Route created!");
-		mail.sendMail({
-			notifyDriver: {
-				routeCreated: true
-			},
-			to: req.user.confirmedEmail
-		});
-		return res.redirect("/route?id=" + (newRoute.shortId || newRoute._id));
+    User.findById(newRoute.driver, function(err, driver) {
+      newRoute.driver = driver;
+      mail.sendMail({
+  			notifyDriver: {
+  				routeCreated: true
+  			},
+  			recipient: req.user,
+        route: newRoute
+  		});
+      return res.redirect("/route?id=" + (newRoute.shortId || newRoute._id));
+    });
 	});
 });
 
@@ -611,9 +639,21 @@ app.post('/route/update', function(req, res) {
 		var updating = req.body.updating;
 		var allowedKeys = ["origin", "destination", "seats", "date", "time"];
 
-		if (_.includes(allowedKeys, updating)) {
-			route[updating] = req.body[updating];
+		if (!_.includes(allowedKeys, updating)) {
+			return res.end("failure");
 		}
+
+    mail.sendMail({
+
+      recipient: req.user,
+      route: route,
+      changed: updating,
+      notifyRider: {
+        infoChanged: true
+      }
+    });
+
+    route[updating] = req.body[updating];
 
 		route.save(function(err) {
 			if (err) { console.log(err); }

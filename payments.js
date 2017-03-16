@@ -9,7 +9,7 @@ var gateway = braintree.connect({
 });
 
 module.exports = {
-  setUp: function(app, Route) {
+  setUp: function(app, mail, Route) {
 
     app.get("/client_token", function (req, res) {
       if (!req.user) { return res.end(""); }
@@ -21,12 +21,12 @@ module.exports = {
     app.post("/checkout", function (req, res) {
       if (!req.user) { return res.end(""); }
 
-      Route.findById(req.body.routeId, function(err, route) {
+      Route.findById(req.body.routeId).populate("driver").execute(function(err, route) {
         if (err || !route) { return res.end("route not found"); }
 
         var nonceFromTheClient = req.body.payment_method_nonce;
         gateway.transaction.sale({
-          amount: req.body.amount,
+          amount: "10",
           paymentMethodNonce: nonceFromTheClient,
           options: {
             submitForSettlement: true
@@ -39,7 +39,28 @@ module.exports = {
             route.save(function(err) {
               if (err) { return res.end(err.toString()); }
               res.end("success");
-            })
+            });
+
+            mail.sendMail({
+              recipient: req.user,
+        			route: route,
+        			options: {
+        				notifyRider: {
+        					paid: true
+        				}
+        			}
+        		});
+
+            mail.sendMail({
+              recipient: route.driver,
+        			route: route,
+        			options: {
+        				notifyDriver: {
+        					riderPaid: true
+        				}
+        			}
+        		});
+
           }
           else {
             res.end("failure");
