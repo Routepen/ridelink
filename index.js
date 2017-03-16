@@ -204,6 +204,7 @@ app.post('/route/addrider', function(req, res) {
     if (!rider) { // rider added
       if (onWaitlist) {
         mail.sendMail({
+          route: route,
           recipient: req.user,
           notifyRider: {
             onWaitlist: true
