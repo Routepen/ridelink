@@ -341,7 +341,7 @@
         <div class="form-inline editableform">
           <div id="timeTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">event</i>
-            <input id="editTimeInput" type="text" class="form-control input-sm" value="<%= routeData.time %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'time'); }">
+            <input id="editTimeInput" type="time" class="form-control input-sm" value="<%= routeData.time %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'time'); }">
             <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'time')">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
