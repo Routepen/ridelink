@@ -21,7 +21,7 @@ module.exports = {
     app.post("/checkout", function (req, res) {
       if (!req.user) { return res.end(""); }
 
-      Route.findById(req.body.routeId).populate("driver").execute(function(err, route) {
+      Route.findById(req.body.routeId).populate("driver").exec(function(err, route) {
         if (err || !route) { return res.end("route not found"); }
 
         var nonceFromTheClient = req.body.payment_method_nonce;
@@ -44,21 +44,17 @@ module.exports = {
             mail.sendMail({
               recipient: req.user,
         			route: route,
-        			options: {
-        				notifyRider: {
-        					paid: true
-        				}
+      				notifyRider: {
+      					paid: true
         			}
         		});
 
             mail.sendMail({
               recipient: route.driver,
         			route: route,
-        			options: {
-        				notifyDriver: {
-        					riderPaid: true
-        				}
-        			}
+      				notifyDriver: {
+      					riderPaid: true
+      				}
         		});
 
           }

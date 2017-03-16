@@ -11,8 +11,6 @@ const transporter = nodemailer.createTransport({
 var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function sendMail(options) {
-
-  return;
   var subject = "", text = "";
 
 
@@ -24,7 +22,6 @@ function sendMail(options) {
 
 
   if (options.notifyRider) {
-    console.log("notify)");
     if (options.notifyRider.confirmed) {
       // TODO add oneclick payment button
 
@@ -44,7 +41,6 @@ function sendMail(options) {
       "Routepen Team";
     }
     if (options.notifyRider.infoChanged) {
-      console.log("changed)");
       // TODO link to view to see changes
       var itemChanged = options.changed;
       subject = driversName + " has made some changes";
@@ -54,7 +50,6 @@ function sendMail(options) {
       "If you're not interested anymore, click here to tell him that you're no longer interested.\n\n" +
       "Best,\n"+
       "Routepen Team";
-      console.log(subject, text);
     }
     if (options.notifyRider.onWaitlist) {
       // TODO add oneclick payment button
@@ -162,7 +157,6 @@ function sendMail(options) {
       if (error) {
           return console.log(error);
       }
-      console.log(options);
       console.log('Message %s sent: %s to %s', info.messageId, info.response, options.recipient.confirmedEmail);
   });
 }
