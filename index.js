@@ -114,7 +114,8 @@ app.get('/route', function (req, res) {
 			isDriver: isDriver,
 			isRider: isRider,
 			confirmedRider: confirmedRider,
-			opened: opened
+			opened: opened,
+      view: req.query.view
 		};
 
 		res.render('route', data);
@@ -163,18 +164,22 @@ app.post('/route/addrider', function(req, res) {
 	}
 
 	Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
+    if (req.user._id.toString() == route.driver._id.toString()) {
+      return;
+    }
 
-		var rider = false, confirmedRider = false;
+		var rider, riderFound = false, confirmedRider = false;
 		for (var i = 0; i < route.riders.length; i++) {
 			if (route.riders[i].toString() == req.user._id) {
-				rider = true;
+				riderFound = true;
+        rider = route.riders[i];
 				break;
 			}
 		}
 		for (var i = 0; i < route.confirmedRiders.length; i++) {
 			if (route.confirmedRiders[i].toString() == req.user._id) {
 				confirmedRider = true;
-				rider = true;
+				riderFound = true;
 				break;
 			}
 		}
@@ -185,7 +190,7 @@ app.post('/route/addrider', function(req, res) {
 			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=1");
 		}
 
-		if (!rider) {
+		if (!riderFound) {
       route.riders.push(userId);
 		}
 		var dropOffs = route.dropOffs || {};
@@ -201,7 +206,7 @@ app.post('/route/addrider', function(req, res) {
 		route.markModified('dropOffs');
 		route.markModified('riderStatus');
 
-    if (!rider) { // rider added
+    if (!riderFound) { // rider added
       if (onWaitlist) {
         mail.sendMail({
           route: route,
@@ -212,12 +217,16 @@ app.post('/route/addrider', function(req, res) {
         });
       }
       else {
-        mail.sendMail({
-          recipient: req.user,
-          route: route,
-          notifyDriver: {
-            riderAdded: true
-          }
+        User.findById(userId, function(err, riderUser) {
+          console.log('rider', riderUser);
+          mail.sendMail({
+            recipient: req.user,
+            route: route,
+            rider: riderUser,
+            notifyDriver: {
+              riderAdded: true
+            }
+          });
         });
 
         mail.sendMail({
@@ -405,21 +414,45 @@ app.post('/route/new', function (req, res) {
 		date.setYear(rightNow.getYear() + 1900);
 	}
 
-	var newRoute = Route({
-		shortId: random(5),
-		origin: req.body.origin,
-		destination: req.body.destination,
-		seats: req.body.seats,
-		date: date,
-		time: req.body.time,
-		driver: req.user._id,
-		riders:[],
-		riderStatus: {},
-		confirmedRiders: [],
-		dropOffs: {},
-		inconvenience: req.body.charge,
-		requireInitialDeposit: req.body.requireInitialDeposit == "on"
-	});
+  var t = req.body.time;
+  var parts = t.split(":");
+  var s = parseInt(parts[0]);
+  if (!isNaN(s)) {
+    if (s == 0) {
+      t =  "12:" + parts[1] + " AM";
+    }
+    else if (s < 12) { t += " AM"; }
+    else if (s == 12) { t += " PM"; }
+    else {
+      if (parts.length > 1) {
+          t = (s-12) + ":" + parts[1] + " PM";
+      }
+    }
+  }
+  req.body.time = t;
+
+	var newRoute;
+  try {
+    newRoute = Route({
+  		shortId: random(5),
+  		origin: req.body.origin,
+  		destination: req.body.destination,
+  		seats: req.body.seats,
+  		date: date,
+  		time: req.body.time,
+  		driver: req.user._id,
+  		riders:[],
+  		riderStatus: {},
+  		confirmedRiders: [],
+  		dropOffs: {},
+  		inconvenience: req.body.charge,
+  		requireInitialDeposit: req.body.requireInitialDeposit == "on"
+  	});
+  }
+  catch(e) {
+    res.status(400);
+    return res.end();
+  }
 
 	if (req.body.confirmedEmail) {
 		req.user.confirmedEmail = req.body.confirmedEmail;
@@ -441,7 +474,7 @@ app.post('/route/new', function (req, res) {
   			recipient: req.user,
         route: newRoute
   		});
-      return res.redirect("/route?id=" + (newRoute.shortId || newRoute._id));
+      return res.end("/route?id=" + (newRoute.shortId || newRoute._id));
     });
 	});
 });
@@ -643,17 +676,43 @@ app.post('/route/update', function(req, res) {
 			return res.end("failure");
 		}
 
-    mail.sendMail({
-
-      recipient: req.user,
-      route: route,
-      changed: updating,
-      notifyRider: {
-        infoChanged: true
-      }
+    var allRiders = [];
+    for (var i = 0; i < route.riders.length; i++) { allRiders.push(route.riders[i]); }
+    for (var i = 0; i < route.confirmedRiders.length; i++) { allRiders.push(route.confirmedRiders[i]); }
+    User.find({ _id: {$in:allRiders}}, function(err, riders) {
+      riders.forEach(function(rider) {
+        mail.sendMail({
+          recipient: rider,
+          route: route,
+          changed: updating,
+          notifyRider: {
+            infoChanged: true
+          }
+        });
+      });
     });
 
-    route[updating] = req.body[updating];
+    if (updating == "time") {
+      var t = req.body[updating];
+      var parts = t.split(":");
+      var s = parseInt(parts[0]);
+      if (!isNaN(s)) {
+        if (s == 0) {
+          t =  "12:" + parts[1] + " AM";
+        }
+        else if (s < 12) { t += " AM"; }
+        else if (s == 12) { t += " PM"; }
+        else {
+          if (parts.length > 1) {
+              t = (s-12) + ":" + parts[1] + " PM";
+          }
+        }
+      }
+      req.body[updating] = t;
+    }
+    if (req.body[updating] && req.body[updating] != "") {
+      route[updating] = req.body[updating];
+    }
 
 		route.save(function(err) {
 			if (err) { console.log(err); }
