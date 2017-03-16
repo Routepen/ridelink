@@ -410,21 +410,28 @@ app.post('/route/new', function (req, res) {
 		date.setYear(rightNow.getYear() + 1900);
 	}
 
-	var newRoute = Route({
-		shortId: random(5),
-		origin: req.body.origin,
-		destination: req.body.destination,
-		seats: req.body.seats,
-		date: date,
-		time: req.body.time,
-		driver: req.user._id,
-		riders:[],
-		riderStatus: {},
-		confirmedRiders: [],
-		dropOffs: {},
-		inconvenience: req.body.charge,
-		requireInitialDeposit: req.body.requireInitialDeposit == "on"
-	});
+	var newRoute;
+  try {
+    newRoute = Route({
+  		shortId: random(5),
+  		origin: req.body.origin,
+  		destination: req.body.destination,
+  		seats: req.body.seats,
+  		date: date,
+  		time: req.body.time,
+  		driver: req.user._id,
+  		riders:[],
+  		riderStatus: {},
+  		confirmedRiders: [],
+  		dropOffs: {},
+  		inconvenience: req.body.charge,
+  		requireInitialDeposit: req.body.requireInitialDeposit == "on"
+  	});
+  }
+  catch(e) {
+    res.status(400);
+    return res.end();
+  }
 
 	if (req.body.confirmedEmail) {
 		req.user.confirmedEmail = req.body.confirmedEmail;

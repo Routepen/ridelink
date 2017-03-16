@@ -38,7 +38,7 @@ module.exports = {
             route.markModified("riderStatus");
             route.save(function(err) {
               if (err) { return res.end(err.toString()); }
-              res.end("success");
+              res.redirect('/route?id=' + (route.shortId || route.id));
             });
 
             mail.sendMail({
@@ -52,6 +52,7 @@ module.exports = {
             mail.sendMail({
               recipient: route.driver,
         			route: route,
+              rider: req.user,
       				notifyDriver: {
       					riderPaid: true
       				}
