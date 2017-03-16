@@ -114,7 +114,8 @@ app.get('/route', function (req, res) {
 			isDriver: isDriver,
 			isRider: isRider,
 			confirmedRider: confirmedRider,
-			opened: opened
+			opened: opened,
+      view: req.query.view
 		};
 
 		res.render('route', data);
@@ -163,6 +164,9 @@ app.post('/route/addrider', function(req, res) {
 	}
 
 	Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
+    if (req.user._id.toString() == route.driver._id.toString()) {
+      return;
+    }
 
 		var rider, riderFound = false, confirmedRider = false;
 		for (var i = 0; i < route.riders.length; i++) {
@@ -409,6 +413,23 @@ app.post('/route/new', function (req, res) {
 	else {
 		date.setYear(rightNow.getYear() + 1900);
 	}
+
+  var t = req.body.time;
+  var parts = t.split(":");
+  var s = parseInt(parts[0]);
+  if (!isNaN(s)) {
+    if (s == 0) {
+      t =  "12:" + parts[1] + " AM";
+    }
+    else if (s < 12) { t += " AM"; }
+    else if (s == 12) { t += " PM"; }
+    else {
+      if (parts.length > 1) {
+          t = (s-12) + ":" + parts[1] + " PM";
+      }
+    }
+  }
+  req.body.time = t;
 
 	var newRoute;
   try {
@@ -689,7 +710,9 @@ app.post('/route/update', function(req, res) {
       }
       req.body[updating] = t;
     }
-    route[updating] = req.body[updating];
+    if (req.body[updating] && req.body[updating] != "") {
+      route[updating] = req.body[updating];
+    }
 
 		route.save(function(err) {
 			if (err) { console.log(err); }

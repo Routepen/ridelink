@@ -192,17 +192,22 @@
 
         <form class="row" action="rider"></form>
         <% if (user) { %>
-          <% if (isDriver) { %>
+          <% if (isDriver && view != "rider") { %>
             <div class="panel panel-default" >
               <div class="panel-heading" id="link-panel">
-                  <div class="col-md-6">
-                      <a class="btn btn-md" onclick="toggleShareableLink()" href="javascript:void(0);">
-                        <span id="getLinkText">Copy link</span>  <span class="glyphicon glyphicon-paperclip" > </span>
-                      </a>
-                  </div>
-                  <div class="col-md-6" id="copy-link" align="right">
-                      <a class="btn btn-md" onclick="showFBModal()" href="javascript:void(0);"> Show Post </a>
-                  </div>
+                <div class="col-md-4">
+                    <a class="btn btn-md" onclick="toggleShareableLink()" href="javascript:void(0);">
+                      <span id="getLinkText">Copy link</span>  <span class="glyphicon glyphicon-paperclip" > </span>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a class="btn btn-md" target="_blank" href="/route?id=<%= routeData.shortId || routeData._id %>&view=rider">
+                      <span id="getLinkText">View as Rider</span>
+                    </a>
+                </div>
+                <div class="col-md-4" id="copy-link" align="right">
+                    <a class="btn btn-md" onclick="showFBModal()" href="javascript:void(0);"> Show Post </a>
+                </div>
               </div>
               <div id="shareableLink" class="panel-body getlink-container" style="display:none">
                   <input onClick="select()" class=" form-control" readonly="readonly" value=""> </input>
@@ -252,7 +257,7 @@
         <hr style="height: 3px; background-color: gray">
 
         <div id="rideIsFull" style="display:none">
-          <button class="info btn <%= isDriver ? 'btn-success' : 'btn-danger'; %>" style="background-color:black">Ride is FULL</button>
+          <button class="info btn <%= isDriver && view != "rider" ? 'btn-success' : 'btn-danger'; %>" style="background-color:black">Ride is FULL</button>
         </div>
         <br>
 
@@ -269,7 +274,7 @@
           </div>
           <div id="originText" style="font-size:18px">
             <i class="material-icons" style="font-size:18px">my_location</i>
-            <span class="<%= isDriver ?'editableInput' : '' %>"><%= routeData.origin %></span>
+            <span class="<%= isDriver && view != "rider" ?'editableInput' : '' %>"><%= routeData.origin %></span>
           </div>
         </div>
 
@@ -288,7 +293,7 @@
           </div>
           <div id="destinationText" style="font-size:18px">
             <i class="material-icons" style="font-size:18px">place</i>
-            <span class="<%= isDriver ?'editableInput' : '' %>"><%= routeData.destination %></span>
+            <span class="<%= isDriver && view != "rider" ?'editableInput' : '' %>"><%= routeData.destination %></span>
           </div>
         </div>
 
@@ -311,7 +316,7 @@
           <div id="seatsText" style="">
             <i class="material-icons" style="font-size:18px">event_seat</i>
             <text style="font-size:18px">Seats left: </text>
-            <span style="font-size:18px" class="<%= isDriver ?'editableInput' : '' %>">
+            <span style="font-size:18px" class="<%= isDriver && view != "rider" ?'editableInput' : '' %>">
               <%= routeData.seats - routeData.confirmedRiders.length %>
             </span>
           </div>
@@ -332,7 +337,7 @@
 
           <div id="dateText" style="">
             <i class="material-icons" style="font-size:18px">event</i>
-            <span style="font-size:18px" class="<%= isDriver ?'editableInput' : '' %>">
+            <span style="font-size:18px" class="<%= isDriver && view != "rider" ?'editableInput' : '' %>">
               <%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %>
             </span>
           </div>
@@ -352,7 +357,7 @@
 
           <div id="timeText" style="">
             <i class="material-icons" style="font-size:18px">access_time</i>
-            <span style="font-size:18px" class="<%= isDriver ?'editableInput' : '' %>">
+            <span style="font-size:18px" class="<%= isDriver && view != "rider" ?'editableInput' : '' %>">
               <%= routeData.time %>
             </span>
           </div>

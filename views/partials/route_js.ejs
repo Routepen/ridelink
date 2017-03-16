@@ -86,7 +86,7 @@
       this.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
         contentString = '<div><a href="' + rider.facebook.link + '">' + rider.facebook.name + '</a></div>';
 
-        <% if (isDriver) { %>
+        <% if (isDriver && view != "rider") { %>
           if (!rider.confirmed) {
             contentString += '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
           }
@@ -245,6 +245,10 @@
     console.log("changed");
     var user = <%- user ? JSON.stringify(user) : '{}'%>
     var userId = user._id;
+    if (userId == routeData.driver._id) {
+      alert("You can't sign up for your own ride");
+      return;
+    }
 
     var text = $('#dropOffText'), editable = $('#dropOffTextEditable');
     text.show();
@@ -283,7 +287,7 @@
   }
 
   function setUpEditability() {
-    <% if (isDriver) { %>
+    <% if (isDriver  && view != "rider") { %>
       $('#originText>span').click(function() {
         $('#originText').hide();
         $('#originTextEditable').show();
@@ -316,12 +320,15 @@
         input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
 
+      $(function () {
+          $("#editDateInput").datepicker();
+      });
+
       $('#timeText>span').click(function() {
         $('#timeText').hide();
         $('#timeTextEditable').show();
         var input = $('#timeTextEditable').find('input');
         input.focus();
-        input[0].selectionStart = input[0].selectionEnd = input.val().length;
       });
     <% } else { %>
 
@@ -348,8 +355,25 @@
     selector = "#" + id;
     var textDiv = $(selector + 'Text');
     var editableDiv = $(selector + 'TextEditable');
-    textDiv.show();
-    editableDiv.hide();
+    if (id == "dropOff") {
+      if (submit) {
+        textDiv.show();
+        editableDiv.hide();
+      }
+      else {
+        <% if (isRider) { %>
+          textDiv.show();
+          editableDiv.hide();
+        <% } else { %>
+          $('#pac-input').val('');
+          return;
+        <% } %>
+      }
+    }
+    else {
+      textDiv.show();
+      editableDiv.hide();
+    }
 
     var span = textDiv.find('span'), input = editableDiv.find('input');
     console.log(submit, span.html().trim(), input.val())
@@ -362,7 +386,9 @@
           seatsLeft = 0;
         }
         var s = "" + seatsLeft
-        span.html(s.trim());
+        if (s.trim() != "") {
+          span.html(s.trim());
+        }
       }
       else if (id == "time") {
         var t = input.val().trim();
@@ -380,10 +406,14 @@
             }
           }
         }
-        span.html(t);
+        if (t != "") {
+          span.html(t);
+        }
       }
       else {
-        span.html(input.val().trim());
+        if (input.val().trim() != "") {
+          span.html(input.val().trim());
+        }
       }
 
       routeData[id] = input.val().trim();
@@ -437,7 +467,7 @@
       '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
     }
 
-    var spanClass = "<%= isDriver ? "editableInput" : "" %>";
+    var spanClass = "<%= isDriver  && view != "rider" ? "editableInput" : "" %>";
     if (status == "Confirmed" || status == "Paid") { spanClass = ""; }
 
     return '<div class="form-inline editableform">' +
@@ -504,7 +534,7 @@
           '<td> ' + getTdElement(rider, status) + '</td>' +
           "</tr>";
 
-        <% if (isDriver) { %>
+        <% if (isDriver && view != "rider") { %>
           if (status != "Paid") {
             initializeTdElement(rider, status);
           }
@@ -528,7 +558,7 @@
           '</td>' +
         '</tr>';
 
-      <% if (isDriver) { %> initializeTdElement(rider, status); <% } %>
+      <% if (isDriver && view != "rider") { %> initializeTdElement(rider, status); <% } %>
     }
   }
 
@@ -645,10 +675,10 @@
   updateClock();
 
   modals = [];
-  <% if (isDriver && !user.paymentSetup) { %>
+  <% if (isDriver && !user.paymentSetup && view != "rider") { %>
     modals.push(showsetUpPaymentModal);
   <% } %>
-  <% if (!opened && isDriver) { %>
+  <% if (!opened && isDriver && view != "rider") { %>
     modals.push(showFBModal);
   <% } %>
 
