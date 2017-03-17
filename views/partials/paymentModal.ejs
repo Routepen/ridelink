@@ -24,7 +24,7 @@
           <input id="payButton" type="submit" value="Pay $10" disabled>
         </form> -->
         <div class="panel panel-default bootstrap-basic">
-          <div class="panel-heading">
+          <div class="panel-heading" id="checkout">
             <h3 class="panel-title">Enter Card Details</h3>
           </div>
           <form id="checkout-form" class="panel-body">
@@ -62,7 +62,9 @@
               </div>
             </div>
 
-
+            <input type="hidden" name="payment_method_nonce">
+            <input type="hidden" name="amount">
+            <input type="hidden" name="routeId" value="<%= routeId %>">
             <button value="submit" id="payButton" class="btn btn-success btn-lg center-block">Pay with <span id="card-type">Card</span></button>
           </form>
         </div>
@@ -132,6 +134,8 @@
               console.log("submit", submit);
               submit.removeAttribute('disabled');
 
+              form.action = "/checkout";
+              form.method = "post";
               form.addEventListener('submit', function (event) {
                 event.preventDefault();
 

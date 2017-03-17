@@ -43,6 +43,7 @@
     }
 
     console.log(waypoints);
+    console.log(routeData);
 
     me = this;
 
@@ -81,9 +82,11 @@
       allRiders.push(rider);
     }
 
-    for (var i = 0; i < allRiders.length; i++) {
-      var rider = allRiders[i];
-      this.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
+    console.log("all riders len", allRiders.length);
+    var me = this;
+    allRiders.forEach(function(rider) {
+      console.log(routeData.dropOffs[rider._id]);
+      me.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
         contentString = '<div><a href="' + rider.facebook.link + '">' + rider.facebook.name + '</a></div>';
 
         <% if (isDriver && view != "rider") { %>
@@ -101,11 +104,15 @@
 
         var markerExists = markers[riderId] != undefined;
 
-        markers[riderId] = markers[riderId] || new google.maps.Marker({
-          map: map,
-          position: results[0].geometry.location,
-          title: rider.facebook.name
-        });
+        if (!markers[riderId]) {
+          markers[riderId] = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location,
+            title: rider.facebook.name
+          });
+        }
+
+        console.log(markers[riderId], results[0].geometry.location);
 
         markers[riderId].setPosition(results[0].geometry.location);
 
@@ -130,7 +137,7 @@
         <% } %>
 
       });
-    }
+    });
   }
 
   showRoute.prototype.setUpDropOff = function(map) {
@@ -274,6 +281,51 @@
     });
   }
 
+  function cancelRequest(btn) {
+    var userId = "<%= userId %>";
+    $(btn).button("loading");
+
+    var post = {
+      userId: userId,
+      routeId: routeData._id
+    };
+
+    $.post("/route/cancelrequest", post, function(data, textStatus) {
+      var riderDeleted;
+      for (var i = 0; i < routeData.riders.length; i++) {
+        var rider = routeData.riders[i];
+        if (rider._id == userId) {
+          riderDeleted = rider;
+          routeData.riders.splice(i, 1);
+        }
+      }
+      setUpTable();
+      if (riderDeleted && markers[riderDeleted._id]) {
+        markers[riderDeleted._id].setMap(null);
+        delete markers[riderDeleted._id];
+      }
+      if (riderDeleted && infoWindows[riderDeleted._id]) { delete infoWindows[riderDeleted._id]; }
+
+      mapHandler.drawMap(function() {
+        mapHandler.setMarkers();
+      });
+
+
+      $(btn).css('visibility', 'hidden');
+      $(btn).button('reset');
+
+      var textDiv = $('#dropOffText');
+      var editableDiv = $('#dropOffTextEditable');
+      var span = textDiv.find('span');
+      var input = editableDiv.find('input');
+      var newValue = "";
+      span.html(newValue);
+      textDiv.hide();
+      editableDiv.show();
+    });
+
+  }
+
   function checkSeatsLeft() {
     var seatsLeft = routeData.seats - routeData.confirmedRiders.length;
     if (seatsLeft <= 0) {
@@ -292,6 +344,7 @@
 
   function addOrUpdateRider(btn) {
     $(btn).button('loading');
+    $('#cancelRequestButton').css('visibility', 'visible');
 
     var user = <%- user ? JSON.stringify(user) : '{}'%>
     var userId = user._id;
@@ -326,6 +379,7 @@
       }
 
       mapHandler.setMarkers();
+      setUpTable();
 
       $(btn).button('reset');
       $('#confirmAddRider').modal('hide');
@@ -770,6 +824,11 @@
   setUpTextInfo();
   checkSeatsLeft();
   updateClock();
+
+  <% if (isRider && !confirmedRider) { %>
+    console.log("showing");
+    $('#cancelRequestButton').css('visibility', 'visible');
+  <% } %>
 
   modals = [];
   <% if (isDriver && !user.paymentSetup && view != "rider") { %>

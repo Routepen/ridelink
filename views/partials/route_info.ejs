@@ -157,10 +157,12 @@
                 <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>-->
               <% } else { %>
                 <text>You've requested a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
-                <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
+                <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span><br/>
               <% } %>
-
             </div>
+            <button id="cancelRequestButton" style="visibility:hidden;"
+              class="btn btn-primary btn-sm" onclick="javascript:cancelRequest(this)">Cancel Request</button>
+
             <% if (confirmedRider && !routeData.riderStatus[user._id].paid) { %>
               <button type="button" class="btn btn-primary" onclick="showPaymentModal()">Pay initial deposit</button>
               <div style="font-size:18px" id="countDown">2hr</div>

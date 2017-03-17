@@ -60,6 +60,7 @@ module.exports = {
 
           }
           else {
+            console.log(result, err);
             res.end("failure");
           }
         });

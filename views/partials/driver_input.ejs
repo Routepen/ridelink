@@ -33,14 +33,15 @@
             <div id="form-color-box" class="color-box">
                 <div>
                     <i class="material-icons" style="padding-left:10px ">adjust</i>
-                    <input autofocus id="origin-input" name="origin" class="controls" type="text"
+                    <input id="origin-input" name="origin" class="controls" type="text"
                            placeholder="Enter an origin location..." onPaste=""
-                           onkeydown="if (event.keyCode == 13) { return false;}">
+                           onkeydown="if (event.keyCode == 13) { return false;}"
+                           value="UCSB, Santa Barbara, CA, United States">
                 </div>
                 <!--<input id="origin" type="text" name='origin' class="form-control" placeholder="Origin"> -->
                 <div>
                     <i class="material-icons" style="padding-left:10px">place</i>
-                    <input id="destination-input" name="destination" class="controls" type="text"
+                    <input autofocus id="destination-input" name="destination" class="controls" type="text"
                            placeholder="Enter a destination location..." onPaste=""
                            onkeydown="if (event.keyCode == 13) { return false;}">
                 </div>
@@ -149,13 +150,21 @@
     };
 
     AutocompleteDirectionsHandler.prototype.route = function() {
-        if (!this.originPlaceId || !this.destinationPlaceId) {
+        if (!this.destinationPlaceId) {
             return;
         }
+
         var me = this;
+        var origin;
+        if (!this.originPlaceId) {
+          origin = $('#origin-input').val();
+        }
+        else {
+          origin = {'placeId': this.originPlaceId};
+        }
 
         this.directionsService.route({
-            origin: {'placeId': this.originPlaceId},
+            origin: origin,
             destination: {'placeId': this.destinationPlaceId},
             travelMode: this.travelMode
         }, function(response, status) {

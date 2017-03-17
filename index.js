@@ -105,9 +105,15 @@ app.get('/route', function (req, res) {
 			});
 		}
 
+    var userId = '';
+    if (req.user) {
+      userId = req.user._id;
+    }
+
 		var data = {
 			routeId: route._id,
 			user: req.user,
+      userId, userId,
 			routeData: route,
 			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,
@@ -141,7 +147,8 @@ app.get('/route/new', function (req, res) {
 		user: req.user,
 		routeId: false,
 		routeData: false,
-		url: req.url
+		url: req.url,
+    creatingRoute: true
 	};
 
 	res.render('route', data);
@@ -225,7 +232,7 @@ app.post('/route/addrider', function(req, res) {
         User.findById(userId, function(err, riderUser) {
           console.log('rider', riderUser);
           mail.sendMail({
-            recipient: req.user,
+            recipient: route.driver,
             route: route,
             rider: riderUser,
             notifyDriver: {
@@ -263,7 +270,6 @@ app.post('/route/removerider', function(req, res) {
 		return res.end("please log in ");
 	}
 
-
 	var removingId = req.body.userId;
 
 	Route.findById(req.body.routeId, function(err, route) {
@@ -295,6 +301,52 @@ app.post('/route/removerider', function(req, res) {
 		route.riderStatus[removingId] = route.riderStatus[removingId] || {
 			paid: false
 		};
+		route.markModified('dropOffs');
+		route.markModified('riderStatus');
+
+		route.save(function(err) {
+			if (err) { console.log(err); return res.end(err.toString()); }
+
+			res.end("success");
+		})
+	});
+});
+
+app.post('/route/cancelrequest', function(req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+	var removingId = req.body.userId;
+
+	Route.findById(req.body.routeId, function(err, route) {
+
+		if (req.user._id.toString() != removingId) {
+			console.log("hacking");
+			return res.end("failure");
+		}
+
+		var removed = false;
+		for (var i = 0; i < route.riders.length; i++) {
+			var rider = route.riders[i];
+			if (rider.toString() == removingId) {
+				removed = true;
+				route.riders.splice(i, 1);
+				break;
+			}
+		}
+
+		if (!removed) {
+			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=2");
+		}
+		var dropOffs = route.dropOffs || {};
+		delete dropOffs[req.user._id]
+		route.dropOffs = dropOffs;
+
+		route.riderStatus = route.riderStatus || {};
+		if (route.riderStatus[removingId]) {
+      delete route.riderStatus[removingId];
+    }
 		route.markModified('dropOffs');
 		route.markModified('riderStatus');
 
@@ -343,24 +395,26 @@ app.post('/route/confirmrider', function(req, res) {
 			route.markModified('riderStatus');
 		}
 
-    if (onWaitlist) {
-      mail.sendMail({
-        recipient: req.user,
-        route: route,
-        notifyRider: {
-          offWaitlist: true
-        }
-      });
-    }
-    else {
-      mail.sendMail({
-        recipient: req.user,
-        route: route,
-        notifyRider: {
-          confirmed: true
-        }
-      });
-    }
+    User.findById(req.body.userId, function(err, rider) {
+      if (onWaitlist) {
+        mail.sendMail({
+          recipient: rider,
+          route: route,
+          notifyRider: {
+            offWaitlist: true
+          }
+        });
+      }
+      else {
+        mail.sendMail({
+          recipient: rider,
+          route: route,
+          notifyRider: {
+            confirmed: true
+          }
+        });
+      }
+    });
 
 
 		route.save(function(err) {
@@ -615,6 +669,15 @@ app.get('/testing2', function(req, res) {
 
 app.get('/test3', function(req, res) {
 	User.findById('58c8ec46ceda60e82de5f850', function(err, user) {
+		req.logIn(user, function(err) {
+      if (err) { console.log(err); }
+      return res.redirect('/');
+    });
+	});
+});
+
+app.get('/test32', function(req, res) {
+	User.findById('58c0794d632def07581d19da', function(err, user) {
 		req.logIn(user, function(err) {
       if (err) { console.log(err); }
       return res.redirect('/');
