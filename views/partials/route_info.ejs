@@ -8,11 +8,25 @@
       </div>
       <div class="modal-body">
         <% days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] %>
-        <div>
-          <div>Driving to <%= routeData.destination %> on <%= days[routeData.date.getDay()] + " " + (routeData.date.getMonth() + 1) + "/" + routeData.date.getDate() %> around <%= routeData.time %>. <%= routeData.seats %> spots available, $<%= routeData.inconvenience %> per seat.</div>
-          <br>
-          <div>To all interested riders, enter your drop-off location in the link below and I'll confirm you if I see a fit! Otherwise you'll be added to the waitlist. PM me if you have any questions!</div>
+<!--
+Use javascript to input into textarea
+        <div class="form-group">
+          <label for="comment">Post to Facebook:</label>
+          <textarea class="form-control" rows="7" id="comment">
+            <div>
+            <div>Driving to <%= routeData.destination %> on <%= days[routeData.date.getDay()] + " " + (routeData.date.getMonth() + 1) + "/" + routeData.date.getDate() %> around <%= routeData.time %>. <%= routeData.seats %> spots available, $<%= routeData.inconvenience %> per seat.</div>
+            <br>
+            <div>To all interested riders, enter your drop-off location in the link below and I'll confirm you if I see a fit! Otherwise you'll be added to the waitlist. PM me if you have any questions!</div>
+          </div>
+          </textarea>
         </div>
+        -->
+          <div>
+            <div>Driving to <%= routeData.destination %> on <%= days[routeData.date.getDay()] + " " + (routeData.date.getMonth() + 1) + "/" + routeData.date.getDate() %> around <%= routeData.time %>. <%= routeData.seats %> spots available, $<%= routeData.inconvenience %> per seat.</div>
+            <br>
+            <div>To all interested riders, enter your drop-off location in the link below and I'll confirm you if I see a fit! Otherwise you'll be added to the waitlist. PM me if you have any questions!</div>
+          </div>
+
         <a id="selfLink"></a>
       </div>
         <hr>
@@ -89,8 +103,8 @@
         <span id="riderDropOff"></span>
       </div>
       <div class="modal-footer">
-        <input type="submit" class="btn btn-danger" data-dismiss="modal" value="No">
         <input type="submit" class="btn btn-success" onclick="addOrUpdateRider(this)" value="Yes">
+        <input type="submit" class="btn btn-danger" data-dismiss="modal" value="No">
       </div>
     </div>
   </div>

@@ -27,13 +27,13 @@ function sendMail(options) {
 
       var initialDepositText = options.route.requireInitialDeposit ?
         "There's limited spots, so be sure to confirm quickly by putting up an initial deposit!" +
-        " You have 28 hours to secure your spot before someone else on the waitlist deserves it." +
+        " You have 18 hours to secure your spot before someone else on the waitlist deserves it." +
         " Go to " + domain + "/route?id=" + options.route._id + " here to secure your spot."
         : '';
 
       var initialDepositHTML = options.route.requireInitialDeposit ?
         "There's limited spots, so be sure to confirm quickly by putting up an initial deposit!" +
-        " You have <b> 28 hours </b> to secure your spot before someone else on the waitlist deserves it." +
+        " You have <b> 18 hours </b> to secure your spot before someone else on the waitlist deserves it." +
         " Click <a href=\"" + domain + "/route?id=" + options.route._id + "&action=pay\">here</a> to secure your spot."
         : '';
 
@@ -73,7 +73,7 @@ function sendMail(options) {
       text = "Hi " + recipientName + ",\n\n"+
       "We're here to let you know that " + driversName + " changed the " + itemChanged + " to his ride. Just thought we'd keep you posted!\n\n"+
       "You can view the updated route here\n\n"+
-      "If you're not interested anymore, click here to tell them that you're no longer interested.\n\n" +
+      "If you're not interested anymore, click here and you can remove yourself from the list.\n\n" +
       "Best,\n"+
       "Routepen Team";
 
@@ -102,7 +102,7 @@ function sendMail(options) {
     }
     if (options.notifyRider.offWaitlist) {
       text = "Hi " + recipientName + ",\n\n" +
-      "Holy Moly you made it off the waitlist for " + driversName + "'s ride! Now all you have to do is secure your spot by putting up an initial deposit here. <b> You have 28 hours to do it before someone else on the waitlist's takes it! </b> We have to be fair to everybody :).\n\n" +
+      "Holy Moly you made it off the waitlist for " + driversName + "'s ride! Now all you have to do is secure your spot by putting up an initial deposit here. <b> You have 18 hours to do it before someone else on the waitlist's takes it! </b> We have to be fair to everybody :).\n\n" +
       "Also, it's important to cancel here if you have decided not to go with them! It's only fair to the poor souls waiting on the waitlist.\n\n" +
       "Best\n" +
       "Routepen Team";
@@ -111,7 +111,7 @@ function sendMail(options) {
       var cancelLink = "<a href=\"" + domain + "/route?id=" + options.route._id + "&action=cancel\">here</a>";
 
       html = "<span>Hi " + recipientName + ",</span><br/><br/>" +
-      "<span>Holy Moly you made it off the waitlist for " + driversName + "'s ride! Now all you have to do is secure your spot by putting up an initial deposit " + depositLink + ". <b> You have 28 hours to do it before someone else on the waitlist's takes it! </b> We have to be fair to everybody :).</span><br/><br/>" +
+      "<span>Holy Moly you made it off the waitlist for " + driversName + "'s ride! Now all you have to do is secure your spot by putting up an initial deposit " + depositLink + ". <b> You have 18 hours to do it before someone else on the waitlist's takes it! </b> We have to be fair to everybody :).</span><br/><br/>" +
       "<span>Also, it's important to cancel " + cancelLink + " if you have decided not to go with them! It's only fair to the poor souls waiting on the waitlist.</span><br/><br/>" +
       "<span>Best</span><br/>" +
       "<span>Routepen Team</span>";
@@ -171,7 +171,7 @@ function sendMail(options) {
       text = "Hi " + driversName + ",\n\n" +
       "Congrats! " + riderName + " is interested in taking a ride from you! Take a look at his dropoff location here and confirm them if you'd like to take them. They'll get a follow up email about details for the initial deposit.\n\n" +
       "How it works:\n\n" +
-      "Once " + riderName + " is confirmed, we'll give them 28 hours to put up his initial deposit. If them doesn't get it on time, someone from the waitlist will replace his spot!\n\n" +
+      "Once " + riderName + " is confirmed, we'll give them 18 hours to put up his initial deposit. If them doesn't get it on time, someone from the waitlist will replace his spot!\n\n" +
       "Feel free to send me an email back if you have any questions :). I'll be sure to answer them within a few hours.\n\n" +
       "Best,\n" +
       "Routepen Team";
@@ -179,7 +179,7 @@ function sendMail(options) {
       html = "<span>Hi " + driversName + ",</span><br/><br/>" +
       "<span>Congrats! " + riderName + " is interested in taking a ride from you! Take a look at his dropoff location " + here + " and confirm them if you'd like to take them. They'll get a follow up email about details for the initial deposit.</span><br/><br/>" +
       "<span><b> How it works: </b></span><br/><br/>" +
-      "<span>Once " + riderName + " is confirmed, we'll give them 28 hours to put up his initial deposit. If them doesn't get it on time, someone from the waitlist will replace his spot!</span><br/><br/>" +
+      "<span>Once " + riderName + " is confirmed, we'll give them 18 hours to put up his initial deposit. If them doesn't get it on time, someone from the waitlist will replace his spot!</span><br/><br/>" +
       "<span>Feel free to send me an email back if you have any questions :). I'll be sure to answer them within a few hours.</span><br/><br/>" +
       "<span>Best,</span><br/>" +
       "<span>Routepen Team</span>";
@@ -207,7 +207,7 @@ function sendMail(options) {
       //
       subject = "Thanks";
       text = "Hi " + driversName + ",\n\n" +
-      "Hope the ride is going well! Now's the time to let us know if you've taken the riders. Confirm here if you've picked them up and assuming no riders deny you've taken them in the next day, we'll send you the money through venmo. Just give it a day!\n\n" +
+      "Hope the ride is going well! Now's the time to let us know if you've taken the riders and more importantly how to get your money. Confirm here if you've picked them up and assuming no riders deny you've taken them in the next day, we'll send you the money through venmo. Just give it a day!\n\n" +
       "If any of the riders deny, we will look into it and give you a follow up email with details.\n\n" +
       "Otherwise if you weren't able to show up, deny here and we'll refund the riders!\n\n" +
       "Thanks for your honesty! To assure quality in this exclusive community, we unfortunately do have to take further action if caught lying, but rest assured I know you're not going to be one of them :)\n\n" +
@@ -217,14 +217,22 @@ function sendMail(options) {
     }
     if (options.notifyDriver.routeCreated) {
       subject = "Route Created";
+      text = "Welcome to Routepen!, \n\n" +
+      "Congrats on creating a route! Routepen is here to help you make some serious money without worrying about last minute bailing! Now all you have to do is to post on the Facebook Rideshare page with your link included. Keep in mind your route is only useful if you share it!\n\n"+
+      "Then just sit back and wait for riders to enter their dropoff locations on the map and confirm the ones you like. We'll even help you by giving you an email every time a rider signs up. (Excess riders will automatically be added to the waitlist) :)\n\n"+
+      "Best, \n" +
+      "Routepen Team";
+      /*
+      Old text
       text = "Welcome to Routepen!,\n\n"+
       "You're now a part of the team. We're here for you to help you make some serious money without worrying about last minute bailing! Now all you have to do is to post on the Fb Rideshare post with your link included. Keep in mind your route is only useful if you share it!\n\n"+
       "Then just sit back and wait for riders to enter their dropoff locations on the map and confirm the ones you like. We'll even help you by giving you an email every time a rider signs up. (Excess riders will automatically be added to the waitlist) :)\n\n"+
       "Best,\n" +
       "Routepen Team";
+      */
 
       html = "<span>Welcome to Routepen!,</span><br/><br/>"+
-      "<span>You're now a part of the team. We're here for you to help you make some serious money without worrying about last minute bailing! Now all you have to do is to post on the Fb Rideshare post with your link included. Keep in mind your route is only useful if you share it!</span><br/><br/>"+
+      "<span>Congrats on creating a route! Routepen is here to help you make some serious money without worrying about last minute bailing! Now all you have to do is to post on the Facebook Rideshare page with your link included. Keep in mind your route is only useful if you share it!</span><br/><br/>"+
       "<span>Then just sit back and wait for riders to enter their dropoff locations on the map and confirm the ones you like. We'll even help you by giving you an email every time a rider signs up. (Excess riders will automatically be added to the waitlist) :)</span><br/><br/>"+
       "<span>Best,</span><br/>" +
       "<span>Routepen Team</span>";

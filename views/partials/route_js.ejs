@@ -217,6 +217,7 @@
 
   };
 
+
   function confirmRider(id, btn) {
     var post = {
       userId: id,
@@ -729,7 +730,7 @@
 
   function showFBModal() {
     $('#selfLink').html(window.location.hostname + "/route?id=<%= routeData.shortId || routeData._id %>");
-    $('#selfLink')[0].href = window.location.hostname + "/route?id=<%= routeData.shortId || routeData._id %>";
+    $('#selfLink')[0].href =  "/route?id=<%= routeData.shortId || routeData._id %>";
     $("#facebookModal").modal('toggle');
     $('#facebookModal').on('hidden.bs.modal', showAvaliableModals);
   }
