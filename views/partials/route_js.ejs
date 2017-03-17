@@ -160,18 +160,47 @@
 
     pickUpInput = document.getElementById("editOriginInput");
     if (pickUpInput) {
-      var pickUpInputAutocomplete = new google.maps.places.Autocomplete(
+      this.pickUpAutocomplete = new google.maps.places.Autocomplete(
               pickUpInput, {placeIdOnly: true});
+      var me = this;
+      this.setupPlaceChangedListener(this.pickUpAutocomplete, function() {
+        me.changeRoute('origin');
+      });
     }
+
 
     destinationInput = document.getElementById("editDestinationInput");
     if (destinationInput) {
-      var destinationInput = new google.maps.places.Autocomplete(
+      this.destinationAutocomplete = new google.maps.places.Autocomplete(
               destinationInput, {placeIdOnly: true});
+      var me = this;
+      this.setupPlaceChangedListener(this.destinationAutocomplete, function() {
+        me.changeRoute('destination');
+      });
     }
 
     var geocoder = this.geocoder;
     var me = this;
+  }
+
+  showRoute.prototype.changeRoute = function(location) {
+    var autocomplete;
+    if (location == "origin") { autocomplete = this.pickUpAutocomplete; }
+    else { autocomplete = this.destinationAutocomplete}
+
+    var place = autocomplete.getPlace();
+    if (!place || !place.place_id) {
+        window.alert("Please select an option from the dropdown list.");
+        callback = callback || function() {};
+        return callback(new Error("invalid place"));
+    }
+
+    routeData[location] = place.name;
+
+    this.drawMap(function() {
+      restoreMapText(location);
+    });
+
   }
 
   showRoute.prototype.setupPlaceChangedListener = function(autocomplete, onChanged) {
@@ -261,14 +290,11 @@
     infoWindows[riderId].open(this.map, marker);
   }
 
-  function riderLocationChanged() {
-    console.log("changed");
+  function addOrUpdateRider(btn) {
+    $(btn).button('loading');
+
     var user = <%- user ? JSON.stringify(user) : '{}'%>
     var userId = user._id;
-    if (userId == routeData.driver._id) {
-      alert("You can't sign up for your own ride");
-      return;
-    }
 
     var text = $('#dropOffText'), editable = $('#dropOffTextEditable');
     text.show();
@@ -277,33 +303,49 @@
     text.find('span').html(address);
 
 
-    var found = false;
-    for (var i = 0; i < routeData.riders.length; i++) {
-      if (routeData.riders[i]._id == userId) {
-        found = true;
-        break;
-      }
-    }
-    if (found) {
-      routeData.dropOffs[userId] = address;
-    }
-    else {
-      routeData.riders.push(user);
-      routeData.dropOffs = routeData.dropOffs || {};
-      routeData.dropOffs[userId] = address;
-    }
-
-
     data = {
       routeId: "<%= routeData._id %>",
       address: address
     };
 
     $.post("/route/addrider", data, function(data, text) {
+      var found = false;
+      for (var i = 0; i < routeData.riders.length; i++) {
+        if (routeData.riders[i]._id == userId) {
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        routeData.dropOffs[userId] = address;
+      }
+      else {
+        routeData.riders.push(user);
+        routeData.dropOffs = routeData.dropOffs || {};
+        routeData.dropOffs[userId] = address;
+      }
+
+      mapHandler.setMarkers();
+
+      $(btn).button('reset');
+      $('#confirmAddRider').modal('hide');
       console.log(data, text);
     });
+  }
 
-    mapHandler.setMarkers();
+  function riderLocationChanged() {
+    console.log("changed");
+    var userId = "<%- ( user ? user : {_id:''} )._id %>";
+    if (userId == routeData.driver._id) {
+      alert("You can't sign up for your own ride");
+      return;
+    }
+
+    var editable = $('#dropOffTextEditable');
+    var address = editable.find('input').val();
+
+    $('#riderDropOff').html(address);
+    $('#confirmAddRider').modal('show');
   }
 
   function setUpEditability() {
@@ -371,97 +413,129 @@
     <% } %>
   }
 
-  function editableDone(submit, id) {
+  function errorMessageFromEditable(id, newValue){
+    if (id == "seats" && newValue != "" + parseInt(newValue)) { return "Please enter a number for the number of people you can take"; }
+    if (id == "date" && newValue.split('/').length != 3) { return "Please enter a valid date"; }
+    if (id == "time" && newValue == "") { return "Please enter the time you are leaving"; }
+
+    return "";
+  }
+
+  function restoreMapText(id) {
     selector = "#" + id;
     var textDiv = $(selector + 'Text');
     var editableDiv = $(selector + 'TextEditable');
-    if (id == "dropOff") {
-      if (submit) {
-        textDiv.show();
-        editableDiv.hide();
-      }
-      else {
+    var span = textDiv.find('span');
+    var input = editableDiv.find('input');
+    var newValue = input.val().trim();
+    span.html(newValue);
+    textDiv.show();
+    editableDiv.hide();
+
+    data = {
+      routeId: routeData._id,
+      updating: id
+    };
+    data[id] = newValue;
+
+    $.post("/route/update", data, function() {
+
+    });
+  }
+
+  function mapEditableDone(submit, id) {
+    if (submit) {
+      mapHandler.changeRoute(id);
+    }
+    else {
+      var selector = "#" + id;
+      var textDiv = $(selector + 'Text');
+      var editableDiv = $(selector + 'TextEditable');
+      var span = textDiv.find('span');
+      var input = editableDiv.find('input');
+
+      console.log(id);
+      if (id == "dropOff") {
         <% if (isRider) { %>
+          input.val(span.html().trim());
           textDiv.show();
           editableDiv.hide();
         <% } else { %>
-          $('#pac-input').val('');
-          return;
+          input.val("");
         <% } %>
       }
-    }
-    else {
-      textDiv.show();
-      editableDiv.hide();
-    }
-
-    var span = textDiv.find('span'), input = editableDiv.find('input');
-    console.log(submit, span.html().trim(), input.val())
-    if (submit && (span.html() != input.val() || id == "seats")) {
-      if (id == "seats") {
-        var seatsLeft = input.val() - routeData.confirmedRiders.length;
-        if (seatsLeft < 0) {
-          $("#lessThanZeroSeats").modal('show');
-          input.val(routeData.confirmedRiders.length);
-          seatsLeft = 0;
-        }
-        var s = "" + seatsLeft
-        if (s.trim() != "") {
-          span.html(s.trim());
-        }
+      else {
+        input.val(span.html().trim());
+        textDiv.show();
+        editableDiv.hide();
       }
-      else if (id == "time") {
-        var t = input.val().trim();
-        var parts = t.split(":");
-        var s = parseInt(parts[0]);
-        if (!isNaN(s)) {
-          if (s == 0) {
-            t =  "12:" + parts[1] + " AM";
+    }
+  }
+
+  function editableDone(submit, id) {
+    console.log('editableDone');
+    selector = "#" + id;
+    var textDiv = $(selector + 'Text');
+    var editableDiv = $(selector + 'TextEditable');
+    var span = textDiv.find('span');
+    var input = editableDiv.find('input');
+    var newValue = input.val().trim();
+
+    var error = errorMessageFromEditable(id, newValue);
+
+    if (error == "" || !submit) {
+      if (submit) {
+        var toSet = newValue;
+        if (id == "seats") {
+          toSet -= routeData.confirmedRiders.length;
+          if (toSet < 0) {
+            $("#lessThanZeroSeats").modal('show');
+            input.val(routeData.confirmedRiders.length);
+            toSet = 0;
           }
-          else if (s < 12) { t += " AM"; }
-          else if (s == 12) { t += " PM"; }
-          else {
-            if (parts.length > 1) {
-                t = (s-12) + ":" + parts[1] + " PM";
+        }
+        if (id == "time") {
+          var parts = toSet.split(":");
+          var s = parseInt(parts[0]);
+          if (!isNaN(s)) {
+            if (s == 0) {
+              t =  "12:" + parts[1] + " AM";
+            }
+            else if (s < 12) { toSet += " AM"; }
+            else if (s == 12) { toSet += " PM"; }
+            else {
+              if (parts.length > 1) {
+                  toSet = (s-12) + ":" + parts[1] + " PM";
+              }
             }
           }
         }
-        if (t != "") {
-          span.html(t);
-        }
+
+        span.html(toSet);
+        textDiv.show();
+        editableDiv.hide();
+
+        data = {
+          routeId: routeData._id,
+          updating: id
+        };
+        data[id] = newValue;
+
+        $.post("/route/update", data, function() {
+
+        });
       }
       else {
-        if (input.val().trim() != "") {
-          span.html(input.val().trim());
-        }
+        var html = span.html().trim();
+        input.val(html);
+        textDiv.show();
+        editableDiv.hide();
       }
-
-      routeData[id] = input.val().trim();
-      if (id == "destination" || id == "origin") {
-        mapHandler.drawMap();
-        mapHandler.setMarkers();
-      }
-      checkSeatsLeft();
-
-      data = {
-        routeId: routeData._id,
-        updating: id
-      };
-
-      data[id] = input.val();
-
-      $.post("/route/update", data, function() {
-
-      });
+      $('#alertbox').hide();
     }
     else {
-      var html = span.html().trim();
-      if (id == "seats"){
-        input.val(parseInt(html) + routeData.confirmedRiders.length);
-      }
-      else {
-        input.val(html);
-      }
+      $('#errorMessage').html(error);
+      $('#alertbox').show();
     }
   }
 

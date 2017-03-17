@@ -57,123 +57,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModal">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Modal for paying</h4>
-      </div>
-      <div class="modal-body">
-        <form id="checkout-form" action="/checkout" method="post">
-          <div id="error-message"></div>
-
-          <label for="card-number">Card Number</label>
-          <div class="hosted-field" id="card-number"></div>
-
-          <label for="cvv">CVV</label>
-          <div class="hosted-field" id="cvv"></div>
-
-          <label for="expiration-date">Expiration Date</label>
-          <div class="hosted-field" id="expiration-date"></div>
-
-          <input type="hidden" name="payment_method_nonce">
-          <input type="hidden" name="amount">
-          <input type="hidden" name="routeId" value="<%= routeId %>">
-          <input id="payButton" type="submit" value="Pay $10" disabled>
-        </form>
-
-        <!-- Load the Client component. -->
-        <script src="https://js.braintreegateway.com/web/3.11.0/js/client.min.js"></script>
-
-        <!-- Load the Hosted Fields component. -->
-        <script src="https://js.braintreegateway.com/web/3.11.0/js/hosted-fields.min.js"></script>
-
-        <script>
-        // We generated a client token for you so you can test out this code
-        // immediately. In a production-ready integration, you will need to
-        // generate a client token on your server (see section below).
-        $.get('/client_token', function(authorization) {
-          var submit = document.getElementById('payButton');
-          var form = document.getElementById('checkout-form');
-
-          console.log("going");
-          braintree.client.create({
-            authorization: authorization
-          }, function (clientErr, clientInstance) {
-            console.log("called");
-            if (clientErr) {
-              console.log(clientErr);
-              return;
-            }
-
-            braintree.hostedFields.create({
-              client: clientInstance,
-              styles: {
-                'input': {
-                  'font-size': '14pt'
-                },
-                'input.invalid': {
-                  'color': 'red'
-                },
-                'input.valid': {
-                  'color': 'green'
-                }
-              },
-              fields: {
-                number: {
-                  selector: '#card-number',
-                  placeholder: '4111 1111 1111 1111'
-                },
-                cvv: {
-                  selector: '#cvv',
-                  placeholder: '123'
-                },
-                expirationDate: {
-                  selector: '#expiration-date',
-                  placeholder: '10/2019'
-                }
-              }
-            }, function (hostedFieldsErr, hostedFieldsInstance) {
-              console.log("called 2");
-              if (hostedFieldsErr) {
-                console.log(hostedFieldsErr);
-                // Handle error in Hosted Fields creation
-                return;
-              }
-              console.log("submit", submit);
-              submit.removeAttribute('disabled');
-
-              form.addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                hostedFieldsInstance.tokenize(function (tokenizeErr, payload) {
-                  if (tokenizeErr) {
-                    // Handle error in Hosted Fields tokenization
-                    return;
-                  }
-
-                  // Put `payload.nonce` into the `payment_method_nonce` input, and then
-                  // submit the form. Alternatively, you could send the nonce to your server
-                  // with AJAX.
-                  console.log('nonce', payload.nonce);
-                  document.querySelector('input[name="payment_method_nonce"]').value = payload.nonce;
-                  document.querySelector('input[name="amount"]').value = "10";
-                  form.submit();
-                });
-              }, false);
-            });
-          });
-        });
-        </script>
-
-      </div>
-      <div class="modal-footer">
-        <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
-      </div>
-    </div>
-  </div>
-</div>
+<% include ./paymentModal %>
 
 
 <div class="modal fade" id="lessThanZeroSeats" tabindex="-1" role="dialog" aria-labelledby="lessThanZeroSeats">
@@ -188,6 +72,25 @@
       </div>
       <div class="modal-footer">
         <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="confirmAddRider" tabindex="-1" role="dialog" aria-labelledby="confirmAddRider">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="lessThanZeroSeatsTitle">Join Ride</h4>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to request a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to
+        <span id="riderDropOff"></span>
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-danger" data-dismiss="modal" value="No">
+        <input type="submit" class="btn btn-success" onclick="addOrUpdateRider(this)" value="Yes">
       </div>
     </div>
   </div>
@@ -242,7 +145,7 @@
                 <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:riderLocationChanged()">
                   <i class="glyphicon glyphicon-ok"></i>
                 </button>
-                <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'dropOff')">
+                <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:mapEditableDone(false, 'dropOff')">
                   <i class="glyphicon glyphicon-remove"></i>
                 </button>
                 <br><br>
@@ -281,11 +184,11 @@
         <div class="form-inline editableform">
           <div id="originTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">my_location</i>
-            <input id="editOriginInput" type="text" class="form-control input-sm" style="width:60%" value="<%= routeData.origin %>" onkeydown="if (event.keyCode == 13) { editableDone(true, 'origin'); }">
-            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'origin')">
+            <input id="editOriginInput" type="text" class="form-control input-sm" style="width:60%" value="<%= routeData.origin %>">
+            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:mapEditableDone(true, 'origin')">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'origin')">
+            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:mapEditableDone(false, 'origin')">
               <i class="glyphicon glyphicon-remove"></i>
             </button>
           </div>
@@ -300,11 +203,11 @@
         <div class="form-inline editableform">
           <div id="destinationTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">my_location</i>
-            <input id="editDestinationInput" type="text" class="form-control input-sm" style="width:60%" value="<%= routeData.destination %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'destination'); }">
-            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'destination')">
+            <input id="editDestinationInput" type="text" class="form-control input-sm" style="width:60%" value="<%= routeData.destination %>"  onkeydown="if (event.keyCode == 13) { mapEditableDone(true, 'destination'); }">
+            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:mapEditableDone(true, 'destination')">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'destination')">
+            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:mapEditableDone(false, 'destination')">
               <i class="glyphicon glyphicon-remove"></i>
             </button>
           </div>
