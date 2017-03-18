@@ -5,18 +5,28 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('./models/User');
 const Route = require('./models/Route');
+const EmailSubscribe = require('./models/EmailSubscribe');
 const _ = require("lodash");
 const app = express();
 
+const auth = require("./auth");
+const mail = require("./mail");
+const payment = require("./payments");
+
 mongoose.Promise = require('bluebird');
 var conn = mongoose.createConnection('ds161169.mlab.com:61169/heroku_9170g7ps');
-mongoose.connect('mongodb://victorcheng:victor97@ds161169.mlab.com:61169/heroku_9170g7ps');
+mongoose.connect('mongodb://victorcheng:victor97@ds161169.mlab.com:61169/heroku_9170g7ps', {
+	server: {
+		socketOptions: {
+			socketTimeoutMS: 0,
+			connectTimeoutMS: 0
+		}
+	}
+});
 var db = mongoose.connection;
 
 /*
@@ -48,49 +58,9 @@ app.use(cookieParser());
 
 // parse application/json
 app.use(bodyParser.json());
-app.use(passport.initialize());
-app.use(passport.session());
 
-passport.serializeUser(function (user, done) {
-	done(null, user._id);
-});
-
-passport.deserializeUser(function (id, done) {
-	User.findById(id, function (err, user) {
-		done(err, user);
-	});
-});
-
-passport.use(new FacebookStrategy({
-	clientID: "1122786494515943",
-	clientSecret: "f6cd89a5fe00867021469477156f95a6",
-	callbackURL: "http://localhost:5000/auth/facebook/callback",
-	profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link']
-}, function (accessToken, refreshToken, profile, done) {
-	console.log(profile);
-	process.nextTick(function () {
-		User.findOne({ 'facebook.id': profile.id }, function (err, user) {
-			if (err) return done(err);else if (user) {
-				return done(null, user);
-			} else {
-				var newUser = new User();
-				newUser.facebook.id = profile.id;
-				newUser.facebook.token = accessToken;
-				newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-				newUser.facebook.email = _.get(profile, 'emails[0].value', '').toLowerCase();
-				newUser.facebook.photos = profile.photos;
-				newUser.facebook.gender = profile.gender;
-				newUser.facebook.link = profile.profileUrl;
-
-				newUser.save(function (err) {
-					if (err) throw err;
-					return done(null, newUser);
-				});
-			}
-			return;
-		});
-	});
-}));
+auth.setUpAuth(app);
+payment.setUp(app, mail, Route);
 
 app.get('/', function (req, res) {
 	var data = {
@@ -98,38 +68,88 @@ app.get('/', function (req, res) {
 		url: req.url
 	};
 
-	res.render('landing', data);
+	res.render('new_landing', data);
 });
 
 app.get('/route', function (req, res) {
-	Route.findById(req.query.id).populate('driver').populate('riders').exec(function (err, route) {
+	var handleRequest = function (err, route) {
 		if (err || !route) {
 			console.log(err);
 			return res.end("404 couldn't find id " + req.query.id);
 		}
 
+		var isRider = false,
+		    confirmedRider = false,
+		    isDriver,
+		    opened;
+		if (req.user) {
+			route.riders.forEach(function (rider) {
+				if (rider._id.toString() == req.user._id.toString()) {
+					isRider = true;
+				}
+			});
+
+			route.confirmedRiders.forEach(function (rider) {
+				if (rider._id.toString() == req.user._id.toString()) {
+					isRider = true;
+					confirmedRider = true;
+				}
+			});
+		}
+
+		isDriver = req.user != undefined && route.driver._id.toString() == req.user._id.toString();
+
+		var opened = route.opened == true;
+		if (isDriver && !opened) {
+			route.opened = true;
+			route.save(function (err) {
+				if (err) console.log(err);
+			});
+		}
+
+		var userId = '';
+		if (req.user) {
+			userId = req.user._id;
+		}
+
 		var data = {
-			routeId: req.query.id,
+			routeId: route._id,
 			user: req.user,
+			userId, userId,
 			routeData: route,
-			url: req.url
+			routeDataString: JSON.stringify(route, null, 4),
+			url: req.url,
+			isDriver: isDriver,
+			isRider: isRider,
+			confirmedRider: confirmedRider,
+			opened: opened,
+			view: req.query.view || "",
+			action: req.query.action || "",
+			riderId: req.query.riderId || ""
 		};
 
-		console.log(JSON.stringify(route, null, 4));
-
 		res.render('route', data);
-	});
+	};
+
+	var id = req.query.id;
+	if (id.length != 24) {
+		Route.findOne({ 'shortId': id }).populate('driver').populate('riders').populate('confirmedRiders').exec(handleRequest);
+	} else {
+		Route.findById(id).populate('driver').populate('riders').populate('confirmedRiders').exec(handleRequest);
+	}
 });
 
 app.get('/route/new', function (req, res) {
 	if (!req.user) {
-		return res.redirect("/auth/facebook");
+		return res.redirect("/auth/facebook?redirect=" + encodeURIComponent('/route/new'));
 	}
+
 	var data = {
 		user: req.user,
 		routeId: false,
 		routeData: false,
-		url: req.url
+		url: req.url,
+		creatingRoute: true
 	};
 
 	res.render('route', data);
@@ -147,22 +167,201 @@ app.get('/route/all', function (req, res) {
 });
 
 app.post('/route/addrider', function (req, res) {
+	console.log("adding rider");
 	if (!req.user) {
 		return res.end("please log in ");
 	}
 
-	Route.findById(req.body.routeId, function (err, route) {
-		console.log(route);
-		route.riders.push(req.user._id);
-		route.dropOffs = route.dropOffs || {};
-		route.dropOffs[req.user._id] = req.body.address;
+	Route.findById(req.body.routeId).populate('driver').exec(function (err, route) {
+		if (req.user._id.toString() == route.driver._id.toString()) {
+			return;
+		}
+
+		var rider,
+		    riderFound = false,
+		    confirmedRider = false;
+		for (var i = 0; i < route.riders.length; i++) {
+			if (route.riders[i].toString() == req.user._id) {
+				riderFound = true;
+				rider = route.riders[i];
+				break;
+			}
+		}
+		for (var i = 0; i < route.confirmedRiders.length; i++) {
+			if (route.confirmedRiders[i].toString() == req.user._id) {
+				confirmedRider = true;
+				riderFound = true;
+				break;
+			}
+		}
+
+		var userId = req.user._id;
+		if (confirmedRider) {
+			console.log("already confirmed");
+			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=1");
+		}
+
+		if (!riderFound) {
+			route.riders.push(userId);
+		}
+		var dropOffs = route.dropOffs || {};
+		dropOffs[req.user._id] = req.body.address;
+		route.dropOffs = dropOffs;
+
+		var onWaitlist = route.confirmedRiders.length == route.seats;
+		route.riderStatus = route.riderStatus || {};
+		route.riderStatus[userId] = {
+			paid: false,
+			onWaitlist: onWaitlist
+		};
+		route.markModified('dropOffs');
+		route.markModified('riderStatus');
+
+		if (!riderFound) {
+			// rider added
+			req.user.routes = req.user.routes || [];
+			req.user.routes.push(route);
+
+			if (onWaitlist) {
+				mail.sendMail({
+					route: route,
+					recipient: req.user,
+					notifyRider: {
+						onWaitlist: true
+					}
+				});
+			} else {
+				User.findById(userId, function (err, riderUser) {
+					console.log('rider', riderUser);
+					mail.sendMail({
+						recipient: route.driver,
+						route: route,
+						rider: riderUser,
+						notifyDriver: {
+							riderAdded: true
+						}
+					});
+				});
+
+				mail.sendMail({
+					recipient: req.user,
+					route: route,
+					notifyRider: {
+						signedUp: true
+					}
+				});
+			}
+		} else {// info edited
+
+		}
 
 		route.save(function (err) {
 			if (err) {
-				return res.end(err.toString());
+				console.log(err);return res.end(err.toString());
+			}
+			req.user.save(function (err) {
+				if (err) {
+					console.log(err);return res.end(err.toString());
+				}
+				res.end("");
+			});
+		});
+	});
+});
+
+app.post('/route/removerider', function (req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+	var removingId = req.body.userId;
+
+	Route.findById(req.body.routeId, function (err, route) {
+
+		if (req.user._id.toString() != route.driver.toString()) {
+			console.log("hacking");
+			return res.end("failure");
+		}
+
+		var removed = false;
+		for (var i = 0; i < route.confirmedRiders.length; i++) {
+			var rider = route.confirmedRiders[i];
+			if (rider.toString() == removingId) {
+				removed = true;
+				route.riders.push(rider);
+				route.confirmedRiders.splice(i, 1);
+				break;
+			}
+		}
+
+		if (!removed) {
+			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=2");
+		}
+		var dropOffs = route.dropOffs || {};
+		delete dropOffs[req.user._id];
+		route.dropOffs = dropOffs;
+
+		route.riderStatus = route.riderStatus || {};
+		route.riderStatus[removingId] = route.riderStatus[removingId] || {
+			paid: false
+		};
+		route.markModified('dropOffs');
+		route.markModified('riderStatus');
+
+		route.save(function (err) {
+			if (err) {
+				console.log(err);return res.end(err.toString());
 			}
 
-			res.redirect("/route?id=" + route._id);
+			res.end("success");
+		});
+	});
+});
+
+app.post('/route/cancelrequest', function (req, res) {
+	if (!req.user) {
+		return res.end("please log in ");
+	}
+
+	var removingId = req.body.userId;
+
+	Route.findById(req.body.routeId, function (err, route) {
+
+		if (req.user._id.toString() != removingId) {
+			console.log("hacking");
+			return res.end("failure");
+		}
+
+		var removed = false;
+		for (var i = 0; i < route.riders.length; i++) {
+			var rider = route.riders[i];
+			if (rider.toString() == removingId) {
+				removed = true;
+				route.riders.splice(i, 1);
+				break;
+			}
+		}
+
+		if (!removed) {
+			return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=2");
+		}
+		var dropOffs = route.dropOffs || {};
+		delete dropOffs[req.user._id];
+		route.dropOffs = dropOffs;
+
+		route.riderStatus = route.riderStatus || {};
+		if (route.riderStatus[removingId]) {
+			delete route.riderStatus[removingId];
+		}
+		route.markModified('dropOffs');
+		route.markModified('riderStatus');
+
+		route.save(function (err) {
+			if (err) {
+				console.log(err);return res.end(err.toString());
+			}
+
+			res.end("success");
 		});
 	});
 });
@@ -176,12 +375,12 @@ app.post('/route/confirmrider', function (req, res) {
 		if (err) {
 			return res.end(err.toString());
 		}
+
 		if (route.driver._id.toString() != req.user._id.toString()) {
 			return res.end("nice try hacker");
 		}
 
 		for (var i = 0; i < route.riders.length; i++) {
-			console.log(route.riders[i].id, route.riders[i]._id);
 			if (route.riders[i].id == req.body.userId) {
 				route.riders.splice(i, 1);
 				break;
@@ -196,112 +395,72 @@ app.post('/route/confirmrider', function (req, res) {
 			}
 		}
 
-		if (!found) route.confirmedRiders.push(req.body.userId);
+		var onWaitlist = route.riderStatus[req.body.userId].onWaitlist;
+		if (!found) {
+			route.confirmedRiders.push(req.body.userId);
+			route.riderStatus[req.body.userId].confirmedOn = new Date(Date.now());
+			route.riderStatus[req.body.userId].onWaitlist = false;
+			route.markModified('riderStatus');
+		}
+
+		User.findById(req.body.userId, function (err, rider) {
+			if (onWaitlist) {
+				mail.sendMail({
+					recipient: rider,
+					route: route,
+					notifyRider: {
+						offWaitlist: true
+					}
+				});
+			} else {
+				mail.sendMail({
+					recipient: rider,
+					route: route,
+					notifyRider: {
+						confirmed: true
+					}
+				});
+			}
+		});
 
 		route.save(function (err) {
 			if (err) {
 				return res.end(err.toString());
 			}
 
-			res.redirect("/route?id=" + route._id);
+			res.redirect("/route?id=" + (route.shortId || route._id));
 		});
 	});
 });
 
-app.post('/route/new', function (req, res) {
+app.post('/route/riderpaid', function (req, res) {
 	if (!req.user) {
 		// TODO Allow user to be informed their session has timed out
 		return res.redirect("/youveBeenLoggedOut");
-	}
-
-	var newRoute = Route({
-		origin: req.body.origin,
-		destination: req.body.destination,
-		seats: req.body.seats,
-		date: new Date(req.body.date),
-		driver: req.user._id,
-		riders: [],
-		confirmedRiders: [],
-		dropOffs: {}
-	});
-
-	newRoute.save(function (err) {
-		if (err) throw err;
-		console.log("Route created!");
-		return res.redirect("/route?id=" + newRoute._id);
-	});
-});
-
-app.get('/route/all', function (req, res) {
-	Route.find({}, function (err, routes) {
-
-		var ids = routes.map(function (r) {
-			return r._id;
-		});
-
-		res.json(ids);
-	});
-});
-
-
-app.post('/route/addrider', function (req, res) {
-	if (!req.user) {
-		return res.end("please log in ");
 	}
 
 	Route.findById(req.body.routeId, function (err, route) {
-		console.log(route);
-		route.riders.push(req.user._id);
-		route.dropOffs = route.dropOffs || {};
-		route.dropOffs[req.user._id] = req.body.address;
+		if (!route) {
+			return res.end("404");
+		}
 
-		route.save(function (err) {
-			if (err) {
-				return res.end(err.toString());
+		route.riderStatus = route.riderStatus || {};
+		route.riderStatus[req.user._id] = route.riderStatus[req.user._id] || {};
+		route.riderStatus[req.user._id].paid = true;
+		route.markModified('riderStatus');
+
+		mail.sendMail({
+			recipient: route.driver,
+			notifyDriver: {
+				riderPaid: true
 			}
-
-			res.redirect("/route?id=" + route._id);
 		});
-	});
-});
 
-app.post('/route/confirmrider', function (req, res) {
-	if (!req.user) {
-		return res.end("please log in ");
-	}
-
-	Route.findById(req.body.routeId).populate('driver').populate('riders').populate('confirmedRiders').exec(function (err, route) {
-		if (err) {
-			return res.end(err.toString());
-		}
-		if (route.driver._id.toString() != req.user._id.toString()) {
-			return res.end("nice try hacker");
-		}
-
-		for (var i = 0; i < route.riders.length; i++) {
-			console.log(route.riders[i].id, route.riders[i]._id);
-			if (route.riders[i].id == req.body.userId) {
-				route.riders.splice(i, 1);
-				break;
+		route.save(function (error) {
+			if (error) {
+				console.log(error);return res.end(error.toString());
 			}
-		}
-
-		var found = false;
-		for (var i = 0; i < route.confirmedRiders.length; i++) {
-			if (route.confirmedRiders[i].id == req.body.userId) {
-				found = true;
-				break;
-			}
-		}
-
-		if (!found) route.confirmedRiders.push(req.body.userId);
-
-		route.save(function (err) {
-			if (err) {
-				return res.end(err.toString());
-			}
-
-			res.redirect("/route?id=" + route._id);
+			res.end("success");
 		});
 	});
 });
@@ -312,26 +471,322 @@ app.post('/route/new', function (req, res) {
 		return res.redirect("/youveBeenLoggedOut");
 	}
 
-	var newRoute = Route({
-		origin: req.body.origin,
-		destination: req.body.destination,
-		seats: req.body.seats,
-		date: new Date(req.body.date),
-		driver: req.user._id,
-		riders: [],
-		confirmedRiders: [],
-		dropOffs: {}
+	var rightNow = new Date(Date.now());
+	var date = new Date(req.body.date);
+
+	if (date.getMonth() < rightNow.getMonth()) {
+		date.setYear(rightNow.getYear() + 1901);
+	} else {
+		date.setYear(rightNow.getYear() + 1900);
+	}
+
+	var t = req.body.time;
+	var parts = t.split(":");
+	var s = parseInt(parts[0]);
+	if (!isNaN(s)) {
+		if (s == 0) {
+			t = "12:" + parts[1] + " AM";
+		} else if (s < 12) {
+			t += " AM";
+		} else if (s == 12) {
+			t += " PM";
+		} else {
+			if (parts.length > 1) {
+				t = s - 12 + ":" + parts[1] + " PM";
+			}
+		}
+	}
+	req.body.time = t;
+
+	var newRoute;
+	try {
+		newRoute = Route({
+			shortId: random(5),
+			origin: req.body.origin,
+			destination: req.body.destination,
+			seats: req.body.seats,
+			date: date,
+			time: req.body.time,
+			driver: req.user._id,
+			riders: [],
+			riderStatus: {},
+			confirmedRiders: [],
+			dropOffs: {},
+			inconvenience: req.body.charge,
+			requireInitialDeposit: req.body.requireInitialDeposit == "on"
+		});
+	} catch (e) {
+		res.status(400);
+		return res.end();
+	}
+
+	if (req.body.confirmedEmail) {
+		req.user.confirmedEmail = req.body.confirmedEmail;
+	}
+	req.user.routes.push(newRoute);
+	req.user.save(function (err) {
+		if (err) console.log(err);
 	});
 
 	newRoute.save(function (err) {
 		if (err) throw err;
 		console.log("Route created!");
-		return res.redirect("/route?id=" + newRoute._id);
+		User.findById(newRoute.driver, function (err, driver) {
+			newRoute.driver = driver;
+			mail.sendMail({
+				notifyDriver: {
+					routeCreated: true
+				},
+				recipient: req.user,
+				route: newRoute
+			});
+			return res.end("/route?id=" + (newRoute.shortId || newRoute._id));
+		});
 	});
 });
 
-app.get('/test/', function (req, res) {
-	res.render('');
+app.get('/sendMail', function (req, res) {
+	var n = req.query.n;
+	if (n == "1") {
+		mail.sendMail({
+			notifyDriver: {
+				routeCreated: true
+			},
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "2") {
+		mail.sendMail({
+			notifyRider: {
+				signedUp: true
+			},
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "3") {
+		mail.sendMail({
+			notifyRider: {
+				confirmed: true
+			},
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "4") {
+		mail.sendMail({
+			notifyRider: {
+				offWaitlist: true
+			},
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "5") {
+		mail.sendMail({
+			notifyRider: {
+				infoChanged: true
+			},
+			driver: { facebook: { name: "Porter Haet" } },
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "6") {
+		mail.sendMail({
+			notifyRider: {
+				offWaitlist: true
+			},
+			driver: { facebook: { name: "Porter Haet" } },
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "7") {
+		mail.sendMail({
+			notifyRider: {
+				paid: true
+			},
+			driver: { facebook: { name: "Porter Haet" } },
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "8") {
+		mail.sendMail({
+			notifyRider: {
+				shouldBePickedUp: true
+			},
+			driver: { facebook: { name: "Porter Haet" } },
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "9") {
+		mail.sendMail({
+			notifyRider: {
+				joinedFeatureWaitlist: true
+			},
+			driver: { facebook: { name: "Porter Haet" } },
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "10") {
+		mail.sendMail({
+			notifyDriver: {
+				riderAdded: true
+			},
+			driver: { facebook: { name: "Porter Haet" } },
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "11") {
+		mail.sendMail({
+			notifyDriver: {
+				riderPaid: true
+			},
+			driver: { facebook: { name: "Porter Haet" } },
+			to: 'pmh192@gmail.com'
+		});
+	} else if (n == "12") {
+		mail.sendMail({
+			notifyDriver: {
+				shouldBePickingUp: true
+			},
+			driver: { facebook: { name: "Porter Haet" } },
+			to: 'pmh192@gmail.com'
+		});
+	}
+	res.end("");
+});
+
+app.get('/testing2', function (req, res) {
+	var newUser = new User({
+		"facebook": {
+			"link": "https://www.facebook.com/app_scoped_user_id/1275391965875712/",
+			"gender": "male",
+			"email": "",
+			"name": "Porter Haet",
+			"token": "EAAP9KxoqCucBAMF22hAWQD5cNryPVRSAsAVy0qIGgMMKH8AkIMiucu8HbJJHYTa1ZBjFnfGiVv1wnIqcjZAMHmIUuSEHJtsZAdeCmyDHwvZAxQOrJpMrOFh9fvZAxxqHFcZAzMlWHVWCPh9MBFSYGFNLGMEO5xzzqo0aa3TyRhOwZDZD",
+			"id": "1275391965875713",
+			"photos": [{
+				"value": "https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/12729183_959477910800454_5056109822890601521_n.jpg?oh=ce58e8e7a372cbc9e18bab4f24409c4d&oe=59661BB4"
+			}]
+		},
+		"confirmedEmail": "pmh192@gmail.com"
+	});
+
+	newUser.save(function (err) {
+		if (err) console.log(err);
+		res.end("saved" + JSON.stringify(newUser));
+	});
+});
+
+app.get('/test3', function (req, res) {
+	User.findById('58c8ec46ceda60e82de5f850', function (err, user) {
+		req.logIn(user, function (err) {
+			if (err) {
+				console.log(err);
+			}
+			return res.redirect('/');
+		});
+	});
+});
+
+app.get('/test32', function (req, res) {
+	User.findById('58c0794d632def07581d19da', function (err, user) {
+		req.logIn(user, function (err) {
+			if (err) {
+				console.log(err);
+			}
+			return res.redirect('/');
+		});
+	});
+});
+
+app.get('/profile', function (req, res) {
+	res.render('profile');
+});
+
+app.get('/route/mine', function (req, res) {
+	if (!req.user) {
+		return res.redirect("/auth/facebook?redirect=" + encodeURIComponent('/route/mine'));
+	}
+
+	Route.find({ _id: { $in: req.user.routes } }, function (err, routes) {
+		var data = {
+			user: req.user || false,
+			url: req.url,
+			routes: routes
+		};
+
+		res.render('userRoutes', data);
+	});
+});
+
+app.get('/test4', function (req, res) {
+	mail.sendMail({
+		notifyDriver: {
+			riderAdded: true
+		},
+		to: 'pmh192@gmail.com'
+	});
+	res.end();
+});
+
+app.post('/route/update', function (req, res) {
+	console.log('updating');
+	if (!req.user) {
+		// TODO Allow user to be informed their session has timed out
+		return res.redirect("/youveBeenLoggedOut");
+	}
+
+	Route.findById(req.body.routeId).populate('driver').exec(function (err, route) {
+		if (route.driver._id.toString() != req.user._id.toString()) {
+			console.log('hacker', route.driver._id, req.user._id);
+			return res.end("nice try hacker");
+		}
+
+		var updating = req.body.updating;
+		var allowedKeys = ["origin", "destination", "seats", "date", "time"];
+
+		if (!_.includes(allowedKeys, updating)) {
+			return res.end("failure");
+		}
+
+		var allRiders = [];
+		for (var i = 0; i < route.riders.length; i++) {
+			allRiders.push(route.riders[i]);
+		}
+		for (var i = 0; i < route.confirmedRiders.length; i++) {
+			allRiders.push(route.confirmedRiders[i]);
+		}
+		User.find({ _id: { $in: allRiders } }, function (err, riders) {
+			riders.forEach(function (rider) {
+				mail.sendMail({
+					recipient: rider,
+					route: route,
+					changed: updating,
+					notifyRider: {
+						infoChanged: true
+					}
+				});
+			});
+		});
+
+		if (updating == "time") {
+			var t = req.body[updating];
+			var parts = t.split(":");
+			var s = parseInt(parts[0]);
+			if (!isNaN(s)) {
+				if (s == 0) {
+					t = "12:" + parts[1] + " AM";
+				} else if (s < 12) {
+					t += " AM";
+				} else if (s == 12) {
+					t += " PM";
+				} else {
+					if (parts.length > 1) {
+						t = s - 12 + ":" + parts[1] + " PM";
+					}
+				}
+			}
+			req.body[updating] = t;
+		}
+		if (req.body[updating] && req.body[updating] != "") {
+			route[updating] = req.body[updating];
+		}
+
+		route.save(function (err) {
+			if (err) {
+				console.log(err);
+			}
+			res.end();
+		});
+	});
 });
 
 // For testing purposes only
@@ -339,31 +794,34 @@ app.get('/rider', function (req, res) {
 	res.render('partials/driver_input');
 });
 
-app.get('/profile', function (req, res) {
-	res.send("hello");
-});
+function random(len) {
+	var a = new Array(len);
+	var ranges = [[48, 10], [65, 26], [97, 26]],
+	    total = 62;
+	for (var i = 0; i < len; i++) {
+		var random = parseInt(Math.random() * total);
+		for (var n = 0; n < ranges.length; n++) {
+			if (random < ranges[n][1]) {
+				a[i] = String.fromCharCode(ranges[n][0] + random);
+				break;
+			}
+			random -= ranges[n][1];
+		}
+	}
 
-app.get('/auth/logout', function (req, res) {
-	req.logout();
-	res.redirect("/");
-});
+	return a.join('');
+}
 
-app.get('/auth/facebook', function (req, res, next) {
-	console.log('/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect));
-	passport.authenticate('facebook', { callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect) }, { scope: ["public_profile,email"] })(req, res, next);
-});
+app.post('/emailsubscribe', function (req, res) {
+	var subscriber = EmailSubscribe({
+		email: req.body.email
+	});
 
-app.get('/auth/facebook/callback/', function (req, res, next) {
-	console.log('/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect));
-	passport.authenticate('facebook', {
-		callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect),
-		successRedirect: req.query.redirect,
-		failureRedirect: '/'
-	})(req, res, next);
+	subscriber.save(function (err) {
+		if (err) throw err;
+		return res.redirect("/");
+	});
 });
-app.get('/logout', function (req, res) {});
-
-app.get('/rider/', function (req, res) {});
 
 app.listen(app.get('port'), function () {
 	console.log('running on port', app.get('port'));
