@@ -62,7 +62,7 @@ Use javascript to input into textarea
         <h4 class="modal-title">Rider added</h4>
       </div>
       <div class="modal-body">
-        Thanks for adding <span id="addedRider"></span>. Sit tight while <span id="riderPronounHeShe"></span> pays <span id="riderPronounHisHer"></span> initial deposit.
+        Thanks for adding <span id="addedRider"></span>. Sit tight while <span id="riderPronounHeShe"></span> pays <span id="riderPronounHisHer"></span> initial deposit. We'll let you know when he does!
       </div>
       <div class="modal-footer">
         <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
@@ -144,23 +144,23 @@ Use javascript to input into textarea
         <form class="row" action="rider"></form>
         <% if (user) { %>
           <% if (isDriver && view != "rider") { %>
-            <div class="panel panel-default" >
-              <div class="panel-heading" id="link-panel">
-                <div class="col-md-4">
+            <div class="panel panel-default row-fluid" >
+              <div class="panel-heading" id="link-panel" >
+                <div class="col-md-4 span4" >
                     <a class="btn btn-md" onclick="toggleShareableLink()" href="javascript:void(0);">
                       <span id="getLinkText">Copy link</span>  <span class="glyphicon glyphicon-paperclip" > </span>
                     </a>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 span4" >
                     <a class="btn btn-md" target="_blank" href="/route?id=<%= routeData.shortId || routeData._id %>&view=rider">
                       <span id="getLinkText">View as Rider</span>
                     </a>
                 </div>
-                <div class="col-md-4" id="copy-link" align="right">
+                <div class="col-md-4 span4" id="copy-link" align="right">
                     <a class="btn btn-md" onclick="showFBModal()" href="javascript:void(0);"> Show Post </a>
                 </div>
               </div>
-              <div id="shareableLink" class="panel-body getlink-container" style="display:none">
+              <div id="shareableLink" class="panel-body getlink-container" >
                   <input onClick="select()" class=" form-control" readonly="readonly" value=""> </input>
               </div>
             </div>
