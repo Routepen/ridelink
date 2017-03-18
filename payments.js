@@ -38,7 +38,7 @@ module.exports = {
             route.markModified("riderStatus");
             route.save(function(err) {
               if (err) { return res.end(err.toString()); }
-              res.redirect('/route?id=' + (route.shortId || route.id));
+              res.redirect('/route?id=' + (route.shortId || route.id) + "&status=paymentConfirmed");
             });
 
             mail.sendMail({

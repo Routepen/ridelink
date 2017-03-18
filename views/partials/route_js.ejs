@@ -42,12 +42,8 @@
       });
     }
 
-    console.log(waypoints);
-    console.log(routeData);
-
     me = this;
 
-    console.log("routing from", routeData.origin, "to", routeData.destination);
     this.directionsService.route({
       origin: routeData.origin,
       destination:  routeData.destination,
@@ -56,7 +52,6 @@
       optimizeWaypoints: true
     }, function(response, status) {
       if (status === 'OK') {
-        console.log(response.routes[0].warnings);
         me.directionsDisplay.setDirections(response);
         if (callback) callback();
       } else {
@@ -82,15 +77,13 @@
       allRiders.push(rider);
     }
 
-    console.log("all riders len", allRiders.length);
     var me = this;
     allRiders.forEach(function(rider) {
-      console.log(routeData.dropOffs[rider._id]);
       me.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
         contentString = '<div><a href="' + rider.facebook.link + '">' + rider.facebook.name + '</a></div>';
 
         <% if (isDriver && view != "rider") { %>
-          if (!rider.confirmed) {
+          if (!rider.confirmed && routeData.confirmedRiders.length < routeData.seats) {
             contentString += '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
           }
         <% } %>
@@ -111,8 +104,6 @@
             title: rider.facebook.name
           });
         }
-
-        console.log(markers[riderId], results[0].geometry.location);
 
         markers[riderId].setPosition(results[0].geometry.location);
 
@@ -381,15 +372,14 @@
 
       mapHandler.setMarkers();
       setUpTable();
+      $('#numConfirmedRiders').html(routeData.confirmedRiders.length);
 
       $(btn).button('reset');
       $('#confirmAddRider').modal('hide');
-      console.log(data, text);
     });
   }
 
   function riderLocationChanged() {
-    console.log("changed");
     var userId = "<%- ( user ? user : {_id:''} )._id %>";
     if (userId == routeData.driver._id) {
       alert("You can't sign up for your own ride");
@@ -509,7 +499,6 @@
       var span = textDiv.find('span');
       var input = editableDiv.find('input');
 
-      console.log(id);
       if (id == "dropOff") {
         <% if (isRider) { %>
           input.val(span.html().trim());
@@ -528,7 +517,6 @@
   }
 
   function editableDone(submit, id) {
-    console.log('editableDone');
     selector = "#" + id;
     var textDiv = $(selector + 'Text');
     var editableDiv = $(selector + 'TextEditable');
@@ -547,6 +535,13 @@
             $("#lessThanZeroSeats").modal('show');
             input.val(routeData.confirmedRiders.length);
             toSet = 0;
+            newValue = routeData.confirmedRiders.length;
+          }
+          if (toSet == 0) {
+            $('#rideIsFull').show();
+          }
+          else {
+            $('#rideIsFull').hide();
           }
         }
         if (id == "time") {
@@ -577,7 +572,9 @@
         data[id] = newValue;
 
         $.post("/route/update", data, function() {
-
+          routeData[id] = newValue;
+          setUpTable();
+          mapHandler.setMarkers();
         });
       }
       else {
@@ -618,6 +615,7 @@
 
     var spanClass = "<%= isDriver  && view != "rider" ? "editableInput" : "" %>";
     if (status == "Confirmed" || status == "Paid") { spanClass = ""; }
+    if (status != "Awaiting payment" && routeData.confirmedRiders.length >= routeData.seats) { spanClass = ""; }
 
     return '<div class="form-inline editableform">' +
       '<div id="tr' + rider._id + 'TextEditable" style="display:none">' +
@@ -634,7 +632,10 @@
   function initializeTdElement(rider, status) {
     var divId = 'tr' + rider._id + 'Text';
     var editableId = divId + 'Editable';
+    console.log("initing", document.getElementById(divId));
+    console.log($('#' + divId + '>span'));
     $('#' + divId + '>span').click(function() {
+      console.log('clicked');
       $('#' + divId).hide();
       $('#' + editableId).show();
     });
@@ -648,6 +649,7 @@
   }
 
   function setUpTable() {
+    console.log("setting up table");
     var table = document.getElementById("tableDiv");
     if (routeData.confirmedRiders.length + routeData.riders.length == 0) {
       //$(table).hide();
@@ -663,7 +665,7 @@
     var tbody = document.getElementById("riderTable");
     tbody.innerHTML = "";
 
-    for (var i = 0; i < routeData.confirmedRiders.length; i++) {
+    routeData.confirmedRiders.forEach(function(rider, i) {
       var rider = routeData.confirmedRiders[i];
       var color = "green", title="confirmed";
       var status = "";
@@ -677,23 +679,31 @@
         }
       }
 
-      tbody.innerHTML += '<tr class="riderElement" onclick="console.log(\'hi\');" id="rider' + rider._id + '">' +
+      tbody.innerHTML += '<tr class="riderElement" id="rider' + rider._id + '">' +
           "<td> " + (i+1) + " </td>" +
           "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
           '<td> ' + getTdElement(rider, status) + '</td>' +
           "</tr>";
+    });
 
-        <% if (isDriver && view != "rider") { %>
-          if (status != "Paid") {
-            initializeTdElement(rider, status);
-          }
-        <% } %>
+    routeData.confirmedRiders.forEach(function(rider) {
+      <% if (isDriver && view != "rider") { %>
+        if (status != "Paid") {
+          initializeTdElement(rider, status);
+        }
+      <% } %>
+    });
+
+
+    var waitlisted = <%= routeData.isWaitlisted == true %>;
+    if (waitlisted && routeData.riders.length > 0) {
+      tbody = document.getElementById("waitlistRiderTable");
+      tbody.innerHTML = "";
+      $('#waitListTable').show();
     }
-
-    if (routeData.seats <= routeData.confirmedRiders.length && routeData.riders.length == 0) {
-      tbody.innerHTML += "<hr/>";
+    else {
+      $('#waitListTable').hide();
     }
-
 
     for (var i = 0; i < routeData.riders.length; i++) {
       var rider = routeData.riders[i];
@@ -707,7 +717,9 @@
           '</td>' +
         '</tr>';
 
-      <% if (isDriver && view != "rider") { %> initializeTdElement(rider, status); <% } %>
+      <% if (isDriver && view != "rider") { %>
+        if (routeData.confirmedRiders.length < routeData.seats) { initializeTdElement(rider, status); }
+      <% } %>
     }
   }
 
@@ -733,6 +745,12 @@
     $('#selfLink')[0].href =  "/route?id=<%= routeData.shortId || routeData._id %>";
     $("#facebookModal").modal('toggle');
     $('#facebookModal').on('hidden.bs.modal', showAvaliableModals);
+  }
+
+  function showPaymentConfirmed() {
+    $("#paymentConfirmed").modal('show');
+    window.history.pushState('RoutePen', 'RoutePen', '/route?id=<%= routeData.shortId || routeData._id %>');
+    $('#paymentConfirmed').on('hidden.bs.modal', showAvaliableModals);
   }
 
   function showsetUpPaymentModal() {
@@ -812,7 +830,7 @@
     <% if (confirmedRider) { %>
       var d = new Date(routeData.riderStatus["<%= user._id %>"].confirmedOn);
       d.setDate(d.getDate() + 1);
-      d.setHours(d.getHours() + 4);
+      d.setHours(d.getHours() - 6);
       var ms = d - Date.now();
 
       $("#countDown").html(msToTime(ms));
@@ -827,7 +845,6 @@
   updateClock();
 
   <% if (isRider && !confirmedRider) { %>
-    console.log("showing");
     $('#cancelRequestButton').css('visibility', 'visible');
   <% } %>
 
@@ -838,6 +855,10 @@
   <% if (!opened && isDriver && view != "rider") { %>
     modals.push(showFBModal);
   <% } %>
+  <% if (paymentConfirmed) { %>
+    modals.push(showPaymentConfirmed);
+  <% } %>
+
 
   function showAvaliableModals() {
     if (modals.length > 0) {
