@@ -115,7 +115,7 @@ app.get('/route', function (req, res) {
 		var data = {
 			routeId: route._id,
 			user: req.user,
-			userId, userId,
+			userId: userId,
 			routeData: route,
 			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,

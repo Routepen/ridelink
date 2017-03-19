@@ -127,19 +127,19 @@ Use javascript to input into textarea
         <form class="row" action="rider"></form>
         <% if (user) { %>
           <% if (isDriver && view != "rider") { %>
-            <div class="panel panel-default row-fluid" >
-              <div class="panel-heading" id="link-panel" >
-                <div class="col-md-4 span4" >
+            <div class="panel panel-default" >
+              <div class="panel-heading panel-button" id="link-panel" style="overflow:hidden; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between;"">
+                <div class="col-md-4 span4" style="display: inline-block; width: calc(1/3*100% - (1 - 1/3)*10px);">
                     <a class="btn btn-md" onclick="toggleShareableLink()" href="javascript:void(0);">
                       <span id="getLinkText">Copy link</span>  <span class="glyphicon glyphicon-paperclip" > </span>
                     </a>
                 </div>
-                <div class="col-md-4 span4" >
+                <div class="col-md-4 span4" style="display:inline-block; width: calc(1/3*100% - (1 - 1/3)*10px);">
                     <a class="btn btn-md" target="_blank" href="/route?id=<%= routeData.shortId || routeData._id %>&view=rider">
                       <span id="getLinkText">View as Rider</span>
                     </a>
                 </div>
-                <div class="col-md-4 span4" id="copy-link" align="right">
+                <div class="col-md-4 span4" id="copy-link" align="right" style="display:inline-block; width: calc(1/3*100% - (1 - 1/3)*10px);">
                     <a class="btn btn-md" onclick="showFBModal()" href="javascript:void(0);"> Show Post </a>
                 </div>
               </div>
