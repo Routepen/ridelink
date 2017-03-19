@@ -115,7 +115,7 @@ app.get('/route', function (req, res) {
 		var data = {
 			routeId: route._id,
 			user: req.user,
-			userId, userId,
+			userId: userId,
 			routeData: route,
 			routeDataString: JSON.stringify(route, null, 4),
 			url: req.url,
@@ -125,7 +125,8 @@ app.get('/route', function (req, res) {
 			opened: opened,
 			view: req.query.view || "",
 			action: req.query.action || "",
-			riderId: req.query.riderId || ""
+			riderId: req.query.riderId || "",
+			paymentConfirmed: req.query.status == "paymentConfirmed"
 		};
 
 		res.render('route', data);
@@ -380,6 +381,10 @@ app.post('/route/confirmrider', function (req, res) {
 			return res.end("nice try hacker");
 		}
 
+		if (route.confirmedRiders.length >= route.seats) {
+			return res.end("failure");
+		}
+
 		for (var i = 0; i < route.riders.length; i++) {
 			if (route.riders[i].id == req.body.userId) {
 				route.riders.splice(i, 1);
@@ -401,6 +406,9 @@ app.post('/route/confirmrider', function (req, res) {
 			route.riderStatus[req.body.userId].confirmedOn = new Date(Date.now());
 			route.riderStatus[req.body.userId].onWaitlist = false;
 			route.markModified('riderStatus');
+			if (route.confirmedRiders.length >= route.seats) {
+				route.isWaitlisted = true;
+			}
 		}
 
 		User.findById(req.body.userId, function (err, rider) {
@@ -427,8 +435,7 @@ app.post('/route/confirmrider', function (req, res) {
 			if (err) {
 				return res.end(err.toString());
 			}
-
-			res.redirect("/route?id=" + (route.shortId || route._id));
+			res.end("success");
 		});
 	});
 });
@@ -513,7 +520,8 @@ app.post('/route/new', function (req, res) {
 			confirmedRiders: [],
 			dropOffs: {},
 			inconvenience: req.body.charge,
-			requireInitialDeposit: req.body.requireInitialDeposit == "on"
+			requireInitialDeposit: req.body.requireInitialDeposit == "on",
+			isWaitlisted: false
 		});
 	} catch (e) {
 		res.status(400);
