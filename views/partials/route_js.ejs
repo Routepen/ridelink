@@ -730,7 +730,7 @@
     });
 
 
-    var waitlisted = <%= routeData.isWaitlisted == true %>;
+    var waitlisted = routeData.confirmedRiders.length >= routeData.seats;
     if (waitlisted && routeData.riders.length > 0) {
       tbody = document.getElementById("waitlistRiderTable");
       tbody.innerHTML = "";
@@ -740,8 +740,7 @@
       $('#waitListTable').hide();
     }
 
-    for (var i = 0; i < routeData.riders.length; i++) {
-      var rider = routeData.riders[i];
+    routeData.riders.forEach(function(rider, i) {
       var status = "Ride Requested"
 
       tbody.innerHTML += '<tr class="riderElement" id="rider' + routeData.riders[i]._id + '">' +
@@ -751,11 +750,13 @@
             getTdElement(rider, status) +
           '</td>' +
         '</tr>';
+    });
 
-      <% if (isDriver && view != "rider") { %>
+    <% if (isDriver && view != "rider") { %>
+      routeData.riders.forEach(function(rider) {
         if (routeData.confirmedRiders.length < routeData.seats) { initializeTdElement(rider, status); }
-      <% } %>
-    }
+      });
+    <% } %>
   }
 
   function hightlightInTable(riderId) {

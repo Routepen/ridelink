@@ -70,8 +70,7 @@
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
                     <br>
-                    <label style="font-size: 16px; padding-right: 10px;">Time</label>
-                    <input id="time" name="time" class="controls" type="time" placeholder="Time..." onPaste=""
+                    <input id="time" name="time" class="controls" type="text" placeholder="Time..." onPaste=""
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }" style="box-shadow:none">
 
                     <br><br>
@@ -181,7 +180,7 @@
     $(function () {
         $("#date").datepicker();
     });
-    //$("#time").timepicker();
+    $("#time").timepicker();
 
     /*
      var inputs = document.querySelectorAll('input[name="origin"], input[name="destination"], input[name="seats"], input[name="date"], input[name="num-seats"]');
