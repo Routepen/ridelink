@@ -357,7 +357,7 @@
 
   function addOrUpdateRider(btn) {
     $(btn).button('loading');
-    $('#cancelRequestButton').css('visibility', 'visible');
+    $('#cancelRequestButton').show();
 
     var user = <%- user ? JSON.stringify(user) : '{}'%>
     var userId = user._id;
@@ -880,7 +880,7 @@
   updateClock();
 
   <% if (isRider && !confirmedRider) { %>
-    $('#cancelRequestButton').css('visibility', 'visible');
+    $('#cancelRequestButton').show();
   <% } %>
 
   modals = [];
