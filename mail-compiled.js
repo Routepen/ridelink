@@ -26,16 +26,24 @@ function sendMail(options) {
     if (options.notifyRider.confirmed) {
       // TODO add oneclick payment button
 
-      var initialDepositText = options.route.requireInitialDeposit ? "There's limited spots, so be sure to confirm quickly by putting up an initial deposit!" + " You have 18 hours to secure your spot before someone else on the waitlist deserves it." + " Go to " + domain + "/route?id=" + options.route._id + " here to secure your spot." : '';
+      if (options.route.requireInitialDeposit) {
+        var initialDepositText = options.route.requireInitialDeposit ? "There's limited spots, so be sure to confirm quickly by putting up an initial deposit!" + " You have 18 hours to secure your spot before someone else on the waitlist deserves it." + " Go to " + domain + "/route?id=" + options.route._id + " here to secure your spot." : '';
 
-      var initialDepositHTML = options.route.requireInitialDeposit ? "There's limited spots, so be sure to confirm quickly by putting up an initial deposit!" + " You have <b> 18 hours </b> to secure your spot before someone else on the waitlist deserves it." + " Click <a href=\"" + domain + "/route?id=" + options.route._id + "&action=pay\">here</a> to secure your spot." : '';
+        var initialDepositHTML = options.route.requireInitialDeposit ? "There's limited spots, so be sure to confirm quickly by putting up an initial deposit!" + " You have <b> 18 hours </b> to secure your spot before someone else on the waitlist deserves it." + " Click <a href=\"" + domain + "/route?id=" + options.route._id + "&action=pay\">here</a> to secure your spot." : '';
 
-      var cancelLink = "<a href=\"" + domain + "/route?id=" + options.route._id + "&action=cancel\">here</a>";
+        var cancelLink = "<a href=\"" + domain + "/route?id=" + options.route._id + "&action=cancel\">here</a>";
 
-      subject = "You've been confirmed";
-      text = "Hi " + recipientName + ",\n\n" + "Awesome! Congrats, " + driversName + " wants to take you on a ride " + date + " at " + time + ". Message them for pickup location details. " + initialDepositText + " \n\n" + "Also don't worry, we're not going to take your money and run :) You'll get a full refund if the driver doesn't actually show up. After the ride is over, we'll send you an email asking if " + driversName + " actually showed up.\n\n" + "It's important to cancel if you have decided not to go with them! It's only fair to the poor souls on the waitlist :)\n\n" + "Best,\n" + "Routepen Team";
+        subject = "You've been confirmed";
+        text = "Hi " + recipientName + ",\n\n" + "Awesome! Congrats, " + driversName + " wants to take you on a ride " + date + " at " + time + ". Message them for pickup location details. " + initialDepositText + " \n\n" + "Also don't worry, we're not going to take your money and run :) You'll get a full refund if the driver doesn't actually show up. After the ride is over, we'll send you an email asking if " + driversName + " actually showed up.\n\n" + "It's important to cancel if you have decided not to go with them! It's only fair to the poor souls on the waitlist :)\n\n" + "Best,\n" + "Routepen Team";
 
-      html = "<span>Hi " + recipientName + ",</span><br/><br/>" + "<span>Awesome! Congrats, " + driversName + " wants to take you on a ride " + date + " at " + time + ". Message them for pickup location details." + initialDepositHTML + "</span><br/><br/>" + "<span>Also don't worry, we're not going to take your money and run :) You'll get a full refund if the driver doesn't actually show up. After the ride is over, we'll send you an email asking if " + driversName + " actually showed up.</span><br/><br/>" + "<span>It's important to cancel " + cancelLink + " if you have decided not to go with them! It's only fair to the poor souls on the waitlist :)</span><br/><br/>" + "<span>Best,</span><br/>" + "<span>Routepen Team</span>";
+        html = "<span>Hi " + recipientName + ",</span><br/><br/>" + "<span>Awesome! Congrats, " + driversName + " wants to take you on a ride " + date + " at " + time + ". Message them for pickup location details." + initialDepositHTML + "</span><br/><br/>" + "<span>Also don't worry, we're not going to take your money and run :) You'll get a full refund if the driver doesn't actually show up. After the ride is over, we'll send you an email asking if " + driversName + " actually showed up.</span><br/><br/>" + "<span>It's important to cancel " + cancelLink + " if you have decided not to go with them! It's only fair to the poor souls on the waitlist :)</span><br/><br/>" + "<span>Best,</span><br/>" + "<span>Routepen Team</span>";
+      } else {
+        var fbLink = '<a href="' + options.route.driver.facebook.link + '">here</a>';
+
+        text = "Hi " + recipientName + ",\n\n" + "Congrats, you've been confirmed by " + driversName + "! Hope you enjoy your ride!\n\n" + "Click here to message them if you have any further questions.\n\n" + "Best,\n" + "Routepen Team";
+
+        html = "<span>Hi " + recipientName + ",</span><br/><br/>" + "<span>Congrats on fully confirming the ride with " + driversName + ". Hope you enjoy your ride</span><br/><br/>" + "Click " + fbLink + " to message them if you have any further questions.<br/><br/>" + "<span>Best</span><br/>" + "<span>Routepen Team</span>";
+      }
     }
     if (options.notifyRider.paid) {
       subject = "Payment Confirmation";
@@ -62,12 +70,21 @@ function sendMail(options) {
       html = "<span>Hi " + recipientName + ",</span><br/><br/>" + "<span>You've now been added to " + driversName + "'s waitlist. We'll send you an email if you get off the waitlist, so sit tight!</span><br/><br/>" + "<span>Best,</span><br/><br/>" + "<span>Routepen Team</span>";
     }
     if (options.notifyRider.offWaitlist) {
-      text = "Hi " + recipientName + ",\n\n" + "Holy Moly you made it off the waitlist for " + driversName + "'s ride! Now all you have to do is secure your spot by putting up an initial deposit here. <b> You have 18 hours to do it before someone else on the waitlist's takes it! </b> We have to be fair to everybody :).\n\n" + "Also, it's important to cancel here if you have decided not to go with them! It's only fair to the poor souls waiting on the waitlist.\n\n" + "Best\n" + "Routepen Team";
+      if (options.route.requireInitialDeposit) {
+        text = "Hi " + recipientName + ",\n\n" + "Holy Moly you made it off the waitlist for " + driversName + "'s ride! Now all you have to do is secure your spot by putting up an initial deposit here. <b> You have 18 hours to do it before someone else on the waitlist's takes it! </b> We have to be fair to everybody :).\n\n" + "Also, it's important to cancel here if you have decided not to go with them! It's only fair to the poor souls waiting on the waitlist.\n\n" + "Best\n" + "Routepen Team";
 
-      var depositLink = "<a href=\"" + domain + "/route?id=" + options.route._id + "&action=deposit\">here</a>";
-      var cancelLink = "<a href=\"" + domain + "/route?id=" + options.route._id + "&action=cancel\">here</a>";
+        var depositLink = "<a href=\"" + domain + "/route?id=" + options.route._id + "&action=deposit\">here</a>";
+        var cancelLink = "<a href=\"" + domain + "/route?id=" + options.route._id + "&action=cancel\">here</a>";
 
-      html = "<span>Hi " + recipientName + ",</span><br/><br/>" + "<span>Holy Moly you made it off the waitlist for " + driversName + "'s ride! Now all you have to do is secure your spot by putting up an initial deposit " + depositLink + ". <b> You have 18 hours to do it before someone else on the waitlist's takes it! </b> We have to be fair to everybody :).</span><br/><br/>" + "<span>Also, it's important to cancel " + cancelLink + " if you have decided not to go with them! It's only fair to the poor souls waiting on the waitlist.</span><br/><br/>" + "<span>Best</span><br/>" + "<span>Routepen Team</span>";
+        html = "<span>Hi " + recipientName + ",</span><br/><br/>" + "<span>Holy Moly you made it off the waitlist for " + driversName + "'s ride! Now all you have to do is secure your spot by putting up an initial deposit " + depositLink + ". <b> You have 18 hours to do it before someone else on the waitlist's takes it! </b> We have to be fair to everybody :).</span><br/><br/>" + "<span>Also, it's important to cancel " + cancelLink + " if you have decided not to go with them! It's only fair to the poor souls waiting on the waitlist.</span><br/><br/>" + "<span>Best</span><br/>" + "<span>Routepen Team</span>";
+      } else {
+
+        var fbLink = '<a href="' + options.route.driver.facebook.link + '">here</a>';
+
+        text = "Hi " + recipientName + ",\n\n" + "Congrats, you've been confirmed by " + driversName + "! Hope you enjoy your ride!\n\n" + "Click here to message them if you have any further questions.\n\n" + "Best,\n" + "Routepen Team";
+
+        html = "<span>Hi " + recipientName + ",</span><br/><br/>" + "<span>Congrats on fully confirming the ride with " + driversName + ". Hope you enjoy your ride</span><br/><br/>" + "Click " + fbLink + " to message them if you have any further questions.\n\n" + "<span>Best</span><br/>" + "<span>Routepen Team</span>";
+      }
     }
     if (options.notifyRider.rideOver) {
       // TODO: Ask if ride happend and for driver ratings
