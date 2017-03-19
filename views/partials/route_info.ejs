@@ -62,7 +62,11 @@ Use javascript to input into textarea
         <h4 class="modal-title">Rider added</h4>
       </div>
       <div class="modal-body">
-        Thanks for adding <span id="addedRider"></span>. Sit tight while <span id="riderPronounHeShe"></span> pays <span id="riderPronounHisHer"></span> initial deposit. We'll let you know when he does!
+        <% if (routeData.requireInitialDeposit) { %>
+          Thanks for adding <span id="addedRider"></span>. Sit tight while <span id="riderPronounHeShe"></span> pays <span id="riderPronounHisHer"></span> initial deposit. We'll let you know when he does!
+        <% } else { %>
+          Thanks for adding <span id="addedRider"></span>. Contact <span id="riderPronounHimHer"></span> to discuss details such as pickup loaction, bagage space etc.
+        <% } %>
       </div>
       <div class="modal-footer">
         <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
@@ -160,7 +164,7 @@ Use javascript to input into textarea
                     <a class="btn btn-md" onclick="showFBModal()" href="javascript:void(0);"> Show Post </a>
                 </div>
               </div>
-              <div id="shareableLink" class="panel-body getlink-container" >
+              <div id="shareableLink" class="panel-body getlink-container" style="display:none">
                   <input onClick="select()" class=" form-control" readonly="readonly" value=""> </input>
               </div>
             </div>
@@ -184,8 +188,8 @@ Use javascript to input into textarea
             </div>
             <div id="dropOffText" style="display:none">
               <% if (confirmedRider) { %>
-                <!--<text>You've got a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
-                <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>-->
+                <text>You've got a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
+                <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
               <% } else { %>
                 <text>You've requested a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
                 <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span><br/>
@@ -194,7 +198,7 @@ Use javascript to input into textarea
             <button id="cancelRequestButton" style="visibility:hidden;"
               class="btn btn-primary btn-sm" onclick="javascript:cancelRequest(this)">Cancel Request</button>
 
-            <% if (confirmedRider && !routeData.riderStatus[user._id].paid) { %>
+            <% if (confirmedRider && !routeData.riderStatus[user._id].paid && routeData.requireInitialDeposit) { %>
               <button type="button" class="btn btn-primary" onclick="showPaymentModal()">Pay initial deposit</button>
               <div style="font-size:18px" id="countDown">2hr</div>
               <div>The driver may drop you if you don't put up the intial deposit on time</div>

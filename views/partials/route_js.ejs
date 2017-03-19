@@ -229,6 +229,7 @@
       }
       $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
       setUpTable();
+      checkSeatsLeft();
       mapHandler.drawMap(function() {
         mapHandler.setMarkers();
       });
@@ -237,14 +238,33 @@
         if (addedRider.facebook.gender.toLowerCase() == "male") {
           $('#riderPronounHeShe').html('he');
           $('#riderPronounHisHer').html('his');
+          $('#riderPronounHimHer').html('him');
         }
         else {
           $('#riderPronounHeShe').html('she');
           $('#riderPronounHisHer').html('her');
+          $('#riderPronounHimHer').html('her');
         }
         $('#addedRider').html(addedRider.facebook.name.split(' ')[0]);
         $('#tellDriverToWait').modal('show');
       }
+    });
+  }
+
+  function markPaid(id, btn) {
+    var post = {
+      userId: id,
+      routeId: routeData._id
+    };
+
+    $(btn).button('loading');
+
+    $.post("/route/markpaid", post, function(data, textStatus) {
+      $(btn).button('reset');
+      routeData.riderStatus = routeData.riderStatus || {};
+      routeData.riderStatus[id] = routeData.riderStatus[id] || {};
+      routeData.riderStatus[id].paid = true;
+      setUpTable();
     });
   }
 
@@ -266,6 +286,7 @@
       }
       $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
       setUpTable();
+      checkSeatsLeft();
       mapHandler.drawMap(function() {
         mapHandler.setMarkers();
       });
@@ -596,29 +617,38 @@
 
   function getTdElement(rider, status) {
 
-    var innerButton = "";
+    var clickable = false;
+
+    var innerButton = "", button2 = "";
     var cancelButton =
       '<button type="button" class="btn btn-default btn-xs editable-cancel" style="margin-left: 10px" onclick="restoreTdElement(\'' + rider._id + '\')">' +
         'Cancel' +
       '</button>';
 
-    if (status == "Awaiting payment") {
+    if ((status == "Awaiting payment" && routeData.requireInitialDeposit) || (status == "Confirmed" && !routeData.requireInitialDeposit)) {
+      clickable = true;
       innerButton =
       '<button type="button" class="btn btn-primary btn-xs editable-submit" onclick="removeRider(\'' + rider._id + '\', this)">' +
         'Remove Rider' +
       '</button>';
     }
     if (status == "Ride Requested") {
+      clickable = true;
       innerButton =
       '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
     }
 
     var spanClass = "<%= isDriver  && view != "rider" ? "editableInput" : "" %>";
-    if (status == "Confirmed" || status == "Paid") { spanClass = ""; }
-    if (status != "Awaiting payment" && routeData.confirmedRiders.length >= routeData.seats) { spanClass = ""; }
+    if (!clickable) { spanClass = ""; }
+
+    if (!routeData.requireInitialDeposit && status == "Awaiting payment") {
+      button2 =
+      '<button class="btn btn-success btn-xs" style="margin-right: 10px;" onclick="javascript:markPaid(\'' + rider._id + '\', this)">Rider Paid</button>'
+    }
 
     return '<div class="form-inline editableform">' +
       '<div id="tr' + rider._id + 'TextEditable" style="display:none">' +
+        button2 +
         innerButton +
         cancelButton +
       '</div>' +
@@ -648,6 +678,8 @@
     $('#' + editableId).hide();
   }
 
+
+
   function setUpTable() {
     console.log("setting up table");
     var table = document.getElementById("tableDiv");
@@ -670,12 +702,15 @@
       var color = "green", title="confirmed";
       var status = "";
 
-      if (routeData.requireInitialDeposit) {
-        if (routeData.riderStatus[rider._id].paid) {
-          status="Paid";
+      if (routeData.riderStatus[rider._id].paid) {
+        status="Paid";
+      }
+      else {
+        if (routeData.requireInitialDeposit) {
+          status="Awaiting payment";
         }
         else {
-          status="Awaiting payment"
+          status = "Confirmed";
         }
       }
 
@@ -849,7 +884,7 @@
   <% } %>
 
   modals = [];
-  <% if (isDriver && !user.paymentSetup && view != "rider") { %>
+  <% if (isDriver && !user.paymentSetup && routeData.requireInitialDeposit && view != "rider") { %>
     modals.push(showsetUpPaymentModal);
   <% } %>
   <% if (!opened && isDriver && view != "rider") { %>

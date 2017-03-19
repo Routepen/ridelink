@@ -58,14 +58,14 @@
                     <input id="charge" name="charge" class="controls" type="text" placeholder="$ Cost per seat" onPaste=""
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }"><br>
                     <br>
-                    <input id="requireInitialDeposit" name="requireInitialDeposit" type="checkbox" checked> Require
+                    <!--<input id="requireInitialDeposit" name="requireInitialDeposit" type="checkbox" checked> Require
                     Initial Deposit <br>
                     <div font-size="8px" id="initialDepositNotes">
                       Initial deposits requires a 3 dollar additional charge for each rider
                       <br>
                       <a target="_blank" href="/html/faq/initialDeposit.html">What is this?</a>
                     </div>
-                    <br>
+                    <br>-->
                     <input id="date" name="date" class="controls" type="text" placeholder="Date..." onPaste=""
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
@@ -272,7 +272,7 @@
       var data = {
           seats: seats.value,
           charge: charge.value.replace('$', ''),
-          requireInitialDeposit: requireInitialDeposit.value,
+          //requireInitialDeposit: requireInitialDeposit.checked,
           date: date.value,
           time: time.value,
           origin: origin.value,
