@@ -70,9 +70,8 @@
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
                     <br>
-                    <label>Time:</label>
-                    <input id="time" name="time" class="controls" type="time" placeholder="Time..." onPaste=""
-                           onkeydown="if (event.keyCode == 13) { submitForm(); return false; }" style="box-shadow:none">
+                    <input id="time" name="time" class="controls" type="text" placeholder="Time..." onPaste=""
+                           onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
                     <br><br>
                     <input type="submit" id="create-route" class="btn btn-md btn-success" value="Create Route">
@@ -181,7 +180,12 @@
     $(function () {
         $("#date").datepicker();
     });
-    //$("#time").timepicker();
+    $("#time").timepicker({
+        template: false,
+        showInputs: false,
+        minuteStep: 5,
+        defaultTime: "8:00 AM"
+    });
 
     /*
      var inputs = document.querySelectorAll('input[name="origin"], input[name="destination"], input[name="seats"], input[name="date"], input[name="num-seats"]');
