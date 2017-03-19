@@ -70,7 +70,8 @@
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
                     <br>
-                    <input id="time" name="time" class="controls" type="text" placeholder="Time..." onPaste=""
+                    <label>Time:</label>
+                    <input id="time" name="time" class="controls" type="time" placeholder="Time..." onPaste=""
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }" style="box-shadow:none">
 
                     <br><br>
@@ -180,7 +181,7 @@
     $(function () {
         $("#date").datepicker();
     });
-    $("#time").timepicker();
+    //$("#time").timepicker();
 
     /*
      var inputs = document.querySelectorAll('input[name="origin"], input[name="destination"], input[name="seats"], input[name="date"], input[name="num-seats"]');
@@ -236,12 +237,12 @@
       var seats = document.getElementById("num-seats").value;
       var charge = document.getElementById("charge").value.replace('$', '');
       var date = document.getElementById("date").value;
-      var time = document.getElementById("time").value;
+      //var time = document.getElementById("time").value;
 
       if (!isNum(seats)) { return "Please enter a number for the number of people you can take"; }
       if (!isNum(charge)) { return "Please enter a number for the price per seat"; }
       if (date.split('/').length != 3) { return "Please enter a valid date"; }
-      if (time == "") { return "Please enter the time you are leaving"; }
+      //if (time == "") { return "Please enter the time you are leaving"; }
 
       return "";
     }
