@@ -5,11 +5,12 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var routeSchema = new Schema({
+    shortId: { type: String, unique: true },
     origin: String,
     destination: String,
     seats: Number,
     date: Date,
-    //date: {type: Date, default: Date.now},
+    time: String,
     driver: {
         type: Schema.ObjectId,
         ref: 'users'
@@ -18,21 +19,29 @@ var routeSchema = new Schema({
         type: Schema.ObjectId,
         ref: 'users'
     }],
+    confirmedRiders: [{
+        type: Schema.ObjectId,
+        ref: 'users'
+    }],
     dropOffs: Schema.Types.Mixed,
+    riderStatus: Schema.Types.Mixed,
     inconvenience: { type: [Number], default: 9999 },
+    requireInitialDeposit: Boolean,
     bailed: { type: [Boolean], default: false },
-
+    opened: { type: Boolean, default: false },
+    isWaitlisted: Boolean,
     created_at: Date
 });
-
-routeSchema.pre('save', function (next) {
+/*
+routeSchema.pre('save', function(next) {
     // if created_at doesn't exist, add to that field
-    if (!this.created_at) var currentDate = new Date();
-    this.created_at = currentDate;
+    if (!this.created_at)
+        var currentDate = new Date();
+        this.created_at = currentDate;
 
     next();
 });
-
+*/
 var Route = mongoose.model('routes', routeSchema);
 module.exports = Route;
 
@@ -53,4 +62,4 @@ module.exports = Route;
  });
  */
 
-//# sourceMappingURL=route-compiled.js.map
+//# sourceMappingURL=Route-compiled.js.map

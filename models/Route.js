@@ -29,7 +29,7 @@ var routeSchema = new Schema({
     requireInitialDeposit: Boolean,
     bailed: {type:[Boolean], default: false},
     opened: {type: Boolean, default: false},
-
+    isWaitlisted: Boolean,
     created_at: Date
 });
 /*
