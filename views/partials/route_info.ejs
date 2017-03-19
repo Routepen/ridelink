@@ -159,7 +159,7 @@ Use javascript to input into textarea
           <% if (isDriver && view != "rider") { %>
             <div class="panel panel-default" >
                 <!-- style="overflow:hidden; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-between;" -->
-              <div class="panel-heading panel-button btn-group" id="link-panel" >
+              <div class="panel-heading panel-button btn-group" id="link-panel" style="display: flex; justify-content: space-between">
                 <a class="btn btn-md" onclick="toggleShareableLink()" href="javascript:void(0);">
                     <span id="getLinkText">Copy link</span>  <span class="glyphicon glyphicon-paperclip" > </span>
                 </a>
@@ -327,25 +327,27 @@ Use javascript to input into textarea
           </div>
         </div>
 
-        <div class="form-inline editableform">
-          <div id="timeTextEditable" style="display:none">
-            <i class="material-icons" style="font-size:18px">event</i>
-            <input id="editTimeInput" type="time" class="form-control input-sm" value="<%= routeData.time %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'time'); }">
-            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'time')">
-              <i class="glyphicon glyphicon-ok"></i>
-            </button>
-            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'time')">
-              <i class="glyphicon glyphicon-remove"></i>
-            </button>
-          </div>
+        <% if (routeData.time != "") { %>
+          <div class="form-inline editableform">
+            <div id="timeTextEditable" style="display:none">
+              <i class="material-icons" style="font-size:18px">event</i>
+              <input id="editTimeInput" type="time" class="form-control input-sm" value="<%= routeData.time %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'time'); }">
+              <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'time')">
+                <i class="glyphicon glyphicon-ok"></i>
+              </button>
+              <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'time')">
+                <i class="glyphicon glyphicon-remove"></i>
+              </button>
+            </div>
 
-          <div id="timeText" style="">
-            <i class="material-icons" style="font-size:18px">access_time</i>
-            <span style="font-size:18px" class="<%= isDriver && view != "rider" ?'editableInput' : '' %>">
-              <%= routeData.time %>
-            </span>
+            <div id="timeText" style="">
+              <i class="material-icons" style="font-size:18px">access_time</i>
+              <span style="font-size:18px" class="<%= isDriver && view != "rider" ?'editableInput' : '' %>">
+                <%= routeData.time %>
+              </span>
+            </div>
           </div>
-        </div>
+        <% } %>
 
 
         <div id="costText" style="">
