@@ -488,22 +488,24 @@ app.post('/route/new', function (req, res) {
 	}
 
 	var t = req.body.time;
-	var parts = t.split(":");
-	var s = parseInt(parts[0]);
-	if (!isNaN(s)) {
-		if (s == 0) {
-			t = "12:" + parts[1] + " AM";
-		} else if (s < 12) {
-			t += " AM";
-		} else if (s == 12) {
-			t += " PM";
-		} else {
-			if (parts.length > 1) {
-				t = s - 12 + ":" + parts[1] + " PM";
+	if (t != "") {
+		var parts = t.split(":");
+		var s = parseInt(parts[0]);
+		if (!isNaN(s)) {
+			if (s == 0) {
+				t = "12:" + parts[1] + " AM";
+			} else if (s < 12) {
+				t += " AM";
+			} else if (s == 12) {
+				t += " PM";
+			} else {
+				if (parts.length > 1) {
+					t = s - 12 + ":" + parts[1] + " PM";
+				}
 			}
 		}
+		req.body.time = t;
 	}
-	req.body.time = t;
 
 	var newRoute;
 	try {
