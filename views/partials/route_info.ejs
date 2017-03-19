@@ -154,7 +154,7 @@ Use javascript to input into textarea
                 <a class="btn btn-md" onclick="toggleShareableLink()" href="javascript:void(0);">
                     <span id="getLinkText">Copy link</span>  <span class="glyphicon glyphicon-paperclip" > </span>
                 </a>
-                <a class="btn btn-md" target="_blank" href="/route?id=<%= routeData.shortId || routeData._id %>&view=rider">
+                <a class="btn btn-md" href="/route?id=<%= routeData.shortId || routeData._id %>&view=rider">
                     <span id="getLinkText">View as Rider</span>
                 </a>
                 <a class="btn btn-md" onclick="showFBModal()" href="javascript:void(0);"> Show Post </a>
@@ -206,8 +206,9 @@ Use javascript to input into textarea
                 <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span><br/>
               <% } %>
             </div>
-            <button id="cancelRequestButton" style="visibility:hidden;"
-              class="btn btn-primary btn-sm" onclick="javascript:cancelRequest(this)">Cancel Request</button>
+            <button id="cancelRequestButton" style="display:none;" class="btn btn-primary btn-sm" onclick="javascript:cancelRequest(this)">
+              Cancel Request
+            </button>
 
             <% if (confirmedRider && !routeData.riderStatus[user._id].paid && routeData.requireInitialDeposit) { %>
               <button type="button" class="btn btn-primary" onclick="showPaymentModal()">Pay initial deposit</button>
@@ -218,6 +219,12 @@ Use javascript to input into textarea
         <% } else {  %>
           <a href="/auth/facebook?redirect=<%= encodeURIComponent('/route?id=' + (routeData.shortId || routeData._id)) %>")>
             Login to Facebook to <%= routeData.confirmedRiders.length >= routeData.seats ? "join the waitlist" : "request a ride" %>
+          </a>
+        <% } %>
+
+        <% if (isDriver && view == "rider") { %>
+          <a class="btn btn-md" href="/route?id=<%= routeData.shortId || routeData._id %>">
+              <span id="getLinkText">View as Driver</span>
           </a>
         <% } %>
 
