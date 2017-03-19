@@ -780,6 +780,23 @@
     $('#selfLink')[0].href =  "/route?id=<%= routeData.shortId || routeData._id %>&view=rider";
     $("#facebookModal").modal('toggle');
     $('#facebookModal').on('hidden.bs.modal', showAvaliableModals);
+
+    function test() {
+      var node = document.getElementById("contentEditableMessageDiv");
+      node.focus();
+      var textNode = node.firstChild;
+      var caret = 10;
+      var range = document.createRange();
+      range.setStart(textNode, caret);
+      range.setEnd(textNode, caret);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    setTimeout(test, 500);
+
+
   }
 
   function showPaymentConfirmed() {
