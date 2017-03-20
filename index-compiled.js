@@ -213,7 +213,8 @@ app.post('/route/addrider', function (req, res) {
 		route.riderStatus = route.riderStatus || {};
 		route.riderStatus[userId] = {
 			paid: false,
-			onWaitlist: onWaitlist
+			onWaitlist: onWaitlist,
+			baggage: req.body.baggage
 		};
 		route.markModified('dropOffs');
 		route.markModified('riderStatus');
@@ -487,25 +488,24 @@ app.post('/route/new', function (req, res) {
 		date.setYear(rightNow.getYear() + 1900);
 	}
 
-	var t = req.body.time;
-	if (t != "") {
-		var parts = t.split(":");
-		var s = parseInt(parts[0]);
-		if (!isNaN(s)) {
-			if (s == 0) {
-				t = "12:" + parts[1] + " AM";
-			} else if (s < 12) {
-				t += " AM";
-			} else if (s == 12) {
-				t += " PM";
-			} else {
-				if (parts.length > 1) {
-					t = s - 12 + ":" + parts[1] + " PM";
-				}
-			}
-		}
-		req.body.time = t;
-	}
+	// var t = req.body.time;
+	// if (t != "") {
+	//   var parts = t.split(":");
+	//   var s = parseInt(parts[0]);
+	//   if (!isNaN(s)) {
+	//     if (s == 0) {
+	//       t =  "12:" + parts[1] + " AM";
+	//     }
+	//     else if (s < 12) { t += " AM"; }
+	//     else if (s == 12) { t += " PM"; }
+	//     else {
+	//       if (parts.length > 1) {
+	//           t = (s-12) + ":" + parts[1] + " PM";
+	//       }
+	//     }
+	//   }
+	//   req.body.time = t;
+	// }
 
 	var newRoute;
 	try {
@@ -523,7 +523,8 @@ app.post('/route/new', function (req, res) {
 			dropOffs: {},
 			inconvenience: req.body.charge,
 			requireInitialDeposit: false, //req.body.requireInitialDeposit,
-			isWaitlisted: false
+			isWaitlisted: false,
+			stops: req.body["stops[]"]
 		});
 	} catch (e) {
 		res.status(400);
@@ -741,9 +742,10 @@ app.post('/route/update', function (req, res) {
 		}
 
 		var updating = req.body.updating;
-		var allowedKeys = ["origin", "destination", "seats", "date", "time"];
+		var allowedKeys = ["origin", "destination", "seats", "date", "time", "stops[]"];
 
 		if (!_.includes(allowedKeys, updating)) {
+			console.log("key not allowed");
 			return res.end("failure");
 		}
 
@@ -787,7 +789,11 @@ app.post('/route/update', function (req, res) {
 			req.body[updating] = t;
 		}
 		if (req.body[updating] && req.body[updating] != "") {
-			route[updating] = req.body[updating];
+			var updating2 = updating;
+			if (updating == "stops[]") {
+				updating2 = "stops";
+			}
+			route[updating2] = req.body[updating];
 		}
 
 		route.save(function (err) {
