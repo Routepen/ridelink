@@ -95,6 +95,7 @@
 
     var mapInputsCorrect = false;
 
+    var mapHandler;
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
             mapTypeControl: false,
@@ -102,7 +103,7 @@
             zoom: 13
         });
 
-        new AutocompleteDirectionsHandler(map);
+        mapHandler = new AutocompleteDirectionsHandler(map);
     }
 
     function AutocompleteDirectionsHandler(map) {
@@ -143,7 +144,7 @@
             }
             if (mode === 'ORIG') {
                 me.originPlaceId = place.place_id;
-            } else {
+            } else if (mode == "DEST"){
                 me.destinationPlaceId = place.place_id;
             }
             me.route();
@@ -165,10 +166,25 @@
           origin = {'placeId': this.originPlaceId};
         }
 
+        var waypoints = [];
+        for (key in stopAutoCompletes) {
+          var place = stopAutoCompletes[key].getPlace();
+          if (!place) {
+            alert("Couldn't find " + $('#stop' + key + ">input").val());
+            return;
+          }
+          waypoints.push({
+            location: stopAutoCompletes[key].getPlace().name,
+            stopover: true,
+          });
+        }
+
         this.directionsService.route({
             origin: origin,
             destination: {'placeId': this.destinationPlaceId},
-            travelMode: this.travelMode
+            travelMode: this.travelMode,
+            waypoints: waypoints,
+            optimizeWaypoints: true
         }, function(response, status) {
             if (status === 'OK') {
                 mapInputsCorrect = true;
@@ -316,6 +332,8 @@
     function removeStop(num) {
       $('#stop' + num).remove();
       delete stopAutoCompletes[num];
+
+      mapHandler.route();
     }
 
     var count = 0;
@@ -339,6 +357,7 @@
       stops.append(div);
 
       stopAutoCompletes[count] = new google.maps.places.Autocomplete(stop[0], {placeIdOnly: true});
+      mapHandler.setupPlaceChangedListener(stopAutoCompletes[count]);
 
       stop.focus();
       count++;

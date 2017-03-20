@@ -42,6 +42,13 @@
       });
     }
 
+    for (key in stopLocations) {
+      waypoints.push({
+        location: stopLocations[key].find('span').html(),
+        stopover: true
+      });
+    }
+
     me = this;
 
     this.directionsService.route({
@@ -897,6 +904,119 @@
     <% } %>
   }
 
+  var stopLocations = {};
+  var count = 0;
+  function setUpStops() {
+    var stops = routeData.stops;
+    var stopsDiv = $('#stops');
+    count = stops.length;
+
+    for (var i = 0; i < count; i++) {
+      var div = $('<div></div>');
+      var onclick = "removeStop(" + i + ")";
+
+      <% if (isDriver && view != "rider") { %>
+        var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size:18px" onclick="' + onclick + '">remove_circle</i>';
+        var stop = $('<span style="font-size:18px" class="">' + stops[i] + '</span>');
+      <% } else {%>
+        var cancel = '';
+        var stop = $('<span style="margin-left: 22px; font-size:18px">' + stops[i] + '</span>');
+      <% } %>
+
+      stopLocations[i] = div;
+
+      div.attr('id', 'stop' + i);
+
+      div.append(cancel);
+      div.append(stop);
+
+      stopsDiv.append(div);
+    }
+  }
+
+  function addStop() {
+    var stops = $('#stops');
+    var id = "stop" + count;
+    console.log("id", id);
+    var onclick = "removeStop(" + count + ")";
+
+    var div = $('<div></div>');
+    var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size: 18px" onclick="' + onclick + '">remove_circle</i>';
+    var stop = $('<input id="origin-input" name="origin" class="stop-input controls"' +
+           'type="text" placeholder="Enter a stop..." onPaste=""' +
+           'onkeydown="if (event.keyCode == 13) { return false;}"' +
+           ' style="margin-left: 0px !important; padding-left: 0px !important">');
+
+    div.attr('id', id);
+
+    div.append(cancel);
+    div.append(stop);
+
+    stops.append(div);
+    stopLocations[count] = div;
+
+    var autocomplete = new google.maps.places.Autocomplete(stop[0], {placeIdOnly: true});
+    var c = count;
+    mapHandler.setupPlaceChangedListener(autocomplete, function() {
+      stopChanged(c);
+    });
+
+    stop.focus();
+    count++;
+  }
+
+  function removeStop(i) {
+    stopLocations[i].remove();
+    delete stopLocations[i];
+    sendStopsToServer();
+    mapHandler.drawMap();
+  }
+
+  function stopChanged(i) {
+    var stopDiv = $('#stop' + i);
+
+    var div = $('<div></div>');
+    var onclick = "removeStop(" + i + ")";
+    var newLocation = stopDiv.find('input').val();
+
+    <% if (isDriver && view != "rider") { %>
+      var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size:18px" onclick="' + onclick + '">remove_circle</i>';
+      var stop = $('<span style="font-size:18px" class="editableInput">' + newLocation + '</span>');
+    <% } else {%>
+      var cancel = '<i class="material-icons" style="padding-right:10px; font-size:18px">remove_circle</i>';
+      var stop = $('<span style="font-size:18px">' + newLocation + '</span>');
+    <% } %>
+
+    div.attr('id', 'stop' + i);
+
+    div.append(cancel);
+    div.append(stop);
+
+    stopLocations[i] = div;
+    stopDiv.replaceWith(div);
+    sendStopsToServer();
+
+    mapHandler.drawMap();
+  }
+
+  function sendStopsToServer() {
+    var stopList = [];
+    for (key in stopLocations) {
+      stopList.push(stopLocations[key].find('span').html());
+    }
+
+    var data = {
+      routeId: routeData._id,
+      stops: stopList,
+      updating: "stops[]"
+    }
+
+    $.post("/route/update", data, function(data, result) {
+
+    });
+  }
+
+  setUpStops();
   setUpTable();
   setUpEditability();
   setUpTextInfo();

@@ -742,9 +742,10 @@ app.post('/route/update', function(req, res) {
 		}
 
 		var updating = req.body.updating;
-		var allowedKeys = ["origin", "destination", "seats", "date", "time"];
+		var allowedKeys = ["origin", "destination", "seats", "date", "time", "stops[]"];
 
 		if (!_.includes(allowedKeys, updating)) {
+      console.log("key not allowed");
 			return res.end("failure");
 		}
 
@@ -783,7 +784,11 @@ app.post('/route/update', function(req, res) {
       req.body[updating] = t;
     }
     if (req.body[updating] && req.body[updating] != "") {
-      route[updating] = req.body[updating];
+      var updating2 = updating;
+      if (updating == "stops[]") {
+        updating2 = "stops";
+      }
+      route[updating2] = req.body[updating];
     }
 
 		route.save(function(err) {
