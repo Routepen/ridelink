@@ -197,7 +197,7 @@ Use javascript to input into textarea
               <form action="javascript:return false">
                 <span> <i class="material-icons">place</i> </span> <input id="pac-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter dropoff address..." value="<%=location %>" autofocus>
                 <input type="hidden" name="routeId" value="<%= routeId %>">
-                <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:riderLocationChanged()">
+                <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:mapHandler.rideRequested()">
                   <i class="glyphicon glyphicon-ok"></i>
                 </button>
                 <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:mapEditableDone(false, 'dropOff')">

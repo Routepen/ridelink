@@ -138,29 +138,62 @@
     });
   }
 
-  showRoute.prototype.setUpDropOff = function(map) {
-    this.dropOffInput = document.getElementById("pac-input");
-    var dropOffInput;
-    if (this.dropOffInput) {
-      dropOffAutocomplete = new google.maps.places.Autocomplete(
-            this.dropOffInput, {placeIdOnly: true});
+  var dropOffAutocomplete;
+  showRoute.prototype.rideRequested = function() {
+    <% if (user) { %>
+      console.log("a", dropOffAutocomplete);
+      var place = dropOffAutocomplete.getPlace();
 
-      var me = this;
-      this.setupPlaceChangedListener(dropOffAutocomplete, function() {
-        <% if (user) { %>
-          var place = dropOffAutocomplete.getPlace();
-          if (!place.place_id) {
-              window.alert("Please select an option from the dropdown list.");
-              return;
-          }
+      if (place && place.place_id) {
+        address == place.name;
+      }
+      else {
+        address = $('#pac-input').val();
+      }
 
-          riderLocationChanged(place);
-          setUpTable();
+      if (address == "") {
+          window.alert("Please select an option from the dropdown list.");
+          return;
+      }
 
-        <% } else { %>
-          window.location.replace("/auth/facebook?redirect=" + encodeURIComponent(window.location.href));
-        <% } %>
+      if (me.testMarker) {
+        me.testMarker.setMap(null);
+        me.testInfoWindow.close();
+      }
+
+      var onclick = "riderLocationChanged(); setUpTable()";
+
+      contentString = '<button class="btn btn-success btn-xs" onclick="' + onclick + '">Requst Ride</button>'
+
+
+      me.testInfoWindow = new google.maps.InfoWindow({
+        content: contentString
       });
+
+      me.geocoder.geocode( { 'address': address }, function(results, status) {
+        if (results.length == 0) {
+          window.alert("Please use autocomplete when choosing a location.");
+          return;
+        }
+        me.testMarker = new google.maps.Marker({
+          map: me.map,
+          position: results[0].geometry.location
+        });
+        me.testInfoWindow.open(me.map, me.testMarker);
+      });
+
+    <% } else { %>
+      window.location.replace("/auth/facebook?redirect=" + encodeURIComponent(window.location.href));
+    <% } %>
+  }
+
+  showRoute.prototype.setUpDropOff = function(map) {
+    dropOffInput = document.getElementById("pac-input");
+    if (dropOffInput) {
+      dropOffAutocomplete = new google.maps.places.Autocomplete(dropOffInput, {placeIdOnly: true});
+      console.log("Autocomplete", dropOffAutocomplete);
+
+      this.setupPlaceChangedListener(dropOffAutocomplete, this.rideRequested);
     }
 
     pickUpInput = document.getElementById("editOriginInput");
