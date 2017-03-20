@@ -249,6 +249,13 @@
 
   };
 
+  showRoute.prototype.hideTestMarker = function() {
+    if (me.testMarker) {
+      me.testMarker.setMap(null);
+      me.testInfoWindow.close();
+    }
+  }
+
 
   function confirmRider(id, btn) {
     var post = {
@@ -432,7 +439,11 @@
         routeData.dropOffs = routeData.dropOffs || {};
         routeData.dropOffs[userId] = address;
       }
+      routeData.riderStatus = routeData.riderStatus || {};
+      routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};
+      routeData.riderStatus[userId]['baggage'] = $('#sel1').val();
 
+      mapHandler.hideTestMarker();
       mapHandler.setMarkers();
       setUpTable();
       $('#numConfirmedRiders').html(routeData.confirmedRiders.length);
