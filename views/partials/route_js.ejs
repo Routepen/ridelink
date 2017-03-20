@@ -144,8 +144,9 @@
       console.log("a", dropOffAutocomplete);
       var place = dropOffAutocomplete.getPlace();
 
+      var address;
       if (place && place.place_id) {
-        address == place.name;
+        address = place.name;
       }
       else {
         address = $('#pac-input').val();
@@ -411,7 +412,8 @@
 
     data = {
       routeId: "<%= routeData._id %>",
-      address: address
+      address: address,
+      baggage: $('#sel1').val()
     };
 
     $.post("/route/addrider", data, function(data, text) {
@@ -764,6 +766,7 @@
           "<td> " + (i+1) + " </td>" +
           "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
           '<td> ' + getTdElement(rider, status) + '</td>' +
+          '<td> ' + routeData.riderStatus[rider._id].baggage + '</td>' +
           "</tr>";
     });
 
@@ -792,9 +795,8 @@
       tbody.innerHTML += '<tr class="riderElement" id="rider' + routeData.riders[i]._id + '">' +
           '<td>' + (i+1) + '</td>' +
           "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
-          '<td>' +
-            getTdElement(rider, status) +
-          '</td>' +
+          '<td>' + getTdElement(rider, status) + '</td>' +
+          '<td> ' + routeData.riderStatus[rider._id].baggage + '</td>' +
         '</tr>';
     });
 

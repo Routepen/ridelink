@@ -129,12 +129,20 @@ Use javascript to input into textarea
         <h4 class="modal-title" id="lessThanZeroSeatsTitle">Join Ride</h4>
       </div>
       <div class="modal-body">
-        Are you sure you want to request a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to
-        <span id="riderDropOff"></span>
+        How much baggage will you have
+        <div class="form-group">
+          <select class="form-control" id="sel1">
+            <option>None</option>
+            <option>A small bag</option>
+            <option>A large bag</option>
+            <option>A couple bags</option>
+            <option>Many bags</option>
+          </select>
+        </div>
       </div>
       <div class="modal-footer">
-        <input type="submit" class="btn btn-success" onclick="addOrUpdateRider(this)" value="Yes">
-        <input type="submit" class="btn btn-danger" data-dismiss="modal" value="No">
+        <input type="submit" class="btn btn-success" onclick="addOrUpdateRider(this)" value="Join">
+        <input type="submit" class="btn btn-danger" data-dismiss="modal" value="Cancel">
       </div>
     </div>
   </div>
@@ -373,6 +381,7 @@ Use javascript to input into textarea
                     <th>#</th>
                     <th> Rider </th>
                     <th> Status </th>
+                    <th> Baggage </th>
                 </tr>
                 </thead>
                 <tbody id="riderTable"></tbody>

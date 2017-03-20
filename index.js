@@ -211,7 +211,8 @@ app.post('/route/addrider', function(req, res) {
 		route.riderStatus = route.riderStatus || {};
 		route.riderStatus[userId] = {
 			paid: false,
-      onWaitlist: onWaitlist
+      onWaitlist: onWaitlist,
+      baggage: req.body.baggage
 		};
 		route.markModified('dropOffs');
 		route.markModified('riderStatus');
