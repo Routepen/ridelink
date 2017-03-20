@@ -23,6 +23,7 @@ var routeSchema = new Schema({
         type:Schema.ObjectId,
         ref:'users'
     }],
+    stops: [String],
     dropOffs: Schema.Types.Mixed,
     riderStatus: Schema.Types.Mixed,
     inconvenience: {type:[Number], default: 9999},

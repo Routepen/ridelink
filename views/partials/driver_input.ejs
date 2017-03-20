@@ -38,7 +38,10 @@
                            onkeydown="if (event.keyCode == 13) { return false;}"
                            value="UCSB, Santa Barbara, CA, United States">
                 </div>
-                <!--<input id="origin" type="text" name='origin' class="form-control" placeholder="Origin"> -->
+                <div id="stops"></div>
+                <button class="btn" style="width:200px; margin-left: 46px; background-color: white; color: #0c84e4" onclick="addStop(); return false;">
+                  Add Stop
+                </button>
                 <div>
                     <i class="material-icons" style="padding-left:10px">place</i>
                     <input autofocus id="destination-input" name="destination" class="controls" type="text"
@@ -272,6 +275,13 @@
       var email = document.getElementById("confirmed_email_input");
       var origin = document.getElementById("origin-input");
       var destination = document.getElementById("destination-input");
+      var stops = $("#stops");
+
+      var children = stops.children();
+      var waypoints = [];
+      for (var i = 0; i < children.length; i++) {
+          waypoints.push($(children[i]).find('input').val());
+      }
 
       var data = {
           seats: seats.value,
@@ -280,7 +290,8 @@
           date: date.value,
           time: time.value,
           origin: origin.value,
-          destination: destination.value
+          destination: destination.value,
+          stops: waypoints
       };
 
       var confirmedEmail = email.value;
@@ -299,6 +310,39 @@
         }
       })
       .error(function() { alert("Request failed. Try again later"); });
+    }
+
+    var stopAutoCompletes = {};
+    function removeStop(num) {
+      $('#stop' + num).remove();
+      delete stopAutoCompletes[num];
+    }
+
+    var count = 0;
+    function addStop() {
+      var stops = $('#stops');
+      var id = "stop" + count;
+      var onclick = "removeStop(" + count + ")";
+
+      var div = $('<div></div>');
+      var cancel = '<i class="material-icons clickable" style="padding-left:10px" onclick="' + onclick + '">remove_circle</i>';
+      var stop = $('<input id="origin-input" name="origin" class="stop-input controls"' +
+             'type="text" placeholder="Enter a stop..." onPaste=""' +
+             'onkeydown="if (event.keyCode == 13) { return false;}"' +
+             ' style="margin-left: 12px; padding-left: 12px">');
+
+      div.attr('id', id);
+
+      div.append(cancel);
+      div.append(stop);
+
+      stops.append(div);
+
+      stopAutoCompletes[count] = new google.maps.places.Autocomplete(stop[0], {placeIdOnly: true});
+
+      stop.focus();
+      count++;
+
     }
 
 </script>

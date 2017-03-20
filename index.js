@@ -511,7 +511,8 @@ app.post('/route/new', function (req, res) {
   		dropOffs: {},
   		inconvenience: req.body.charge,
   		requireInitialDeposit: false,//req.body.requireInitialDeposit,
-      isWaitlisted: false
+      isWaitlisted: false,
+      stops: req.body["stops[]"]
   	});
   }
   catch(e) {

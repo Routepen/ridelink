@@ -164,7 +164,8 @@ nav.navbar-no-landing a.btn.newroute:active {
 }
 
 #origin-input,
-#destination-input {
+#destination-input,
+.stop-input {
     /*background-color: #4285F4 !important;*/
     /*background-color: #fff; */
     font-family: Roboto;
@@ -174,10 +175,12 @@ nav.navbar-no-landing a.btn.newroute:active {
     padding: 0 11px 0 13px;
     text-overflow: ellipsis;
     width: 200px;
+    margin-bottom: 12px;
 }
 
 #origin-input:focus,
-#destination-input:focus {
+#destination-input:focus,
+.stop-input:focus {
     border-color: #4d90fe;
 }
 
@@ -424,5 +427,3 @@ select.form-control>option:hover {
 
 
 /* For route_info buttons */
-
-
