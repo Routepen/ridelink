@@ -65,14 +65,14 @@ nav li > a.btn.newroute {
     background: #37AAFF;
     color: white;
     text-align: center;
-    padding: 150px 0;
+    padding: 50px 0 0 ;
 }
 .first-landing h1 {
     color: white;
     font-weight: 700;
     font-size: 60px;
 }
-.first-landing h2 {
+.first-landing h4 {
     font-size: 25px;
     color: white;
     width: 70%;
