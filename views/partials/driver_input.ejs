@@ -250,10 +250,6 @@
         <% } %>
     }
 
-    function isNum(s) {
-      return s == ""+parseInt(s);
-    }
-
     function getErrorMessage() {
       if (!mapInputsCorrect) { return "Please enter a valid origin and a valid destination"; }
 
@@ -262,8 +258,8 @@
       var date = document.getElementById("date").value;
       //var time = document.getElementById("time").value;
 
-      if (!isNum(seats)) { return "Please enter a number for the number of people you can take"; }
-      if (!isNum(charge)) { return "Please enter a number for the price per seat"; }
+      if (parseInt(seats) == NaN) { return "Please enter a number for the number of people you can take"; }
+      if (parseInt(charge) == NaN) { return "Please enter a number for the price per seat"; }
       if (date.split('/').length != 3) { return "Please enter a valid date"; }
       //if (time == "") { return "Please enter the time you are leaving"; }
 
