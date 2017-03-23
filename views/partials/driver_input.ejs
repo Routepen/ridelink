@@ -243,23 +243,24 @@
     }
 
     function submitForm() {
-        <% if (user && (!user.confirmedEmail || user.confirmedEmail == "")) { %>
-          $("#emailModal").modal('show');
+        <% if (user && (!user.confirmedEmail/* || user.confirmedEmail == ""*/)) { %>
+        $("#emailInput").value(user.confirmedEmail);
         <% } else { %>
-          post();
+        //post();
         <% } %>
+        $("#emailModal").modal('show');
     }
 
     function getErrorMessage() {
       if (!mapInputsCorrect) { return "Please enter a valid origin and a valid destination"; }
 
-      var seats = document.getElementById("num-seats").value;
-      var charge = document.getElementById("charge").value.replace('$', '');
+      var seats = document.getElementById("num-seats").value.replace(/\s+/, "");
+      var charge = document.getElementById("charge").value.replace(/\s+/, "");
       var date = document.getElementById("date").value;
       //var time = document.getElementById("time").value;
 
-      if (parseInt(seats) == NaN) { return "Please enter a number for the number of people you can take"; }
-      if (parseInt(charge) == NaN) { return "Please enter a number for the price per seat"; }
+      if (seats.search(/^\d+$/) < 0) { return "Please enter a number for the number of people you can take"; }
+      if (charge.search(/^\$?(?:\d*\.\d{0,2}|\d+)$/) < 0) { return "Please enter a number for the price per seat"; }
       if (date.split('/').length != 3) { return "Please enter a valid date"; }
       //if (time == "") { return "Please enter the time you are leaving"; }
 
