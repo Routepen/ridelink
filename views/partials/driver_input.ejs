@@ -243,11 +243,10 @@
     }
 
     function submitForm() {
-        <% if (user && (!user.confirmedEmail/* || user.confirmedEmail == ""*/)) { %>
-        console.log(user.confirmedEmail);
+        if (validateFields()) return;
+
+        <% if (user && user.confirmedEmail) { %>
         $("#emailInput").value(user.confirmedEmail);
-        <% } else { %>
-        //post();
         <% } %>
         $("#emailModal").modal('show');
     }
@@ -268,14 +267,20 @@
       return "";
     }
 
+    function validateFields() {
+        errorMessage = getErrorMessage();
+        if (errorMessage != "") {
+            $('#errorMessage').html(errorMessage);
+            $('#alertbox').show();
+            return true;
+        }
+
+        return false;
+    }
+
     var posted = false;
     function post() {
-      errorMessage = getErrorMessage();
-      if (errorMessage != "") {
-        $('#errorMessage').html(errorMessage);
-        $('#alertbox').show();
-        return;
-      }
+        if (validateFields()) return;
 
       if (posted) return;
       posted = true;
