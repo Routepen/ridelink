@@ -244,6 +244,7 @@
 
     function submitForm() {
         <% if (user && (!user.confirmedEmail/* || user.confirmedEmail == ""*/)) { %>
+        console.log(user.confirmedEmail);
         $("#emailInput").value(user.confirmedEmail);
         <% } else { %>
         //post();
