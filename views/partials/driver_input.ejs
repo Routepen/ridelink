@@ -9,7 +9,7 @@
             <form action="javascript:confirmEmail()">
                 <div class="modal-body">
                     Send me notifications at
-                    <input type="email" class="form-control" id="emailInput" value="<%= user.facebook.email %>"
+                    <input type="email" class="form-control" id="emailInput" value="<%= user.confirmedEmail || user.facebook.email %>"
                            placeholder="Email">
                 </div>
                 <div class="modal-footer">
@@ -245,9 +245,6 @@
     function submitForm() {
         if (validateFields()) return;
 
-        <% if (user && user.confirmedEmail) { %>
-        $("#emailInput").value(user.confirmedEmail);
-        <% } %>
         $("#emailModal").modal('show');
     }
 
