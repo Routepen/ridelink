@@ -12,11 +12,27 @@ class MapView extends Component {
     console.log("rendering");
     if (this.map && this.state.route.originPlaceId && this.state.route.destinationPlaceId) {
       var me = this;
-      
+
+      var waypoints = [];
+      var stops = this.state.route.stops;
+      for (var i = 0; i < stops.length; i++) {
+        var place = stops[i].place;
+        if (!place) {
+          alert("Couldn't find " + place);
+          return;
+        }
+        waypoints.push({
+          location: place.name,
+          stopover: true,
+        });
+      }
+
       this.directionsService.route({
           origin: {placeId: this.state.route.originPlaceId},
           destination: {placeId: this.state.route.destinationPlaceId},
           travelMode: this.travelMode,
+          waypoints: waypoints,
+          optimizeWaypoints: true
       }, function(response, status) {
           if (status === 'OK') {
               me.directionsDisplay.setDirections(response);

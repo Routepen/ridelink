@@ -163,7 +163,7 @@ app.get('/route/new', function (req, res) {
     creatingRoute: true
 	};
 
-	res.render('route', {data:data});
+	res.render('new_route', {data:data});
 });
 
 app.get('/route/all', function (req, res) {

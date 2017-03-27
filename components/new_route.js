@@ -30,7 +30,9 @@ class NewRoute extends Component {
       <Navbar user={this.state.user}/>
       <div id="content" className="fill">
         <div className="col-md-4 core-container">
-          <DriverInput route={this.state.route} mapChanged={this.forceUpdate.bind(this)}/>
+          <DriverInput route={this.state.route}
+            mapChanged={this.forceUpdate.bind(this)}
+            stopsUpdated={this.forceUpdate.bind(this)}/>
         </div>
         <MapView route={this.state.route}/>
       </div>

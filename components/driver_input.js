@@ -34,7 +34,7 @@ class DriverInput extends Component {
                                onKeyDown={this.keyPressed.bind(this)}
                                defaultValue={this.state.route.origin}/>
                     </div>
-                    <Stops stops={this.props.route.stops}/>
+                    <Stops stops={this.props.route.stops} stopsUpdated={this.props.stopsUpdated.bind(this)}/>
                     <div>
                         <i className="material-icons" style={{paddingLeft: "10px"}}>place</i>
                         <input autoFocus id="destination-input" name="destination" className="controls" type="text"
@@ -58,7 +58,7 @@ class DriverInput extends Component {
                         <input id="time" name="time" className="controls" type="text" placeholder="Time..." onPaste=""/>
 
                         <br/><br/>
-                        <input type="submit" id="create-route" className="btn btn-md btn-success" value="Create Route" onClick={this.printState.bind(this)}/>
+                        <input type="submit" id="create-route" className="btn btn-md btn-success" value="Create Route" onClick={this.submitForm.bind(this)}/>
                     </div>
                 </div>
 
@@ -88,6 +88,16 @@ class DriverInput extends Component {
 
     this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
     this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
+
+    $(function () {
+        $("#date").datepicker();
+    });
+    $("#time").timepicker({
+        template: false,
+        showInputs: false,
+        minuteStep: 5,
+        defaultTime: "8:00 AM"
+    });
   }
 
   setupPlaceChangedListener(autocomplete, mode) {
@@ -112,6 +122,49 @@ class DriverInput extends Component {
         me.setState(me.state);
         me.props.mapChanged();
     });
+  }
+
+  submitForm() {
+
+    var seats = document.getElementById("num-seats");
+    var charge = document.getElementById("charge");
+    var requireInitialDeposit = document.getElementById("requireInitialDeposit");
+    var date = document.getElementById("date");
+    var time = document.getElementById("time");
+
+    let data = {
+      origin: this.state.route.origin,
+      destination: this.state.route.destination,
+      stops: this.state.route.stops.map(stop => {
+        return stop.place.name
+      }),
+      seats: seats.value,
+      charge: charge.value.replace('$', ''),
+      date: date.value,
+      time: time.value,
+    };
+
+    var email = document.getElementById("confirmed_email_input");
+
+
+    var confirmedEmail = email.value;
+    if (confirmedEmail) {
+      data.confirmedEmail = confirmedEmail;
+    }
+
+    $.post('/route/new/', data, function(data, status){
+      console.log(data, status);
+      if (status == "success") {
+        window.location.href = data;
+      }
+      else {
+        posted = false;
+        $('#create-route').button('reset');
+      }
+    })
+    .error(function() { alert("Request failed. Try again later"); });
+
+
   }
 }
 
