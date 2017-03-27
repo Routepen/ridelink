@@ -6,14 +6,18 @@ class App extends Component {
   constructor() {
     super();
 
-    this.state={
-      user: false
-    };
+    var txt = document.createElement("textarea");
+    txt.innerHTML = document.getElementById("info").innerHTML;
+    var val = txt.value.trim();
+    var data = JSON.parse(txt.value);
+    console.log(data);
+
+    this.state = data;
   }
 
   render() {
     return <div>
-      <Navbar/>
+      <Navbar user={this.state.user}/>
       <Landing/>
     </div>
   }

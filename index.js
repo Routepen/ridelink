@@ -79,10 +79,11 @@ app.get('/', function (req, res) {
 		url: req.url
 	};
 
-	res.render('new_landing', data);
+	res.render('index', {data:data});
 });
 
 app.get('/route', function (req, res) {
+  return res.sendFile(__dirname + "/public/html/route.html");
 	var handleRequest = function(err, route) {
 		if (err || !route) {
 			console.log(err);
@@ -162,7 +163,7 @@ app.get('/route/new', function (req, res) {
     creatingRoute: true
 	};
 
-	res.render('route', data);
+	res.render('route', {data:data});
 });
 
 app.get('/route/all', function (req, res) {
