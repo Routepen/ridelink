@@ -59,6 +59,7 @@ class DriverInput extends Component {
 
                         <br/><br/>
                         <input type="submit" id="create-route" className="btn btn-md btn-success" value="Create Route" onClick={this.submitForm.bind(this)}/>
+                        <input type="submit" id="create-route" className="btn btn-md btn-success" value="p" onClick={console.log.bind(null, this.state)}/>
                     </div>
                 </div>
 

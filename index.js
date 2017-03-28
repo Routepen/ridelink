@@ -83,7 +83,6 @@ app.get('/', function (req, res) {
 });
 
 app.get('/route', function (req, res) {
-  return res.sendFile(__dirname + "/public/html/route.html");
 	var handleRequest = function(err, route) {
 		if (err || !route) {
 			console.log(err);
@@ -138,7 +137,7 @@ app.get('/route', function (req, res) {
       paymentConfirmed: req.query.status == "paymentConfirmed"
 		};
 
-		res.render('route', data);
+		res.render('route', {data:data});
 	}
 
 	var id = req.query.id;
