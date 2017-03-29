@@ -12,7 +12,9 @@
 #newride {
     left-margin: 10px,
 }
-
+.navbar-form{
+    margin-left: 150px;
+}
 .navbar-static-top {
     position: relative;
     margin-bottom: 19px;
