@@ -5,8 +5,9 @@ class Stops extends Component {
     super(props);
 
     this.state = {
-      stops: [],
-      isDriver: this.props.isDriver
+      stops: this.props.stops,
+      isDriver: this.props.isDriver,
+      creatingRoute: this.props.creatingRoute
     };
 
     this.props.stops.forEach((stop, i) => {
@@ -47,7 +48,7 @@ class Stops extends Component {
       Add Stop
     </button>
 
-    if (!this.state.isDriver) {
+    if (!this.state.isDriver && !this.state.creatingRoute) {
       button = ''
     }
 
@@ -102,9 +103,12 @@ class Stops extends Component {
       if (stops[i].index == index) {
         stops[i].place = stops[i].autocomplete.getPlace();
         stops[i].finalized = true;
-
       }
     }
+
+    this.state.stops = stops;
+
+    console.log(this.state);
     this.setState(this.state);
 
     this.props.stopsUpdated();

@@ -270,7 +270,7 @@ app.post('/route/addrider', function(req, res) {
 			if (err) { console.log(err); return res.end(err.toString()); }
 			req.user.save(function(err) {
 				if (err) { console.log(err); return res.end(err.toString()); }
-				res.end("");
+				res.json({});
 			});
 		});
 

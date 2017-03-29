@@ -55,6 +55,7 @@ class DropoffInput extends Component {
 
       me.setState(me.state);
       me.props.eventEmitter.emit('markerAdded', me.marker);
+      me.props.eventEmitter.emit('dropoffSet', address);
 
 
 

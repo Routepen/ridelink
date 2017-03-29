@@ -12,6 +12,9 @@ class RouteInfo extends Component {
     super(props);
 
     this.state = {
+      isDriver: this.props.isDriver,
+      isRider: this.props.isRider,
+      confirmedRider: this.props.confirmedRider,
       route: this.props.route,
       user: this.props.user,
       markers: this.props.markers
@@ -32,13 +35,14 @@ class RouteInfo extends Component {
 
     console.log(this.state);
 
-    var isDriver = this.state.user &&
-      this.state.route.driver._id == this.state.user._id;
+    var isDriver = this.state.isDriver;
+    var isRider = this.state.isRider;
+    var isConfirmedRider = this.state.confirmedRider;
     var loggedIn = !!this.state.user;
 
     let actionable = '';
     if (loggedIn) {
-      if (!isDriver) {
+      if (!isDriver && !isConfirmedRider) {
         actionable = <DropoffInput
           routeId={this.state.route._id}
           markers={this.state.markers}
@@ -62,23 +66,36 @@ class RouteInfo extends Component {
           {actionable}
 
           <TextDisplay text={this.state.route.origin} editable={isDriver} icon={"my_location"} />
-          <Stops stops={this.state.route.stops} isDriver={isDriver}/>
+          <Stops
+            stops={this.state.route.stops}
+            isDriver={isDriver}
+            stopsUpdated={this.stopsUpdated.bind(this)}/>
           <TextDisplay text={this.state.route.destination} editable={isDriver} icon={"place"}/>
 
           <br/>
 
           <TextDisplay text={this.state.route.seats} editable={isDriver} icon={"event_seat"} />
-          <TextDisplay text={this.state.route.date} editable={isDriver} icon={"event"} />
+          <TextDisplay text={this.formatDate(this.state.route.date)} editable={isDriver} icon={"event"} />
           <TextDisplay text={this.state.route.time} editable={isDriver} icon={"access_time"}/>
           <TextDisplay text={this.state.route.inconvenience} editable={isDriver} icon={"attach_money"}/>
           <br/><br/>
           <Table
-            riders={this.state.route.riders}
-            confirmedRiders={this.state.route.confirmedRiders}
+            user={this.state.user}
+            routeId={this.state.route._id}
+            isDriver={this.state.isDriver}
+            route={this.state.route}
             seats={this.state.route.seats}/>
 
       </div>
 
+  }
+
+  stopsUpdated() {
+    this.props.stopsUpdated();
+  }
+
+  formatDate(date) {
+    return (date.getMonth() + 1) + "/" + date.getDate() + "/" + (date.getYear()-100);
   }
 
 

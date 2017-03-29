@@ -39,7 +39,7 @@ class Heading extends Component {
     return <div style={{backgroundColor: "#c5d9f9", borderRadius: "5px"}}>
         <h2>
           <a href={this.state.driver.facebook.link}>
-            <img align="middle" src={src}></img>
+            <img src={src}></img>
           </a>
           {this.state.driver.facebook.name.split(' ')[0] + "'s Route"}
         </h2>

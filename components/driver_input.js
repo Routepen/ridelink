@@ -34,7 +34,10 @@ class DriverInput extends Component {
                                onKeyDown={this.keyPressed.bind(this)}
                                defaultValue={this.state.route.origin}/>
                     </div>
-                    <Stops stops={this.props.route.stops} stopsUpdated={this.props.stopsUpdated.bind(this)}/>
+                    <Stops
+                      stops={this.props.route.stops}
+                      stopsUpdated={this.props.stopsUpdated.bind(this)}
+                      creatingRoute={true}/>
                     <div>
                         <i className="material-icons" style={{paddingLeft: "10px"}}>place</i>
                         <input autoFocus id="destination-input" name="destination" className="controls" type="text"

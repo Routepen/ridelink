@@ -21,7 +21,9 @@ class NewRoute extends Component {
       origin: "UCSB, Santa Barbara, CA, United States",
       originPlaceId: "ChIJN0sx82c_6YARws62XH5rlU4",
       destination: "",
-      destinationPlaceId: null
+      destinationPlaceId: null,
+      riders: [],
+      confirmedRiders: []
     };
   }
 
