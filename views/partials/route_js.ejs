@@ -87,7 +87,7 @@
     var me = this;
     allRiders.forEach(function(rider) {
       me.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
-        contentString = '<div><a href="' + rider.facebook.link + '">' + rider.facebook.name + '</a></div>';
+        contentString = '<div>Facebook: <a href="' + rider.facebook.link + '">' + rider.facebook.name + '</a></div>';
 
         <% if (isDriver && view != "rider") { %>
           if (!rider.confirmed && routeData.confirmedRiders.length < routeData.seats) {

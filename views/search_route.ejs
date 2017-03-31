@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+    <!--<link rel="icon" href="../../favicon.ico"> -->
+
+    <title>RoutePen</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link href="/css/new_landing.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
+
+    <!-- Custom styles for this template -->
+    <link href="/css/main.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body style="background-color:#0c84e4; overflow: hidden">
+
+<% include ./partials/navbar %>
+
+<div style="padding-top: 40px"></div>
+
+<div class="core-container">
+  <div class="col-md-3 col-sm-0">
+    <div style="border-radius:15px; background-color:white">
+      <div class="core-container">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+          <div style="padding-left: 10px;">
+            <div style="font-size: 24px; font-weight:bold; color:#F0413D">Sort By</div>
+            <select multiple class="form-control" onchange="selectChanged()">
+              <option autofocus>Date</option>
+              <option>Origin</option>
+              <option>Destination</option>
+              <option>Role</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8 col-sm-12" style="overflow: scroll">
+    <table class="table">
+      <thead>
+      <tr class="riderElement-inverse">
+          <th>#</th>
+          <th> Role </th>
+          <th> Origin </th>
+          <th> Destination </th>
+          <th> Cost </th>
+      </tr>
+      </thead>
+      <tbody id="tbody">
+        <!--<tr class="riderElement riderElement-inverse clickable">
+          <td>1</td>
+          <td>Rider</td>
+          <td>Santa Barbara</td>
+          <td>San Francisco</td>
+          <td>$20</td>
+        </tr>-->
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
+</div>
+
+<script type="text/javascript">
+  var data = <%- JSON.stringify(routes) %>;
+  data = data.map(function(d) { d.date = new Date(d.date); return d; });
+
+  var tbody = document.getElementById('tbody');
+  var s = document.getElementsByTagName('select')[0]
+  s.value = "Date";
+
+  function sort(data, sortBy) {
+    var func;
+    if (sortBy == "Role") {
+      func = function(a, b) {
+        var role1 = ("<%= user._id%>" == a.driver._id ? 1 : 0);
+        var role2 = ("<%= user._id%>" == b.driver._id ? 1 : 0);
+        return role1 - role2;
+      }
+    }
+    else if (sortBy == "Origin") {
+      func = function(a, b) {
+        return a.origin > b.origin;
+      }
+    }
+    else if (sortBy == "Destination") {
+      func = function(a, b) {
+        return a.destination > b.destination;
+      }
+    }
+    else {
+      func = function(a, b) {
+        return b.date - a.date;
+      }
+    }
+
+    data.sort(func);
+  }
+
+  function setUpTable(sortBy) {
+
+    sort(data, sortBy);
+
+    tbody.innerHTML = "";
+    if (data.length == 0) {
+      tbody.innerHTML = '<tr><td style="color: white; font-size:18px">You have no routes. Why don\'t you <a href="/route/new" style="color:lightgray">create one</a>';
+    }
+    else {
+      for (var i = 0; i < data.length; i++) {
+        var onclick = "clicked('" + (data[i].shortId || data[i]._id) + "')"
+        tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" onclick="' + onclick + '">' +
+          '<td>' + (i+1) + '</td>' +
+          '<td>' + ("<%= user._id%>" == data[i].driver ? "Driver" : "Rider") + '</td>' +
+          '<td>' + data[i].origin + '</td>' +
+          '<td>' + data[i].destination + '</td>' +
+          '<td>$' + data[i].inconvenience + '</td>';
+      }
+    }
+  }
+
+  function clicked(id) {
+    window.location.href = "/route?id=" + id;
+  }
+
+  setUpTable(s.value);
+
+  function selectChanged() {
+    console.log(s.value);
+    setUpTable(s.value);
+  }
+</script>
+
+</body>
+</html>
