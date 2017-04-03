@@ -299,7 +299,11 @@
           waypoints.push($(children[i]).find('input').val());
       }
 
-        //TODO add up the total distance it takes to get there
+        var test1 = $("#origin-input").geocomplete();
+        var test2 = $("#destination-input").geocomplete();
+        console.log(test1, test2);
+
+        //TODO geocode origin and destination
 
       var data = {
           seats: seats.value,
@@ -310,7 +314,6 @@
           origin: origin.value,
           destination: destination.value,
           stops: waypoints,
-          distance:
       };
 
       var confirmedEmail = email.value;

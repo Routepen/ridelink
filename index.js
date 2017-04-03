@@ -511,6 +511,8 @@ app.post('/route/new', function (req, res) {
   //   req.body.time = t;
   // }
 
+	//TODO geocode the origin and distance, then enter it as total distance
+
 	var newRoute;
   try {
     newRoute = Route({
