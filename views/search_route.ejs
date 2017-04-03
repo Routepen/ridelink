@@ -16,7 +16,7 @@
     <link href="/css/bootstrap.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <link href="/css/new_landing.css" rel="stylesheet">
+    <!--<link href="/css/new_landing.css" rel="stylesheet"> -->
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
@@ -40,25 +40,6 @@
 
 <div style="padding-top: 40px"></div>
 
-<div class="core-container">
-  <div class="col-md-3 col-sm-0">
-    <div style="border-radius:15px; background-color:white">
-      <div class="core-container">
-        <div class="col-md-1"></div>
-        <div class="col-md-11">
-          <div style="padding-left: 10px;">
-            <div style="font-size: 24px; font-weight:bold; color:#F0413D">Sort By</div>
-            <select multiple class="form-control" onchange="selectChanged()">
-              <option autofocus>Date</option>
-              <option>Origin</option>
-              <option>Destination</option>
-              <option>Role</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="col-md-8 col-sm-12" style="overflow: scroll">
     <table class="table">
       <thead>
@@ -84,7 +65,10 @@
   <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
 </div>
 
+<div id="map"></div>
+
 <script type="text/javascript">
+  /*
   var data = <%- JSON.stringify(routes) %>;
   data = data.map(function(d) { d.date = new Date(d.date); return d; });
 
@@ -120,6 +104,7 @@
     data.sort(func);
   }
 
+
   function setUpTable(sortBy) {
 
     sort(data, sortBy);
@@ -151,6 +136,7 @@
     console.log(s.value);
     setUpTable(s.value);
   }
+  */
 </script>
 
 </body>

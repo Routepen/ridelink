@@ -72,6 +72,16 @@ app.get('/', function (req, res) {
 	res.render('new_landing', data);
 });
 
+app.get('/search', function(req,res){
+	var data = {
+		user: req.user,
+		url: req.url
+	};
+	// TODO Fill in Google maps API call and send JSON to front end to parse
+
+	res.render("search_route");
+});
+
 app.get('/route', function (req, res) {
 	var handleRequest = function(err, route) {
 		if (err || !route) {
