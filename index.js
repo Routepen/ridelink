@@ -8,7 +8,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const User = require('./models/User');
 const Route = require('./models/Route');
-const EmailSubscribe = require('./models/EmailSubscribe')
+const EmailSubscribe = require('./models/EmailSubscribe');
+const util = require('util');
 const _ = require("lodash");
 const app = express();
 
@@ -77,9 +78,12 @@ app.get('/search', function(req,res){
 		user: req.user,
 		url: req.url
 	};
+	var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
+		console.log(util.inspect(JSON.parse(body), {depth:null}))
+	});
 	// TODO Fill in Google maps API call and send JSON to front end to parse
 
-	res.render("search_route");
+	res.render("search_route", data);
 });
 
 app.get('/route', function (req, res) {

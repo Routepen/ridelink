@@ -39,8 +39,7 @@
 <% include ./partials/navbar %>
 
 <div style="padding-top: 40px"></div>
-
-  <div class="col-md-8 col-sm-12" style="overflow: scroll">
+    <div class="col-md-8 col-sm-12" style="overflow: scroll">
     <table class="table">
       <thead>
       <tr class="riderElement-inverse">
@@ -67,76 +66,41 @@
 
 <div id="map"></div>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer>
+</script>
 <script type="text/javascript">
-  /*
-  var data = <%- JSON.stringify(routes) %>;
-  data = data.map(function(d) { d.date = new Date(d.date); return d; });
+    var mapHandler;
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            mapTypeControl: false,
+            center: {lat: 34.4140, lng: -119.8489},
+            zoom: 13
+        });
 
-  var tbody = document.getElementById('tbody');
-  var s = document.getElementsByTagName('select')[0]
-  s.value = "Date";
+        mapHandler = new showRoute(map);
+    }
+    var markers = {}, infoWindows = {};
 
-  function sort(data, sortBy) {
-    var func;
-    if (sortBy == "Role") {
-      func = function(a, b) {
-        var role1 = ("<%= user._id%>" == a.driver._id ? 1 : 0);
-        var role2 = ("<%= user._id%>" == b.driver._id ? 1 : 0);
-        return role1 - role2;
-      }
-    }
-    else if (sortBy == "Origin") {
-      func = function(a, b) {
-        return a.origin > b.origin;
-      }
-    }
-    else if (sortBy == "Destination") {
-      func = function(a, b) {
-        return a.destination > b.destination;
-      }
-    }
-    else {
-      func = function(a, b) {
-        return b.date - a.date;
-      }
+    function showRoute(map) {
+        this.map = map;
+        this.originPlaceId = null;
+        this.destinationPlaceId = null;
+        this.travelMode = 'DRIVING';
+        this.directionsService = new google.maps.DirectionsService;
+        this.directionsDisplay = new google.maps.DirectionsRenderer;
+        this.directionsDisplay.setMap(map);
+        this.geocoder = new google.maps.Geocoder();
+
+        var me = this;
+        this.drawMap(function() {
+            me.setUpDropOff(map);
+            me.setMarkers();
+        });
+
     }
 
-    data.sort(func);
-  }
+    initMap();
 
-
-  function setUpTable(sortBy) {
-
-    sort(data, sortBy);
-
-    tbody.innerHTML = "";
-    if (data.length == 0) {
-      tbody.innerHTML = '<tr><td style="color: white; font-size:18px">You have no routes. Why don\'t you <a href="/route/new" style="color:lightgray">create one</a>';
-    }
-    else {
-      for (var i = 0; i < data.length; i++) {
-        var onclick = "clicked('" + (data[i].shortId || data[i]._id) + "')"
-        tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" onclick="' + onclick + '">' +
-          '<td>' + (i+1) + '</td>' +
-          '<td>' + ("<%= user._id%>" == data[i].driver ? "Driver" : "Rider") + '</td>' +
-          '<td>' + data[i].origin + '</td>' +
-          '<td>' + data[i].destination + '</td>' +
-          '<td>$' + data[i].inconvenience + '</td>';
-      }
-    }
-  }
-
-  function clicked(id) {
-    window.location.href = "/route?id=" + id;
-  }
-
-  setUpTable(s.value);
-
-  function selectChanged() {
-    console.log(s.value);
-    setUpTable(s.value);
-  }
-  */
 </script>
 
 </body>
