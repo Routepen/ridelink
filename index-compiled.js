@@ -80,7 +80,8 @@ app.get('/search', function (req, res) {
 	var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
 		console.log(util.inspect(JSON.parse(body), { depth: null }));
 	});
-	// TODO Fill in Google maps API call and send JSON to front end to parse
+	//TODO query database for all routes with distance off less than 9% and != current date
+	// TODO Fill in Maps API call and send JSON to front end to parse
 
 	res.render("search_route", data);
 });

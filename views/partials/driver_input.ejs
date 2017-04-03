@@ -299,6 +299,8 @@
           waypoints.push($(children[i]).find('input').val());
       }
 
+        //TODO add up the total distance it takes to get there
+
       var data = {
           seats: seats.value,
           charge: charge.value.replace('$', ''),
@@ -307,7 +309,8 @@
           time: time.value,
           origin: origin.value,
           destination: destination.value,
-          stops: waypoints
+          stops: waypoints,
+          distance:
       };
 
       var confirmedEmail = email.value;

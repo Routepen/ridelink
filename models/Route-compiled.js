@@ -31,7 +31,8 @@ var routeSchema = new Schema({
     bailed: { type: [Boolean], default: false },
     opened: { type: Boolean, default: false },
     isWaitlisted: Boolean,
-    created_at: Date
+    created_at: Date,
+    distance: Number
 });
 /*
 routeSchema.pre('save', function(next) {
