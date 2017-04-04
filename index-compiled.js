@@ -81,25 +81,30 @@ app.get('/', function (req, res) {
 	res.render('new_landing', data);
 });
 
-app.get('/search', function (req, res) {
+app.post('/search', function (req, res) {
+	console.log(req.data.origin, req.data.destination);
+
 	var data = {
 		user: req.user,
 		url: req.url
 	};
-	var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
-		console.log(util.inspect(JSON.parse(body), { depth: null }));
-	});
-
-	var geocodeParams = {
-		"address": req.body.origin
-	};
-
-	gmAPI.geocode(geocodeParams, function (err, result) {
-		console.log(result.results[0].geometry.location);
-	});
-	//TODO geocode the origin and destination if it's not in the cache already.
-	//TODO query database for all routes with distance off less than 9% and != current date
-	// TODO Fill in Maps API call and send JSON to front end to parse
+	/*
+ var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
+ 	console.log(util.inspect(JSON.parse(body), {depth:null}))
+ });
+ 
+ var geocodeParams = {
+ 	"address": req.body.origin,
+ };
+ 
+ gmAPI.geocode(geocodeParams, function(err, result){
+ 	console.log(result.results[0].geometry.location);
+ });
+ //TODO geocode the origin and destination if it's not in the cache already.
+ //TODO query database for all routes with distance off less than 9% and != current date
+ // TODO Fill in Maps API call and send JSON to front end to parse
+ 
+ */
 
 	res.render("search_route", data);
 });
