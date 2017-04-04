@@ -90,6 +90,8 @@
     </div>
 </div>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=initMap"
+        async defer></script>
 
 <script type="text/javascript">
 
@@ -299,11 +301,12 @@
           waypoints.push($(children[i]).find('input').val());
       }
 
+        /*
         var test1 = $("#origin-input").geocomplete();
         var test2 = $("#destination-input").geocomplete();
         console.log(test1, test2);
 
-        //TODO geocode origin and destination
+        */
 
       var data = {
           seats: seats.value,

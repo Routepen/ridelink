@@ -12,6 +12,8 @@ const EmailSubscribe = require('./models/EmailSubscribe');
 const util = require('util');
 const _ = require("lodash");
 const app = express();
+const GoogleMapsAPI = require('googlemaps');
+
 
 const auth = require("./auth");
 const mail = require("./mail");
@@ -28,6 +30,16 @@ mongoose.connect('mongodb://victorcheng:victor97@ds161169.mlab.com:61169/heroku_
   }
 });
 var db = mongoose.connection;
+
+
+var publicConfig = {
+	key: 'AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA',
+	//key: process.env.GOOGLE_MAPS_KEY,
+	stagger_time:       1000, // for elevationPath
+	encode_polylines:   false,
+	secure:             true, // use https
+};
+var gmAPI = new GoogleMapsAPI(publicConfig);
 
 /*
 const isAuthenticated = (req, res, next) =>
@@ -81,6 +93,15 @@ app.get('/search', function(req,res){
 	var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
 		console.log(util.inspect(JSON.parse(body), {depth:null}))
 	});
+
+	var geocodeParams = {
+		"address": req.body.origin,
+	};
+
+	gmAPI.geocode(geocodeParams, function(err, result){
+		console.log(result.results[0].geometry.location);
+	});
+	//TODO geocode the origin and destination if it's not in the cache already.
 	//TODO query database for all routes with distance off less than 9% and != current date
 	// TODO Fill in Maps API call and send JSON to front end to parse
 
@@ -511,7 +532,7 @@ app.post('/route/new', function (req, res) {
   //   req.body.time = t;
   // }
 
-	//TODO geocode the origin and distance, then enter it as total distance
+	//TODO geocode the origin and distance (check to see if it's in the cache already), then enter it as total distance
 
 	var newRoute;
   try {

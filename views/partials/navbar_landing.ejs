@@ -12,10 +12,12 @@
         <form class="navbar-form navbar-left">
             <div class="input-group">
                 <div class="col-md-6">
-                    <input type="text" class="form-control" size="20" placeholder="Enter your origin" autofocus>
+                    <input type="text" id="search-origin" class="form-control" size="20" placeholder="Enter your origin"
+                           onPaste="" onkeydown="if (event.keyCode == 13) { return false;}" autofocus>
                 </div>
                 <div class="col-md-6">
-                    <input type="text" class="form-control" size="20" placeholder="Enter your destination" >
+                    <input type="text" id="search-destination" class="form-control" size="20" placeholder="Enter your destination"  onPaste=""
+                           onkeydown="if (event.keyCode == 13) { return false;}">
                 </div>
                 <div class="input-group-btn">
                     <button class="btn btn-default" type="submit">
@@ -51,3 +53,35 @@
 </nav>
 
 <div style="margin-top:100px"></div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=AutocompleteHandler"
+        async defer></script>
+<script type="text/javascript">
+    var originInput = document.getElementById("search-origin");
+    var destinationInput = document.getElementById("search-destination");
+
+
+    function AutocompleteHandler(){
+        var originAutocomplete = new google.maps.places.Autocomplete(
+                originInput, {placeIdOnly: true});
+        var destinationAutocomplete = new google.maps.places.Autocomplete(
+                destinationInput, {placeIdOnly: true});
+        this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
+        this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
+    }
+
+    AutocompleteHandler.prototype.setupPlaceChangedListener = function(autocomplete, mode){
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            if (!place.place_id) {
+                window.alert("Please select an option from the dropdown list.");
+                return;
+            }
+            if (mode === 'ORIG') {
+                this.originPlaceId = place.place_id;
+            } else if (mode == "DEST"){
+                this.destinationPlaceId = place.place_id;
+            }
+        });
+    };
+
+</script>
