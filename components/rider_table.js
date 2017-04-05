@@ -16,11 +16,15 @@ class RiderTable extends Component {
       seats: this.props.seats,
       isFull: this.props.route.confirmedRiders.length >= this.props.seats
     };
+
+    this.props.eventEmitter.on('seatsChanged', this.forceUpdate.bind(this));
   }
   render() {
-
-    let riders = [];
+    let riders = [], waitlistRiders = [];
     var me = this;
+
+    let rideIsFull = this.state.route.confirmedRiders.length >= this.state.route.seats;
+
     this.state.route.confirmedRiders.forEach((rider, i) => {
       var color = "green", title="confirmed";
       var status = "";
@@ -40,7 +44,7 @@ class RiderTable extends Component {
       //onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'
       riders.push(<tr key={i} className="riderElement" id={"rider" + rider._id}>
           <td>{ i+1 }</td>
-          <td><a href='#'>{rider.facebook.name}</a></td>
+          <td><a onClick={me.riderClicked.bind(me, rider)} href='javascript:void(0)'>{rider.facebook.name}</a></td>
           <td>{status}</td>
           <td>{me.state.route.riderStatus[rider._id].baggage}</td>
         </tr>
@@ -57,14 +61,33 @@ class RiderTable extends Component {
         className = "editableInput";
       }
 
-      i += me.state.route.confirmedRiders.length;
-
-      //onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'
-      riders.push(<tr key={i} className="riderElement" id={"rider" + rider._id}>
+      if (rideIsFull) {
+        waitlistRiders.push(<tr key={i} className="riderElement" id={"rider" + rider._id}>
           <td>{ i + 1 }</td>
-          <td><a href='#'>{rider.facebook.name}</a></td>
+          <td><a onClick={me.riderClicked.bind(me, rider)} href='javascript:void(0)'>{rider.facebook.name}</a></td>
           <td>
             <RiderStatusDisplay
+              eventEmitter={me.props.eventEmitter}
+              text={status}
+              editable={false}
+              riders={this.state.route.riders}
+              riderId={rider._id}
+              confirmedRiders={this.state.route.confirmedRiders}
+              user={this.state.user}
+              routeId={this.state.routeId}/>
+          </td>
+          <td>{me.state.route.riderStatus[rider._id].baggage}</td>
+          </tr>
+        );
+      }
+      else {
+        i += me.state.route.confirmedRiders.length;
+        riders.push(<tr key={i} className="riderElement" id={"rider" + rider._id}>
+          <td>{ i + 1 }</td>
+          <td><a onClick={me.riderClicked.bind(me, rider, true)} href='javascript:void(0)'>{rider.facebook.name}</a></td>
+          <td>
+            <RiderStatusDisplay
+              eventEmitter={me.props.eventEmitter}
               text={status}
               editable={me.state.isDriver}
               riders={this.state.route.riders}
@@ -73,11 +96,17 @@ class RiderTable extends Component {
               user={this.state.user}
               routeId={this.state.routeId}/>
           </td>
-          <td></td>
-          </tr>
-      );
+          <td>{me.state.route.riderStatus[rider._id].baggage}</td>
+          </tr>)
+      }
 
     });
+
+    var tableMessage = "", messageStyle = {display: "none"};
+    if (this.state.route.riders.length + this.state.route.confirmedRiders.length == 0) {
+      tableMessage = "No riders have signed up yet";
+      messageStyle = {};
+    }
 
 
     return <div>
@@ -96,9 +125,9 @@ class RiderTable extends Component {
                 {riders}
               </tbody>
           </table>
-          <p style={{display: "none"}} id="tableMessage"></p>
+          <p style={messageStyle} id="tableMessage">{tableMessage}</p>
       </div>
-      <div style={{display: "none"}} id="waitListTable" className="container-fluid row">
+      <div style={{display: waitlistRiders.length == 0 ? "none" : "inline"}} id="waitListTable" className="container-fluid row">
         <div style={{fontSize: "24px"}}>Waitlist</div>
         <table className="table table-striped table-hover">
             <thead>
@@ -108,11 +137,14 @@ class RiderTable extends Component {
                 <th> Status </th>
             </tr>
             </thead>
-            <tbody id="waitlistRiderTable"></tbody>
+            <tbody id="waitlistRiderTable">{waitlistRiders}</tbody>
         </table>
       </div>
     </div>
+  }
 
+  riderClicked(rider, isWaitlisted) {
+    this.props.eventEmitter.emit("riderClicked", rider);
   }
 }
 

@@ -1,17 +1,21 @@
 import React, { Component } from 'react'
 
 
-class TextDisplay extends Component {
+class SeatsDisplay extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      text: this.props.text,
+      route: this.props.route,
       editable: this.props.editable,
-      value: this.props.value,
       editing: false
     };
+
+    var me = this;
+    this.props.eventEmitter.on("seatsChanged", () => {
+      me.forceUpdate();
+    })
   }
   render() {
 
@@ -32,7 +36,7 @@ class TextDisplay extends Component {
       <div style={editable}>
         <i className="material-icons" style={{fontSize:"18px"}}>{this.props.icon}</i>
         <input ref="input" type="text" className="form-control input-sm" style={{width: "60%"}} defaultValue={this.state.text}
-          onKeyPress={this.keyPressed(this)}/>
+          placeholder="Total number of people you can take..." onKeyPress={this.keyPressed(this)}/>
         <button ref="doneButton" type="button" className="btn btn-primary btn-sm editable-submit" onClick={this.doneEditing.bind(this)}>
           <i className="glyphicon glyphicon-ok"></i>
         </button>
@@ -42,7 +46,10 @@ class TextDisplay extends Component {
       </div>
       <div style={display}>
         <i className="material-icons" style={{fontSize:"18px"}}>{this.props.icon}</i>
-        <span ref="text" onClick={this.clicked.bind(this)} className={this.state.editable ? 'editableInput clickable' : ''}>{this.state.text}</span>
+        <span>{"Seats Left: "}</span>
+        <span ref="text" onClick={this.clicked.bind(this)} className={this.state.editable ? 'editableInput clickable' : ''}>
+          {this.state.route.seats - this.state.route.confirmedRiders.length}
+          </span>
       </div>
     </div>
   }
@@ -60,23 +67,26 @@ class TextDisplay extends Component {
   }
 
   doneEditing() {
-    let text = this.refs.input.value;
+    let seats = parseInt(this.refs.input.value);
+
+    if (seats < this.state.route.confirmedRiders.length) {
+      this.props.eventEmitter.emit("notEnoughSeats");
+      return;
+    }
 
     $(this.refs.doneButton).button('loading');
 
     var me = this;
-    this.props.eventEmitter.emit("valueChanged", this.state.value, text, (textResponse, success) => {
-      me.state.text = text;
+    this.props.eventEmitter.emit("valueChanged", "seats", seats, (text, success) => {
+      console.log(text, success);
+      me.state.route.seats = seats;
+      me.refs.input.value = "";
       me.state.editing = false;
-      me.setState(me.state);
-
       $(me.refs.doneButton).button('reset');
       me.setState(me.state);
 
-      me.props.eventEmitter.emit(this.state.value + "Changed");
+      me.props.eventEmitter.emit("seatsChanged");
     });
-
-
   }
 
   clicked() {
@@ -86,11 +96,11 @@ class TextDisplay extends Component {
   }
 
   editingCancelled() {
-    this.refs.input.value = this.refs.text.innerHTML;
+    this.refs.input.value = "";
     this.state.editing = false;
     this.setState(this.state);
   }
 }
 
 
-export default TextDisplay
+export default SeatsDisplay

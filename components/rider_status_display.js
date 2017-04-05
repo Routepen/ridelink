@@ -59,13 +59,16 @@ class RiderStatusDisplay extends Component {
       var addedRider;
       for (var i = 0; i < me.state.riders.length; i++) {
         var rider = me.state.riders[i];
-        if (rider._id == this.state.riderId) {
+        if (rider._id == me.state.riderId) {
           addedRider = rider;
           me.state.riders.splice(i, 1);
           me.state.confirmedRiders.push(rider);
         }
       }
 
+      me.props.eventEmitter.emit("tableShouldChange");
+      me.props.eventEmitter.emit("seatsChanged");
+      me.props.eventEmitter.emit("riderConfirmed", addedRider);
       me.setState(me.state);
 
     });

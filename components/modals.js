@@ -17,13 +17,24 @@ class Modals extends Component {
       user: this.props.user,
       toShow: this.props.toShow
     };
+
+    var me = this;
+    this.props.eventEmitter.on("showPost", () => {
+      me.state.toShow.push(me.refs.fb);
+      me.show();
+    });
+
+    this.props.eventEmitter.on('requestRideClicked', () => {
+      me.state.toShow.push(me.refs.addRider);
+      me.show();
+    });
   }
 
   show() {
     if (this.state.toShow.length > 0) {
-      var id = this.state.toShow[0];
+      var modal = this.state.toShow[0];
       this.state.toShow.splice(0, 1);
-      $('#' + id).modal('show');
+      modal.show();
     }
   }
 
@@ -34,7 +45,7 @@ class Modals extends Component {
 
   render() {
     return <div>
-      <FacebookModal eventEmitter={this.props.eventEmitter} route={this.state.route}/>
+      <FacebookModal ref="fb" eventEmitter={this.props.eventEmitter} route={this.state.route}/>
 
       <SetupPaymentModal eventEmitter={this.props.eventEmitter} route={this.state.route}/>
 
@@ -44,13 +55,17 @@ class Modals extends Component {
 
       <LessThanZeroSeatsModal eventEmitter={this.props.eventEmitter} route={this.state.route}/>
 
-      <ConfirmAddRiderModal eventEmitter={this.props.eventEmitter} route={this.state.route} user={this.state.user}/>
+      <ConfirmAddRiderModal ref="addRider" eventEmitter={this.props.eventEmitter} route={this.state.route} user={this.state.user}/>
 
     </div>
 
   }
 
   componentDidMount() {
+    if (!this.props.opened && this.props.isDriver) {
+      this.state.toShow.push(this.refs.fb);
+    }
+
     this.show();
   }
 }

@@ -17,8 +17,12 @@ class ConfirmAddRiderModal extends Component {
     });
   }
 
+  show() {
+    $(this.refs.modal).modal("show");
+  }
+
   render() {
-    return <div className="modal fade" id="confirmAddRider" tabIndex="-1" role="dialog" aria-labelledby="confirmAddRider">
+    return <div ref="modal" className="modal fade" id="confirmAddRider" tabIndex="-1" role="dialog" aria-labelledby="confirmAddRider">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">

@@ -3,6 +3,9 @@ import Navbar from "./navbar"
 import Landing from "./landing"
 import DriverInput from "./driver_input"
 import MapView from "./map_view"
+const EventEmitter = require('events');
+
+class MyEmitter extends EventEmitter {}
 
 class NewRoute extends Component {
   constructor() {
@@ -23,8 +26,13 @@ class NewRoute extends Component {
       destination: "",
       destinationPlaceId: null,
       riders: [],
-      confirmedRiders: []
+      confirmedRiders: [],
+      stops: []
     };
+
+    this.eventEmitter = new MyEmitter();
+
+
   }
 
   render() {
@@ -36,7 +44,7 @@ class NewRoute extends Component {
             mapChanged={this.forceUpdate.bind(this)}
             stopsUpdated={this.forceUpdate.bind(this)}/>
         </div>
-        <MapView route={this.state.route}/>
+        <MapView eventEmitter={this.eventEmitter} route={this.state.route} page="new"/>
       </div>
     </div>
   }

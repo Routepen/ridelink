@@ -1,9 +1,14 @@
 import React, { Component } from 'react'
 import Heading from "./heading"
 import TextDisplay from "./text_display"
+import SeatsDisplay from "./seats_display"
+import DateDisplay from "./date_display"
+import TimeDisplay from "./time_display"
+import LocationDisplay from "./location_display"
 import Stops from "./stops"
 import Table from "./rider_table"
 import DropoffInput from "./dropoff_input"
+import RiderStatus from "./rider_status"
 
 
 class RouteInfo extends Component {
@@ -21,10 +26,6 @@ class RouteInfo extends Component {
     };
   }
 
-  keyPressed(e) {
-    if (e.keyCode == 13) { return false; }
-  }
-
   render() {
     let src = '';
     if (this.state.route.driver.facebook.photos &&
@@ -40,21 +41,6 @@ class RouteInfo extends Component {
     var isConfirmedRider = this.state.confirmedRider;
     var loggedIn = !!this.state.user;
 
-    let actionable = '';
-    if (loggedIn) {
-      if (!isDriver && !isConfirmedRider) {
-        actionable = <DropoffInput
-          routeId={this.state.route._id}
-          markers={this.state.markers}
-          eventEmitter={this.props.eventEmitter}/>
-      }
-    }
-    else {
-      actionable = <a href={"/auth/facebook?redirect=" + encodeURIComponent('/route?id=' + (this.state.route.shortId || this.state.route._id))}>
-        Login to Facebook to {this.state.route.confirmedRiders.length >= this.state.route.seats ? "join the waitlist" : "request a ride"}
-      </a>
-    }
-
     return <div>
           <Heading
             driver={this.state.route.driver}
@@ -63,41 +49,83 @@ class RouteInfo extends Component {
             isDriver={isDriver}
             eventEmitter={this.props.eventEmitter}/>
 
-          {actionable}
+          <RiderStatus
+            user={this.state.user}
+            route={this.state.route}
+            markers={this.state.markers}
+            isDriver={this.state.isDriver}
+            isRider={this.state.isRider}
+            isConfirmedRider={this.state.isConfirmedRider}
+            eventEmitter={this.props.eventEmitter} />
 
-          <TextDisplay text={this.state.route.origin} editable={isDriver} icon={"my_location"} />
+
+          <LocationDisplay
+            eventEmitter={this.props.eventEmitter}
+            value="origin"
+            route={this.state.route}
+            editable={isDriver}
+            icon={"my_location"}
+            iconClickable={false}
+            locationChanged={this.locationChanged.bind(this)}
+            page={"view"}/>
+
+
           <Stops
-            stops={this.state.route.stops}
+            eventEmitter={this.props.eventEmitter}
+            route={this.state.route}
             isDriver={isDriver}
-            stopsUpdated={this.stopsUpdated.bind(this)}/>
-          <TextDisplay text={this.state.route.destination} editable={isDriver} icon={"place"}/>
+            stopsUpdated={this.props.routeChanged}
+            page="view"/>
+
+          <LocationDisplay
+            eventEmitter={this.props.eventEmitter}
+            value="destination"
+            route={this.state.route}
+            editable={isDriver}
+            icon={"place"}
+            iconClickable={false}
+            locationChanged={this.locationChanged.bind(this)}
+            page={"view"}/>
 
           <br/>
 
-          <TextDisplay text={this.state.route.seats} editable={isDriver} icon={"event_seat"} />
-          <TextDisplay text={this.formatDate(this.state.route.date)} editable={isDriver} icon={"event"} />
-          <TextDisplay text={this.state.route.time} editable={isDriver} icon={"access_time"}/>
-          <TextDisplay text={this.state.route.inconvenience} editable={isDriver} icon={"attach_money"}/>
+          <SeatsDisplay
+            route={this.state.route}
+            editable={isDriver}
+            icon={"event_seat"}
+            eventEmitter={this.props.eventEmitter} />
+
+          <DateDisplay date={this.state.route.date} editable={isDriver} icon={"event"}       eventEmitter={this.props.eventEmitter}/>
+          <TimeDisplay time={this.state.route.time} editable={isDriver} icon={"access_time"} eventEmitter={this.props.eventEmitter}/>
+
+          <TextDisplay text={this.state.route.inconvenience} editable={false} icon={"attach_money"}/>
+
+
           <br/><br/>
           <Table
+            ref={"table"}
             user={this.state.user}
             routeId={this.state.route._id}
             isDriver={this.state.isDriver}
             route={this.state.route}
-            seats={this.state.route.seats}/>
+            seats={this.state.route.seats}
+            eventEmitter={this.props.eventEmitter} />
 
       </div>
 
   }
 
-  stopsUpdated() {
-    this.props.stopsUpdated();
+  keyPressed(e) {
+    if (e.keyCode == 13) { return false; }
   }
 
-  formatDate(date) {
-    return (date.getMonth() + 1) + "/" + date.getDate() + "/" + (date.getYear()-100);
+  tableShouldChange() {
+    this.refs.table.forceUpdate();
   }
 
+  locationChanged() {
+    this.props.routeChanged();
+  }
 
   componentDidMount() {
 

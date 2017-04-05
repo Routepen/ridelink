@@ -1,18 +1,18 @@
 import React, { Component } from 'react'
 
 
-class TextDisplay extends Component {
+class TimeDisplay extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      text: this.props.text,
+      time: this.props.time,
       editable: this.props.editable,
-      value: this.props.value,
       editing: false
     };
   }
+
   render() {
 
     var hiddenStyle = {display: "none"}, normal = {};
@@ -31,8 +31,8 @@ class TextDisplay extends Component {
     return <div className="form-inline editableform">
       <div style={editable}>
         <i className="material-icons" style={{fontSize:"18px"}}>{this.props.icon}</i>
-        <input ref="input" type="text" className="form-control input-sm" style={{width: "60%"}} defaultValue={this.state.text}
-          onKeyPress={this.keyPressed(this)}/>
+        <input ref="input" type="text" className="form-control input-sm" style={{width: "60%"}}
+          onKeyPress={this.keyPressed(this)} defaultValue={this.state.time}/>
         <button ref="doneButton" type="button" className="btn btn-primary btn-sm editable-submit" onClick={this.doneEditing.bind(this)}>
           <i className="glyphicon glyphicon-ok"></i>
         </button>
@@ -42,7 +42,7 @@ class TextDisplay extends Component {
       </div>
       <div style={display}>
         <i className="material-icons" style={{fontSize:"18px"}}>{this.props.icon}</i>
-        <span ref="text" onClick={this.clicked.bind(this)} className={this.state.editable ? 'editableInput clickable' : ''}>{this.state.text}</span>
+        <span ref="text" onClick={this.clicked.bind(this)} className={this.state.editable ? 'editableInput clickable' : ''}>{this.state.time}</span>
       </div>
     </div>
   }
@@ -59,24 +59,33 @@ class TextDisplay extends Component {
     this.refs.input.focus()
   }
 
+  componentDidMount() {
+    var me = this;
+    $(function () {
+      $(me.refs.input).timepicker({
+          template: false,
+          showInputs: false,
+          minuteStep: 5
+      });
+    });
+  }
+
   doneEditing() {
-    let text = this.refs.input.value;
+    var time = this.refs.input.value;
 
     $(this.refs.doneButton).button('loading');
 
     var me = this;
-    this.props.eventEmitter.emit("valueChanged", this.state.value, text, (textResponse, success) => {
-      me.state.text = text;
+    this.props.eventEmitter.emit("valueChanged", "time", time, (textResponse, success) => {
+      me.state.time = time;
       me.state.editing = false;
-      me.setState(me.state);
 
-      $(me.refs.doneButton).button('reset');
-      me.setState(me.state);
+      $(this.refs.doneButton).button('reset');
+      me.setState(this.state);
 
-      me.props.eventEmitter.emit(this.state.value + "Changed");
+      me.props.eventEmitter.emit("timeChanged");
+
     });
-
-
   }
 
   clicked() {
@@ -93,4 +102,4 @@ class TextDisplay extends Component {
 }
 
 
-export default TextDisplay
+export default TimeDisplay

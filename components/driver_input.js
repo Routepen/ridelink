@@ -35,9 +35,11 @@ class DriverInput extends Component {
                                defaultValue={this.state.route.origin}/>
                     </div>
                     <Stops
-                      stops={this.props.route.stops}
+                      route={this.state.route}
                       stopsUpdated={this.props.stopsUpdated.bind(this)}
-                      creatingRoute={true}/>
+                      creatingRoute={true}
+                      isDriver={true}
+                      page="new"/>
                     <div>
                         <i className="material-icons" style={{paddingLeft: "10px"}}>place</i>
                         <input autoFocus id="destination-input" name="destination" className="controls" type="text"
@@ -62,7 +64,7 @@ class DriverInput extends Component {
 
                         <br/><br/>
                         <input type="submit" id="create-route" className="btn btn-md btn-success" value="Create Route" onClick={this.submitForm.bind(this)}/>
-                        <input type="submit" id="create-route" className="btn btn-md btn-success" value="p" onClick={console.log.bind(null, this.state)}/>
+                        <input type="submit" id="print-state" className="btn btn-md btn-success" value="p" onClick={console.log.bind(null, this.state)}/>
                     </div>
                 </div>
 
@@ -130,6 +132,8 @@ class DriverInput extends Component {
 
   submitForm() {
 
+    $('#create-route').button("loading");
+
     var seats = document.getElementById("num-seats");
     var charge = document.getElementById("charge");
     var requireInitialDeposit = document.getElementById("requireInitialDeposit");
@@ -139,8 +143,12 @@ class DriverInput extends Component {
     let data = {
       origin: this.state.route.origin,
       destination: this.state.route.destination,
-      stops: this.state.route.stops.map(stop => {
+      stops: this.state.route.stops
+      .map(stop => {
         return stop.place.name
+      })
+      .filter(stop => {
+        return stop;
       }),
       seats: seats.value,
       charge: charge.value.replace('$', ''),

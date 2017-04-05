@@ -10,7 +10,8 @@ class Heading extends Component {
       driver: this.props.driver,
       user: this.props.user,
       route: this.props.route,
-      isDriver: this.props.isDriver
+      isDriver: this.props.isDriver,
+      showing: false
     };
   }
   render() {
@@ -18,13 +19,17 @@ class Heading extends Component {
     if (this.state.isDriver) {
       below = <div className="panel panel-default" >
         <div className="panel-heading panel-button btn-group" id="link-panel" style={{display: "flex", justifyContent: "space-between"}}>
-          <a className="btn btn-md"  href="javascript:void(0);">
-              <span id="getLinkText">Copy link</span>  <span className="glyphicon glyphicon-paperclip" > </span>
+          <a className="btn btn-md"  href="javascript:void(0);" onClick={this.clicked.bind(this)}>
+              <span id="getLinkText">{this.state.showing ? "Hide Link" : "Copy link"}</span>
+              <span className="glyphicon glyphicon-paperclip" > </span>
           </a>
           <a className="btn btn-md" href="/route?id=<%= this.state.route.shortId || this.state.route._id %>&view=rider">
               <span id="getLinkText">View as Rider</span>
           </a>
-          <a className="btn btn-md" href="javascript:void(0);"> Show Post </a>
+          <a className="btn btn-md" href="javascript:void(0);" onClick={this.showPost.bind(this)}> Show Post </a>
+        </div>
+        <div ref="link" id="shareableLink" className="panel-body getlink-container" style={{display: "none"}}>
+            <input ref="link" onClick={this.select.bind(this)} className=" form-control" readOnly="readonly" value={window.location.href}/>
         </div>
       </div>
     }
@@ -45,7 +50,26 @@ class Heading extends Component {
         </h2>
         {below}
       </div>
+  }
 
+  clicked() {
+    if (this.state.showing) {
+      $(this.refs.link).hide();
+    }
+    else {
+      $(this.refs.link).show();
+    }
+    this.state.showing = !this.state.showing;
+
+    this.setState(this.state);
+  }
+
+  select() {
+    this.refs.link.focus();
+  }
+
+  showPost() {
+    this.props.eventEmitter.emit("showPost");
   }
 }
 

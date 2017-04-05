@@ -10,10 +10,27 @@ class MapView extends Component {
 
     this.googleMarkers = {};
     this.infoWindows = {};
+
+    var me = this;
+    this.props.eventEmitter.on("riderClicked", rider => {
+      if (me.infoWindows[rider._id]) {
+        let marker = me.googleMarkers[rider._id];
+        let latLng = marker.getPosition();
+        let map = me.map;
+
+        me.infoWindows[rider._id].open(map, marker);
+        map.setCenter(latLng);
+      }
+    });
+
+    this.props.eventEmitter.on("riderConfirmed", rider => {
+      me.route(() => {
+        me.infoWindows[rider._id].close();
+      });
+    })
   }
 
   render() {
-    console.log("rendering");
     if (this.map && this.state.route.originPlaceId && this.state.route.destinationPlaceId) {
       this.route();
     }
@@ -21,8 +38,7 @@ class MapView extends Component {
     return <div id="map"></div>
   }
 
-  route() {
-    console.log(this.state);
+  route(callback) {
     var origin, destination;
     if (this.state.route.originPlaceId && this.state.route.destinationPlaceId) {
       origin = {placeId: this.state.route.originPlaceId};
@@ -48,15 +64,17 @@ class MapView extends Component {
         return;
       }
 
-      waypoints.push({
-        location: place.name,
-        stopover: true,
-      });
+      if (place.name) {
+        waypoints.push({
+          location: place.name,
+          stopover: true,
+        });
+      }
     }
 
     this.state.route.confirmedRiders.forEach(rider => {
       waypoints.push({
-        location: this.state.route.dropOffs[rider._id],
+        location: me.state.route.dropOffs[rider._id],
         stopover: true
       });
     });
@@ -71,6 +89,7 @@ class MapView extends Component {
         if (status === 'OK') {
             me.directionsDisplay.setDirections(response);
             me.setMarkers();
+            if (callback) callback();
         } else {
             window.alert('Directions request failed due to ' + status);
         }
@@ -88,9 +107,9 @@ class MapView extends Component {
     this.state.route.riders.forEach(rider => { allRiders.push(rider); });
     this.state.route.confirmedRiders.forEach(rider => { allRiders.push(rider); });
 
-    allRiders.forEach(rider => {
+    allRiders.forEach((rider,i) => {
+      let isConfirmed = i >= me.state.route.riders.length;
       let riderId = rider._id;
-      console.log(me.state.route.dropOffs[riderId]);
       me.geocoder.geocode( { 'address': me.state.route.dropOffs[riderId] }, function(results, status) {
         if (results.length == 0) {
           return;
@@ -108,7 +127,15 @@ class MapView extends Component {
         // }
 
         const span = document.createElement("span");
-        const content = <div><a href={rider.facebook.link}>{rider.facebook.name}</a></div>;
+        let confirm = '';
+        if (!isConfirmed && me.state.isDriver) {
+          var id = "confirmButton" + rider._id;
+            confirm = <span>
+            <br/>
+            <button id={id} onClick={me.riderConfirmed.bind(me, rider, id)} className="btn btn-success btn-xs">Confirm</button>
+          </span>
+        }
+        const content = <div><a href={rider.facebook.link}>{rider.facebook.name}</a>{confirm}</div>;
         ReactDOM.render(content, span);
 
         var infowindow = new google.maps.InfoWindow({
@@ -122,6 +149,36 @@ class MapView extends Component {
         me.googleMarkers[rider._id] = marker;
         me.infoWindows[rider._id] = infowindow;
       });
+    });
+  }
+
+  riderConfirmed(rider, id) {
+    var post = {
+      userId: rider._id,
+      routeId: this.state.route._id
+    };
+
+    $("#" + id).button('loading');
+
+    var me = this;
+    $.post("/route/confirmrider", post, function(data, textStatus) {
+      console.log(data, textStatus);
+      var addedRider;
+      for (var i = 0; i < me.state.route.riders.length; i++) {
+        var r = me.state.route.riders[i];
+        if (r._id == rider._id) {
+          addedRider = r;
+          me.state.route.riders.splice(i, 1);
+          me.state.route.confirmedRiders.push(r);
+        }
+      }
+
+      me.setState(me.state);
+
+      me.props.eventEmitter.emit("tableShouldChange");
+      me.props.eventEmitter.emit("seatsChanged");
+      me.props.eventEmitter.emit("riderConfirmed", addedRider);
+
     });
   }
 
@@ -189,12 +246,49 @@ class MapView extends Component {
     });
 
     this.directionsService = new google.maps.DirectionsService;
-    this.directionsDisplay = new google.maps.DirectionsRenderer;
+    this.directionsDisplay = new google.maps.DirectionsRenderer({
+      suppressMarkers: this.state.page != "new"
+    });
     this.geocoder = new google.maps.Geocoder();
     this.directionsDisplay.setMap(this.map);
-    //this.directionsDisplay.setOptions( { suppressMarkers: true } );
+
+    if (this.state.route.origin && this.state.page != "new") {
+      this.setUpEndPoints();
+    }
 
     this.route();
+  }
+
+  setUpEndPoints() {
+    console.log("setting up endpoitns");
+    var me = this;
+    this.geocoder.geocode( { 'address': this.state.route.origin }, function(results, status) {
+      if (results.length == 0) {
+        return;
+      }
+
+      me.originMarker = new google.maps.Marker({
+        map: me.map,
+        position: results[0].geometry.location,
+        label: "A"
+      });
+
+
+    });
+
+    this.geocoder.geocode( { 'address': this.state.route.destination }, function(results, status) {
+      if (results.length == 0) {
+        return;
+      }
+
+      me.destinationMarker = new google.maps.Marker({
+        map: me.map,
+        position: results[0].geometry.location,
+        label: "B"
+      });
+
+    });
+
   }
 }
 

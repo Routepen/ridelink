@@ -1,50 +1,83 @@
 import React, { Component } from 'react'
+import LocationDisplay from './location_display'
 
 class Stops extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      stops: this.props.stops,
+      route: this.props.route,
       isDriver: this.props.isDriver,
-      creatingRoute: this.props.creatingRoute
+      creatingRoute: this.props.creatingRoute,
+      page: this.props.page
     };
 
-    this.props.stops.forEach((stop, i) => {
-      this.state.stops.push({
-        name: stop,
+    this.props.route.stops.forEach((stop, i) => {
+      this.state.route.stops[i] = {
+        place: {name: stop},
         index: i,
         finalized: true
-      });
+      };
     })
   }
 
   render() {
     let stops = [];
-    for (var i = 0; i < this.state.stops.length; i++) {
+    for (var i = 0; i < this.state.route.stops.length; i++) {
       var display = null;
-      var stop = this.state.stops[i];
+      var stop = this.state.route.stops[i];
       var id = "stop" + stop.index;
-      if (stop.finalized) {
-        display = <span id={id} style={{fontSize: "18px"}}>{stop.name || stop.place.name}</span>
+
+      var style = {
+        fontSize: "17px",
+        marginLeft: "14px",
+        position: "relative",
+        top: "-6px"
+      };
+
+      if (this.state.page == "new") {
+        style = {
+
+        };
       }
-      else {
-        display = <input id={id} name="origin" className="stop-input controls"
-             type="text" placeholder="Enter a stop..." onPaste=""
-             style={{marginLeft: "12px", paddingLeft: "12px"}}/>
+      else if (this.state.page == "view") {
+        style = {
+          fontSize: "18px",
+          marginLeft: "22px"
+        };
       }
+
+      display = <LocationDisplay
+        eventEmitter={this.props.eventEmitter}
+        ref={"locationDisplay" + stop.index}
+        text={stop.place.name}
+        route={this.state.route}
+        value={"stop"}
+        editable={this.state.isDriver}
+        icon={"remove_circle"}
+        iconClickable={true}
+        iconClicked={this.removeStop.bind(this, stop.index)}
+        locationChanged={this.stopChanged(stop.index)}
+        removeMe={this.removeStop.bind(this, stop.index)}
+        page={this.state.page}/>
 
 
       var stopDiv = <div key={i}>
-        <i className="material-icons clickable" style={{paddingLeft: "10px"}}
-        onClick={this.removeStop.bind(this, stop.index)}>remove_circle</i>
         {display}
       </div>
 
       stops.push(stopDiv);
     }
 
-    var button = <button className="btn" style={{width: "200px", marginLeft: "46px", backgroundColor: "white", color: "#0c84e4"}} onClick={this.addStop.bind(this)}>
+    var buttonStyle = {};
+    if (this.state.page == "view") {
+      buttonStyle = {width: "200px", marginLeft: "38px"};
+    }
+    else if (this.state.page == "new") {
+      buttonStyle = {width: "200px", marginLeft: "46px", backgroundColor: "white", color: "#0c84e4"};
+    }
+
+    var button = <button className="btn btn-primary" style={buttonStyle} onClick={this.addStop.bind(this)}>
       Add Stop
     </button>
 
@@ -58,60 +91,57 @@ class Stops extends Component {
     </div>
   }
 
-  componentDidUpdate() {
-    // wait for dom to be rendered
-    window.requestAnimationFrame(() => {
-      console.log("updating");
-      var stops = this.state.stops;
-      for (var i = 0; i < stops.length; i++) {
-        if (!stops[i].autocomplete && !stops[i].finalized) {
-          var id = "stop" + stops[i].index;
-          var autocomplete = new google.maps.places.Autocomplete(
-            document.getElementById(id), {placeIdOnly: true});
-
-          autocomplete.addListener('place_changed', this.stopChanged.bind(this, stops[i].index));
-
-          stops[i].autocomplete = autocomplete;
-        }
-      }
-    });
-  }
-
   addStop() {
     // let stops = this.stops;
     // stops.push({index:stops.length, finalized: false});
     // this.stops = stops;
-    this.state.stops.push({index:this.state.stops.length, finalized: false});
+    var index = Math.max.apply(null, this.state.route.stops.map(s => { return s.index }) ) + 1;
+    this.state.route.stops.push({index:index, finalized: false, place:{}});
+    this.setFocusOn = index;
     this.setState(this.state);
   }
 
+  componentDidUpdate() {
+      if (this.setFocusOn != undefined) {
+        this.refs["locationDisplay" + this.setFocusOn].focus();
+      }
+      this.setFocusOn = undefined
+  }
+
   removeStop(index) {
-    console.log("removing", index);
-    for (var i = 0; i < this.state.stops.length; i++) {
-      if (this.state.stops[i].index == index) {
-        this.state.stops.splice(i, 1);
+    for (var i = 0; i < this.state.route.stops.length; i++) {
+      if (this.state.route.stops[i].index == index) {
+        this.state.route.stops.splice(i, 1);
       }
     }
+    let stopStrings = this.state.route.stops.map(stop => {
+      return stop.place.name;
+    }).filter(s => { return s; });
+
+    var me = this;
+    this.props.eventEmitter.emit("valueChanged", "stops[]", stopStrings, (text, success) => {
+
+    });
     this.setState(this.state);
     this.props.stopsUpdated();
   }
 
   stopChanged(index) {
-    console.log("changed", index);
-    var stops = this.state.stops;
-    for (var i = 0; i < stops.length; i++) {
-      if (stops[i].index == index) {
-        stops[i].place = stops[i].autocomplete.getPlace();
-        stops[i].finalized = true;
+    var me = this;
+    return autocomplete => {
+      var stops = me.state.route.stops;
+      for (var i = 0; i < stops.length; i++) {
+        if (stops[i].index == index) {
+          stops[i].place = autocomplete.getPlace();
+          stops[i].finalized = true;
+        }
       }
+
+      me.state.route.stops = stops;
+      this.setState(me.state);
+
+      me.props.stopsUpdated();
     }
-
-    this.state.stops = stops;
-
-    console.log(this.state);
-    this.setState(this.state);
-
-    this.props.stopsUpdated();
   }
 
 

@@ -9,10 +9,16 @@ class LessThanZeroSeatsModal extends Component {
     this.state = {
       route: this.props.route
     };
+
+    this.props.eventEmitter.on("notEnoughSeats", this.show.bind(this));
+  }
+
+  show() {
+    $(this.refs.modal).modal('show');
   }
 
   render() {
-    return <div className="modal fade" id="lessThanZeroSeats" tabIndex="-1" role="dialog" aria-labelledby="lessThanZeroSeats">
+    return <div ref="modal" className="modal fade" id="lessThanZeroSeats" tabIndex="-1" role="dialog" aria-labelledby="lessThanZeroSeats">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">

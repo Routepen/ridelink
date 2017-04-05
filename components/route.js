@@ -34,10 +34,6 @@ class Route extends Component {
       me.refs.mapview.markerAdded(marker);
     });
 
-    this.eventEmitter.on('requestRideClicked', () => {
-      me.refs.modals.add("confirmAddRider");
-    });
-
     this.eventEmitter.on('rideRequested', (rider, address) => {
       me.refs.mapview.removeRequestMarker();
       me.refs.mapview.markerAdded({
@@ -48,12 +44,31 @@ class Route extends Component {
       me.forceUpdate();
     });
 
+    this.eventEmitter.on('tableShouldChange', () => {
+      console.log("tsc1");
+      me.refs.routeInfo.tableShouldChange();
+    });
+
+    this.eventEmitter.on('valueChanged', (key, newValue, cb) => {
+      let data = {
+        routeId: me.state.routeData._id,
+        updating: key
+      };
+
+      data[key] = newValue;
+      console.log('sending', data);
+
+      $.post("/route/update", data, cb);
+    });
+
   }
 
   render() {
     return <div>
       <Navbar user={this.state.user}/>
       <Modals ref="modals"
+        isDriver={this.state.isDriver}
+        opened={this.state.opened}
         eventEmitter={this.eventEmitter}
         toShow={[]} route={this.state.routeData}
         user={this.state.user}/>
@@ -61,6 +76,7 @@ class Route extends Component {
       <div id="content" className="fill" style={{overflow: "scroll", height: "100%"}}>
         <div className="col-md-4 core-container">
           <RouteInfo
+            ref={"routeInfo"}
             eventEmitter={this.eventEmitter}
             markers={this.state.markers}
             route={this.state.routeData}
@@ -69,24 +85,25 @@ class Route extends Component {
             isRider={this.state.isRider}
             confirmedRider={this.state.confirmedRider}
             mapChanged={this.forceUpdate.bind(this)}
-            stopsUpdated={this.stopsUpdated.bind(this)}/>
+            routeChanged={this.routeChanged.bind(this)}/>
 
             <button onClick={console.log.bind(null, this.state)}>Print</button>
         </div>
         <MapView
           ref="mapview"
+          page="view"
           eventEmitter={this.eventEmitter}
           route={this.state.routeData}
           markers={this.state.markers}
           confirmationMarker={this.state.confirmationMarker}
+          isDriver={this.state.isDriver}
            />
       </div>
     </div>
   }
 
-  stopsUpdated() {
-    console.log("stops updated");
-    console.log(this.state.routeData.stops);
+  routeChanged() {
+    console.log('route changed');
     this.refs.mapview.route();
   }
 

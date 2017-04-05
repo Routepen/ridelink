@@ -1,18 +1,23 @@
 import React, { Component } from 'react'
 
 
-class TextDisplay extends Component {
+class DateDisplay extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      text: this.props.text,
+      date: this.props.date,
+      text: this.formatDate(this.props.date),
       editable: this.props.editable,
-      value: this.props.value,
       editing: false
     };
   }
+
+  formatDate(date) {
+    return (date.getMonth() + 1) + "/" + date.getDate() + "/" + (date.getYear()-100);
+  }
+
   render() {
 
     var hiddenStyle = {display: "none"}, normal = {};
@@ -32,7 +37,7 @@ class TextDisplay extends Component {
       <div style={editable}>
         <i className="material-icons" style={{fontSize:"18px"}}>{this.props.icon}</i>
         <input ref="input" type="text" className="form-control input-sm" style={{width: "60%"}} defaultValue={this.state.text}
-          onKeyPress={this.keyPressed(this)}/>
+          onKeyPress={this.keyPressed(this)} />
         <button ref="doneButton" type="button" className="btn btn-primary btn-sm editable-submit" onClick={this.doneEditing.bind(this)}>
           <i className="glyphicon glyphicon-ok"></i>
         </button>
@@ -59,24 +64,27 @@ class TextDisplay extends Component {
     this.refs.input.focus()
   }
 
-  doneEditing() {
-    let text = this.refs.input.value;
-
-    $(this.refs.doneButton).button('loading');
-
+  componentDidMount() {
     var me = this;
-    this.props.eventEmitter.emit("valueChanged", this.state.value, text, (textResponse, success) => {
-      me.state.text = text;
+    $(function () {
+      $(me.refs.input).datepicker();
+    });
+  }
+
+  doneEditing() {
+    let date = new Date(this.refs.input.value);
+    let me = this;
+    $(this.refs.doneButton).button("loading");
+    this.props.eventEmitter.emit("valueChanged", "date", date, (text, success) => {
+      me.state.date = date;
+      me.state.text = this.formatDate(me.state.date);
       me.state.editing = false;
-      me.setState(me.state);
 
       $(me.refs.doneButton).button('reset');
       me.setState(me.state);
 
-      me.props.eventEmitter.emit(this.state.value + "Changed");
+      me.props.eventEmitter.emit("dateChanged");
     });
-
-
   }
 
   clicked() {
@@ -93,4 +101,4 @@ class TextDisplay extends Component {
 }
 
 
-export default TextDisplay
+export default DateDisplay

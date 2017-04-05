@@ -11,9 +11,14 @@ class FacebookModal extends Component {
     };
   }
 
+  show() {
+    $(this.refs.modal).modal("show");
+    this.refs.message.focus();
+  }
+
   render() {
     var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    return <div className="modal fade" id="facebookModal" tabIndex="-1" role="dialog" aria-labelledby="facebookModal">
+    return <div ref="modal" className="modal fade" id="facebookModal" tabIndex="-1" role="dialog" aria-labelledby="facebookModal">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -22,7 +27,7 @@ class FacebookModal extends Component {
               <hr/>
           </div>
           <div className="modal-body">
-            <div contentEditable="true" id="contentEditableMessageDiv">
+            <div ref="message" contentEditable="true" id="contentEditableMessageDiv">
               <div>
                 {
                   "Driving to " +
@@ -38,14 +43,14 @@ class FacebookModal extends Component {
                   ". " +
                   this.state.route.seats +
                   " spots available, $" +
-                  this.state.inconvenience +
-                  "per seat."
+                  this.state.route.inconvenience +
+                  " per seat."
                 }
               </div>
               <br/>
               <div>To all interested riders, enter your drop-off location in the link below and I'll confirm you if I see a fit! Otherwise you'll be added to the waitlist. PM me if you have any questions!</div>
               <br/>
-              <a id="selfLink"></a>
+              <a href={window.location.href}>{window.location.href}</a>
             </div>
 
           </div>

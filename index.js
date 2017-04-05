@@ -776,25 +776,29 @@ app.post('/route/update', function(req, res) {
       });
     });
 
-    if (updating == "time") {
-      var t = req.body[updating];
-      var parts = t.split(":");
-      var s = parseInt(parts[0]);
-      if (!isNaN(s)) {
-        if (s == 0) {
-          t =  "12:" + parts[1] + " AM";
-        }
-        else if (s < 12) { t += " AM"; }
-        else if (s == 12) { t += " PM"; }
-        else {
-          if (parts.length > 1) {
-              t = (s-12) + ":" + parts[1] + " PM";
-          }
-        }
-      }
-      req.body[updating] = t;
-    }
-    if (req.body[updating] && req.body[updating] != "") {
+    // if (updating == "time") {
+    //   var t = req.body[updating];
+    //   var parts = t.split(":");
+    //   var s = parseInt(parts[0]);
+    //   if (!isNaN(s)) {
+    //     if (s == 0) {
+    //       t =  "12:" + parts[1] + " AM";
+    //     }
+    //     else if (s < 12) { t += " AM"; }
+    //     else if (s == 12) { t += " PM"; }
+    //     else {
+    //       if (parts.length > 1) {
+    //           t = (s-12) + ":" + parts[1] + " PM";
+    //       }
+    //     }
+    //   }
+    //   req.body[updating] = t;
+    // }
+
+    console.log()
+    if (updating == "stops[]" && !req.body[updating]) { req.body['stops[]'] = []; }
+
+    if (req.body[updating] && req.body[updating] !== "") {
       var updating2 = updating;
       if (updating == "stops[]") {
         updating2 = "stops";
