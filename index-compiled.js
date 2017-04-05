@@ -81,13 +81,14 @@ app.get('/', function (req, res) {
 	res.render('new_landing', data);
 });
 
-app.post('/search', function (req, res) {
+app.get('/search', function (req, res) {
 	console.log(req.data.origin, req.data.destination);
 
 	var data = {
 		user: req.user,
 		url: req.url
 	};
+
 	/*
  var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
  	console.log(util.inspect(JSON.parse(body), {depth:null}))
