@@ -91,7 +91,8 @@ app.get('/', function (req, res) {
 		url: req.url
 	};
 
-	res.render('index', {data:data});
+	res.render('new_landing', data);
+	//res.render('index', {data:data});
 });
 
 app.get('/search', function(req,res){
