@@ -13,7 +13,10 @@
             <div class="input-group">
                 <div class="col-md-6">
                     <input type="text" id="search-origin" class="form-control" size="20" placeholder="Enter your origin"
-                           onPaste="" onkeydown="if (event.keyCode == 13) { return false;}" >
+                           onPaste="" onkeydown="if (event.keyCode == 13) { return false;}"
+                           <% if (url == '/') { %>
+                           autofocus
+                           <% } %>>
                 </div>
                 <div class="col-md-6">
                     <input type="text" id="search-destination" class="form-control" size="20" placeholder="Enter your destination"  onPaste=""
@@ -110,7 +113,7 @@
                 posted = false;
             }
         })
-                .error(function() { alert("Request failed."); });
-    }
+         .error(function() { alert("Request failed."); });
+            }
 
 </script>
