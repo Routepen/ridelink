@@ -18,6 +18,8 @@ class Route extends Component {
     var data = JSON.parse(txt.value);
     console.log(data);
 
+    if (data.view == "rider") { data.isDriver = false; }
+
     this.state = data;
     this.state.routeData.date = new Date(this.state.routeData.date);
 
@@ -45,7 +47,6 @@ class Route extends Component {
     });
 
     this.eventEmitter.on('tableShouldChange', () => {
-      console.log("tsc1");
       me.refs.routeInfo.tableShouldChange();
     });
 

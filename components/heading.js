@@ -23,7 +23,7 @@ class Heading extends Component {
               <span id="getLinkText">{this.state.showing ? "Hide Link" : "Copy link"}</span>
               <span className="glyphicon glyphicon-paperclip" > </span>
           </a>
-          <a className="btn btn-md" href="/route?id=<%= this.state.route.shortId || this.state.route._id %>&view=rider">
+          <a className="btn btn-md" href={"/route?id=" + (this.state.route.shortId || this.state.route._id) + "&view=rider"}>
               <span id="getLinkText">View as Rider</span>
           </a>
           <a className="btn btn-md" href="javascript:void(0);" onClick={this.showPost.bind(this)}> Show Post </a>
