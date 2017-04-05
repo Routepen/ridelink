@@ -39,6 +39,16 @@ var publicConfig = {
 	secure: true };
 var gmAPI = new GoogleMapsAPI(publicConfig);
 
+var config = require('./webpack.config.js');
+var webpack = require('webpack');
+var webpackDevMiddleware = require('webpack-dev-middleware');
+var webpackHotMiddleware = require('webpack-hot-middleware');
+
+var compiler = webpack(config);
+
+app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
+app.use(webpackHotMiddleware(compiler));
+
 /*
 const isAuthenticated = (req, res, next) =>
 	if (req.isAuthenticated())
@@ -78,7 +88,7 @@ app.get('/', function (req, res) {
 		url: req.url
 	};
 
-	res.render('new_landing', data);
+	res.render('index', { data: data });
 });
 
 app.get('/search', function (req, res) {
@@ -168,7 +178,7 @@ app.get('/route', function (req, res) {
 			paymentConfirmed: req.query.status == "paymentConfirmed"
 		};
 
-		res.render('route', data);
+		res.render('route', { data: data });
 	};
 
 	var id = req.query.id;
@@ -192,7 +202,7 @@ app.get('/route/new', function (req, res) {
 		creatingRoute: true
 	};
 
-	res.render('route', data);
+	res.render('new_route', { data: data });
 });
 
 app.get('/route/all', function (req, res) {
@@ -304,7 +314,7 @@ app.post('/route/addrider', function (req, res) {
 				if (err) {
 					console.log(err);return res.end(err.toString());
 				}
-				res.end("");
+				res.json({});
 			});
 		});
 	});
@@ -810,26 +820,31 @@ app.post('/route/update', function (req, res) {
 			});
 		});
 
-		if (updating == "time") {
-			var t = req.body[updating];
-			var parts = t.split(":");
-			var s = parseInt(parts[0]);
-			if (!isNaN(s)) {
-				if (s == 0) {
-					t = "12:" + parts[1] + " AM";
-				} else if (s < 12) {
-					t += " AM";
-				} else if (s == 12) {
-					t += " PM";
-				} else {
-					if (parts.length > 1) {
-						t = s - 12 + ":" + parts[1] + " PM";
-					}
-				}
-			}
-			req.body[updating] = t;
+		// if (updating == "time") {
+		//   var t = req.body[updating];
+		//   var parts = t.split(":");
+		//   var s = parseInt(parts[0]);
+		//   if (!isNaN(s)) {
+		//     if (s == 0) {
+		//       t =  "12:" + parts[1] + " AM";
+		//     }
+		//     else if (s < 12) { t += " AM"; }
+		//     else if (s == 12) { t += " PM"; }
+		//     else {
+		//       if (parts.length > 1) {
+		//           t = (s-12) + ":" + parts[1] + " PM";
+		//       }
+		//     }
+		//   }
+		//   req.body[updating] = t;
+		// }
+
+		console.log();
+		if (updating == "stops[]" && !req.body[updating]) {
+			req.body['stops[]'] = [];
 		}
-		if (req.body[updating] && req.body[updating] != "") {
+
+		if (req.body[updating] && req.body[updating] !== "") {
 			var updating2 = updating;
 			if (updating == "stops[]") {
 				updating2 = "stops";
