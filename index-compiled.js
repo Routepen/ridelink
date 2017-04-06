@@ -14,6 +14,7 @@ const util = require('util');
 const _ = require("lodash");
 const app = express();
 const GoogleMapsAPI = require('googlemaps');
+const jsonfile = require('jsonfile');
 
 const auth = require("./auth");
 const mail = require("./mail");
@@ -88,12 +89,81 @@ app.get('/', function (req, res) {
 		url: req.url
 	};
 
-	res.render('index', { data: data });
+	res.render('new_landing', data);
+	//res.render('index', {data:data});
 });
 
 app.get('/search', function (req, res) {
-	console.log(req.data.origin, req.data.destination);
+	//TODO do error checking for when they give us wrong input
+	var originCoor, destinationCoor;
 
+	// For Google Maps
+	var originText = {
+		"address": req.query.origin
+	};
+	var destinationText = {
+		"address": req.query.destination
+	};
+
+	var file = './geolocation_cache.json';
+
+	let jsonFile = new Promise((resolve, reject) => {
+		jsonfile.readFile(file, function (err, obj) {
+			originCoor = obj[req.query.origin];
+			destinationCoor = obj[req.query.destination];
+			resolve([originCoor, destinationCoor]);
+		});
+	});
+	jsonFile.then(function (data) {
+		return new Promise((resolve, reject) => {
+			if (data[0] == undefined) {
+				gmAPI.geocode(originText, function (err, result) {
+					if (err)
+						//TODO return to home page with a message saying incorrect destination. Try client side verification not server
+
+						originCoor = result.results[0].geometry.location;
+				});
+				console.log(data[0]);
+			}
+			if (data[1] == undefined) {
+				gmAPI.geocode(destinationText, function (err, result) {
+					if (err)
+						//TODO return to home page with a message saying incorrect destination
+						destinationCoor = result.results[0].geometry.location;
+				});
+				console.log(data[1]);
+			}
+			//TODO doesn't resolve data[1] call to google maps
+			resolve([data[0], data[1]]);
+		});
+	}).then(function (data) {
+		console.log(data);
+	});
+
+	/*
+ jsonfile.readFile(file, function(err,obj){
+ 	originCoor = obj[req.query.origin];
+ 	destinationCoor = obj[req.query.destination];
+ 	if(originCoor == undefined){
+ 		gmAPI.geocode(originText, function(err, result){
+ 			if(err)
+ 			//TODO return to home page with a message saying incorrect destination. Try client side verification not server
+ 
+ 				originCoor = result.results[0].geometry.location;
+ 		});
+ 	}
+ 	if(destinationCoor == undefined){
+ 		gmAPI.geocode(destinationText, function(err, result){
+ 			if(err)
+ 			//TODO return to home page with a message saying incorrect destination
+ 				destinationCoor = result.results[0].geometry.location;
+ 		});
+ 	}
+ 	console.log(originCoor, destinationCoor);
+ 
+ });
+ 
+ */
 	var data = {
 		user: req.user,
 		url: req.url
@@ -556,7 +626,14 @@ app.post('/route/new', function (req, res) {
 	//   req.body.time = t;
 	// }
 
+	var originCoor, destinationCoor;
 	//TODO geocode the origin and distance (check to see if it's in the cache already), then enter it as total distance
+	gmAPI.geocode(req.body.destination, function (err, result) {
+		destinationCoor = result.results[0].geometry.location;
+	});
+	gmAPI.geocode(req.body.origin, function (err, result) {
+		originCoor = result.results[0].geometry.location;
+	});
 
 	var newRoute;
 	try {
@@ -564,6 +641,8 @@ app.post('/route/new', function (req, res) {
 			shortId: random(5),
 			origin: req.body.origin,
 			destination: req.body.destination,
+			originCoor: originCoor,
+			destinationCoor: destinationCoor,
 			seats: req.body.seats,
 			date: date,
 			time: req.body.time,

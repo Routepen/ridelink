@@ -6,8 +6,8 @@ var polyline = require('@mapbox/polyline');
 var jsonfile = require('jsonfile');
 
 var file = './geolocation_cache.json';
-jsonfile.readFile(file, function(err,obj){
-   console.log(obj);
+jsonfile.readFile(file, function (err, obj) {
+    console.log(obj);
 });
 /*
 var publicConfig = {
@@ -64,3 +64,5 @@ gmAPI.directions(request, function(err, result){
     })
 });
 */
+
+//# sourceMappingURL=googlemaps-compiled.js.map

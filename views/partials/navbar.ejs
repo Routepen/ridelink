@@ -56,12 +56,10 @@
 </nav>
 
 <div style="margin-top:100px"></div>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=AutocompleteHandler"
-        async defer></script>
+
 <script type="text/javascript">
     var originInput = document.getElementById("search-origin");
     var destinationInput = document.getElementById("search-destination");
-
 
     function AutocompleteHandler(){
         var originAutocomplete = new google.maps.places.Autocomplete(
@@ -104,16 +102,19 @@
             destination : destinationInput.value
         }
 
-        $.get('/search/', data, function(data, status){
+        $.get('/search', data, function(data, status){
             console.log(data, status);
             if (status == "success") {
-                window.location.href = data;
+               // window.location.href = data;
             }
             else {
                 posted = false;
             }
         })
          .error(function() { alert("Request failed."); });
-            }
+    }
 
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=AutocompleteHandler"
+        async defer ></script>

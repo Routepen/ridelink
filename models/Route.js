@@ -8,6 +8,8 @@ var routeSchema = new Schema({
     shortId: {type: String, unique: true},
     origin: String,
     destination: String,
+    originCoor: {"lat": Number, "lng": Number},
+    destinationCoor: {"lat": Number, "lng" : Number},
     seats: Number,
     date: Date,
     time: String,
