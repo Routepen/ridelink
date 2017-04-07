@@ -4,12 +4,13 @@
 var GoogleMapsAPI = require('googlemaps');
 var polyline = require('@mapbox/polyline');
 var jsonfile = require('jsonfile');
+var jsonUpdate = require('json-update');
 
 var file = './geolocation_cache.json';
-jsonfile.readFile(file, function(err,obj){
-   console.log(obj);
-});
-/*
+var obj = {"hello" : "test"};
+
+jsonUpdate.update(file, obj);
+
 var publicConfig = {
     key: 'AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA',
     //key: process.env.GOOGLE_MAPS_KEY,
@@ -63,4 +64,3 @@ gmAPI.directions(request, function(err, result){
 
     })
 });
-*/

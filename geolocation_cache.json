@@ -1,4 +1,22 @@
 {
-  "UCSB, Santa Barbara, CA, United States" : {"long": 34.4208, "lat": -119.6982},
-  "Palo Alto": {"long": 37.4419, "lat": -122.143}
+  "UCSB, Santa Barbara, CA, United States": {
+    "long": 34.4208,
+    "lat": -119.6982
+  },
+  "Palo Alto": {
+    "long": 37.4419,
+    "lat": -122.143
+  },
+  "Cal Poly, San Luis Obispo, CA, United States": {
+    "lat": 35.3050053,
+    "lng": -120.6624942
+  },
+  "UCLA, Los Angeles, CA, United States": {
+    "lat": 34.068921,
+    "lng": -118.4451811
+  },
+  "University of Southern California, Los Angeles, CA, United States": {
+    "lat": 34.0223519,
+    "lng": -118.285117
+  }
 }
