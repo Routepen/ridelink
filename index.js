@@ -107,21 +107,17 @@ app.get('/search', (req, res) => {
   var returnVal = new Promise((response, reject) => {
     search(req.query.origin, req.query.destination, gmAPI, response, reject);
   }).then((data) => {
+    var req = {
+  		user: req.user,
+  		url: req.url
+  	};
+    //add filter right here
     console.log(data[0]);
+    res.render("search_route", req);
   }).catch((err)=>{
     console.log(err);
     res.status(300).send('you a little bitch');
   });
-
-
-
-
-
-	var data = {
-		user: req.user,
-		url: req.url
-	};
-
 
 	/*
 	var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
@@ -141,7 +137,7 @@ app.get('/search', (req, res) => {
 
 	*/
 
-	res.render("search_route", data);
+
 });
 
 app.get('/route', function (req, res) {
