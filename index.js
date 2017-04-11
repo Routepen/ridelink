@@ -102,11 +102,18 @@ app.get('/', function (req, res) {
 const search = require('./search');
 
 app.get('/search', (req, res) => {
-	//TODO do error checking for when they give us wrong input
-
+	//TODO do error handling on user sending in invalid origin/destination
   var returnVal = new Promise((response, reject) => {
-    search(req.query.origin, req.query.destination, gmAPI, response, reject);
+    geocode(req.query.origin, req.query.destination, gmAPI, response, reject);
   }).then((data) => {
+	Route.find({}, function(err, routes){
+		routes.forEach(function(route){
+			console.log(route.origin, route.destination);
+		});
+	});
+	//TODO geocode the origin and destination if it's not in the cache already, write to the cache
+	//TODO query database for all routes with distance off less than 9% and != current date
+	// TODO Fill in Maps API call and send JSON to front end to parse
     var credentials = {
   		user: req.user,
   		url: req.url
@@ -116,7 +123,7 @@ app.get('/search', (req, res) => {
     res.render("search_route", credentials);
   }).catch((err)=>{
     console.log(err);
-    res.status(300).send('Victor is a little bitch');
+    res.status(300).send('Danny is a little bitch');
   });
 
 	/*
@@ -131,9 +138,7 @@ app.get('/search', (req, res) => {
 	gmAPI.geocode(geocodeParams, function(err, result){
 		console.log(result.results[0].geometry.location);
 	});
-	//TODO geocode the origin and destination if it's not in the cache already, write to the cache
-	//TODO query database for all routes with distance off less than 9% and != current date
-	// TODO Fill in Maps API call and send JSON to front end to parse
+
 
 	*/
 

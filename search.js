@@ -2,7 +2,8 @@ const GoogleMapsAPI = require('googlemaps');
 const jsonfile = require('jsonfile');
 const jsonUpdate = require('json-update');
 
-function geoencoding(origin, destination, gmAPI, resFunct, rejFunct){
+function geocoding(origin, destination, gmAPI, resFunct, rejFunct){
+
   var file = './geolocation_cache.json';
 
   //Data[0] is originCoordinate and Data[1] is destinationCoordinate
@@ -66,4 +67,4 @@ function geoencoding(origin, destination, gmAPI, resFunct, rejFunct){
   return 0;
 }
 
-module.exports = search;
+module.exports = geocode;
