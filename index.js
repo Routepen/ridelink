@@ -104,10 +104,13 @@ const search = require('./search');
 app.get('/search', (req, res) => {
 	//TODO do error checking for when they give us wrong input
 
-  var returnVal = new Promise((res, rej) => {
-    search(req.query.origin, req.query.destination, gmAPI, res);
+  var returnVal = new Promise((response, reject) => {
+    search(req.query.origin, req.query.destination, gmAPI, response, reject);
   }).then((data) => {
     console.log(data[0]);
+  }).catch((err)=>{
+    console.log(err);
+    res.status(300).send('you a little bitch');
   });
 
 

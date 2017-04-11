@@ -2,7 +2,7 @@ const GoogleMapsAPI = require('googlemaps');
 const jsonfile = require('jsonfile');
 const jsonUpdate = require('json-update');
 
-function search(origin, destination, gmAPI, resFunct){
+function search(origin, destination, gmAPI, resFunct, rejFunct){
   var file = './geolocation_cache.json';
 
   //Data[0] is originCoordinate and Data[1] is destinationCoordinate
@@ -59,6 +59,9 @@ function search(origin, destination, gmAPI, resFunct){
   })
   .then( function(data){
     resFunct([data[0], data[1]]);
+  }).catch((err) => {
+    console.log('rejected');
+    rejFunct(err);
   });
   return 0;
 }

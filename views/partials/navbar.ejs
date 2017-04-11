@@ -12,14 +12,14 @@
         <form class="navbar-form navbar-left" action="/search" onsubmit="validate()">
             <div class="input-group">
                 <div class="col-md-6">
-                    <input type="text" id="search-origin" class="form-control" size="20" placeholder="Enter your origin"
+                    <input type="text" name="origin" id="search-origin" class="form-control" size="20" placeholder="Enter your origin"
                            onPaste="" onkeydown="if (event.keyCode == 13) { return false;}"
                            <% if (url == '/') { %>
                            autofocus
                            <% } %>>
                 </div>
                 <div class="col-md-6">
-                    <input type="text" id="search-destination" class="form-control" size="20" placeholder="Enter your destination"  onPaste=""
+                    <input type="text" name="destination" id="search-destination" class="form-control" size="20" placeholder="Enter your destination"  onPaste=""
                            onkeydown="if (event.keyCode == 13) { return false;}">
                 </div>
                 <div class="input-group-btn">
