@@ -1,22 +1,70 @@
 {
-  "UCSB, Santa Barbara, CA, United States": {
-    "long": 34.4208,
-    "lat": -119.6982
+  "Yoshinoya Beef Bowl Restaurant, Santa Barbara, CA, United States": {
+    "lat": 34.4149594,
+    "lng": -119.8406633
   },
-  "Palo Alto": {
-    "long": 37.4419,
-    "lat": -122.143
+  "McDonald's, Market Place Drive, Goleta, CA, United States": {
+    "lat": 34.4290263,
+    "lng": -119.8701266
   },
-  "Cal Poly, San Luis Obispo, CA, United States": {
-    "lat": 35.3050053,
-    "lng": -120.6624942
+  "Russia": {
+    "lat": 61.52401,
+    "lng": 105.318756
   },
-  "UCLA, Los Angeles, CA, United States": {
-    "lat": 34.068921,
-    "lng": -118.4451811
+  "Arizona, United States": {
+    "lat": 34.0489281,
+    "lng": -111.0937311
   },
-  "University of Southern California, Los Angeles, CA, United States": {
-    "lat": 34.0223519,
-    "lng": -118.285117
+  "Los Agaves, Market Place Drive, Goleta, CA, United States": {
+    "lat": 34.4295248,
+    "lng": -119.8722818
+  },
+  "Riverside, CA, United States": {
+    "lat": 33.9533487,
+    "lng": -117.3961564
+  },
+  "Lompoc, CA, United States": {
+    "lat": 34.6391501,
+    "lng": -120.4579409
+  },
+  "Redlands, CA, United States": {
+    "lat": 34.0555693,
+    "lng": -117.1825381
+  },
+  "The Goodland, Calle Real, Goleta, CA, United States": {
+    "lat": 34.441407,
+    "lng": -119.820868
+  },
+  "North Fairview Avenue, Goleta, CA, United States": {
+    "lat": 34.4569408,
+    "lng": -119.8305924
+  },
+  "Las Vegas, NV, United States": {
+    "lat": 36.1699412,
+    "lng": -115.1398296
+  },
+  "Ventura, CA, United States": {
+    "lat": 34.274646,
+    "lng": -119.2290316
+  },
+  "Redondo Beach, CA, United States": {
+    "lat": 33.8491816,
+    "lng": -118.3884078
+  },
+  "Bacara Resort & Spa, Goleta, CA, United States": {
+    "lat": 34.4351448,
+    "lng": -119.9203386
+  },
+  "Québec, Canada": {
+    "lat": 46.8138783,
+    "lng": -71.2079809
+  },
+  "Romania": {
+    "lat": 45.943161,
+    "lng": 24.96676
+  },
+  "Nevada, United States": {
+    "lat": 38.8026097,
+    "lng": -116.419389
   }
 }

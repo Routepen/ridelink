@@ -9,7 +9,7 @@
             </button>
             <a class="navbar-brand" href="/">Routepen</a>
         </div>
-        <form class="navbar-form navbar-left" action="javascript:post()">
+        <form class="navbar-form navbar-left" action="/search" onsubmit="validate()">
             <div class="input-group">
                 <div class="col-md-6">
                     <input type="text" id="search-origin" class="form-control" size="20" placeholder="Enter your origin"
@@ -85,8 +85,11 @@
         });
     };
 
-    function validateFields(){
+    function validate(){
         //TODO make sure origin and destination are both filled out correctly Google Maps
+        if(1==2){
+          return false;
+        }
     }
 
     var posted = false;
@@ -105,7 +108,7 @@
         $.get('/search', data, function(data, status){
             console.log(data, status);
             if (status == "success") {
-               // window.location.href = data;
+               document.body.innerHTML = data;
             }
             else {
                 posted = false;

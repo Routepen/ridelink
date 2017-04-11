@@ -99,66 +99,17 @@ app.get('/', function (req, res) {
 	//res.render('index', {data:data});
 });
 
+const search = require('./search');
+
 app.get('/search', (req, res) => {
 	//TODO do error checking for when they give us wrong input
 
-	var file = './geolocation_cache.json';
+  var returnVal = new Promise((res, rej) => {
+    search(req.query.origin, req.query.destination, gmAPI, res);
+  }).then((data) => {
+    console.log(data[0]);
+  });
 
-	//Data[0] is originCoordinate and Data[1] is destinationCoordinate
-
-	let jsonFilePromise = new Promise((resolve, reject) =>{
-		//Is origin or destination coordinate in the json file?
-		jsonfile.readFile(file, function(err,obj){
-			if(err)
-				reject(err);
-			var originCoor = obj[req.query.origin];
-			var destinationCoor = obj[req.query.destination];
-			resolve([originCoor, destinationCoor]);
-		});
-	});
-	jsonFilePromise.then( function(data){
-		// If the origin coordinate is not in the json file already
-			return new Promise((resolve, reject)=>{
-				if(data[0] == undefined){
-					gmAPI.geocode( { "address": req.query.origin }, function(err, result){
-						if(err)
-							reject(err);
-							//if (err) TODO return to home page with a message saying incorrect destination. Try client side verification not server
-						data[0] = result.results[0].geometry.location;
-						var newEntry = {};
-						newEntry[req.query.origin] = data[0];
-						jsonUpdate.update(file, newEntry);
-						resolve([data[0], data[1]]);
-					});
-				}
-				else{
-					resolve([data[0], data[1]]);
-				}
-			});
-		})
-		.then( function(data){
-			// If the destination coordinate is not in the json file already
-			return new Promise((resolve, reject) => {
-				if(data[1] == undefined){
-					gmAPI.geocode( { "address": req.query.destination }, function(err, result){
-						if(err)
-							reject(err);
-						//if (err) TODO return to home page with a message saying incorrect destination
-						data[1] = result.results[0].geometry.location;
-						var newEntry = {};
-						newEntry[req.query.destination] = data[1];
-						jsonUpdate.update(file, newEntry);
-						resolve([data[0], data[1]]);
-					});
-				}
-				else{
-					resolve([data[0], data[1]]);
-				}
-			});
-		})
-		.then( function(data){
-			console.log(data[0], data[1]);
-		});
 
 
 
