@@ -94,5 +94,13 @@
   "Virginia, United States": {
     "lat": 37.4315734,
     "lng": -78.6568942
+  },
+  "UCSB, Santa Barbara, CA, United States": {
+    "lat": 34.4139629,
+    "lng": -119.848947
+  },
+  "UCLA, Los Angeles, CA, United States": {
+    "lat": 34.068921,
+    "lng": -118.4451811
   }
 }

@@ -27,7 +27,7 @@ var geocodeParams = {
 gmAPI.geocode(geocodeParams, function(err, result){
     console.log(result.results[0].geometry.location);
 });
-
+/*
 var request = {
     origin: 'UCSB',
     destination: 'San Francisco',
@@ -64,3 +64,4 @@ gmAPI.directions(request, function(err, result){
 
     })
 });
+*/
