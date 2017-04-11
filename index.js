@@ -42,6 +42,7 @@ var publicConfig = {
 };
 var gmAPI = new GoogleMapsAPI(publicConfig);
 
+/*
 var config = require('./webpack.config.js');
 var webpack = require('webpack');
 var webpackDevMiddleware = require('webpack-dev-middleware');
@@ -51,6 +52,7 @@ var compiler = webpack(config);
 
 app.use(webpackDevMiddleware(compiler, {noInfo: true, publicPath: config.output.publicPath}));
 app.use(webpackHotMiddleware(compiler));
+*/
 
 /*
 const isAuthenticated = (req, res, next) =>
@@ -97,16 +99,8 @@ app.get('/', function (req, res) {
 	//res.render('index', {data:data});
 });
 
-app.get('/search', function(req,res){
+app.get('/search', (req, res) => {
 	//TODO do error checking for when they give us wrong input
-
-	// For Google Maps
-	var originText = {
-		"address": req.query.origin
-	};
-	var destinationText = {
-		"address": req.query.destination
-	};
 
 	var file = './geolocation_cache.json';
 
@@ -126,7 +120,7 @@ app.get('/search', function(req,res){
 		// If the origin coordinate is not in the json file already
 			return new Promise((resolve, reject)=>{
 				if(data[0] == undefined){
-					gmAPI.geocode(originText, function(err, result){
+					gmAPI.geocode( { "address": req.query.origin }, function(err, result){
 						if(err)
 							reject(err);
 							//if (err) TODO return to home page with a message saying incorrect destination. Try client side verification not server
@@ -146,7 +140,7 @@ app.get('/search', function(req,res){
 			// If the destination coordinate is not in the json file already
 			return new Promise((resolve, reject) => {
 				if(data[1] == undefined){
-					gmAPI.geocode(destinationText, function(err, result){
+					gmAPI.geocode( { "address": req.query.destination }, function(err, result){
 						if(err)
 							reject(err);
 						//if (err) TODO return to home page with a message saying incorrect destination
@@ -174,7 +168,7 @@ app.get('/search', function(req,res){
 		url: req.url
 	};
 
-	
+
 	/*
 	var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
 		console.log(util.inspect(JSON.parse(body), {depth:null}))
