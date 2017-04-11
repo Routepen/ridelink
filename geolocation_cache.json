@@ -1,105 +1,25 @@
 {
-  "Yoshinoya Beef Bowl Restaurant, Santa Barbara, CA, United States": {
-    "lat": 34.4149594,
-    "lng": -119.8406633
-  },
-  "McDonald's, Market Place Drive, Goleta, CA, United States": {
-    "lat": 34.4290263,
-    "lng": -119.8701266
-  },
-  "Russia": {
-    "lat": 61.52401,
-    "lng": 105.318756
-  },
-  "Arizona, United States": {
-    "lat": 34.0489281,
-    "lng": -111.0937311
-  },
-  "Los Agaves, Market Place Drive, Goleta, CA, United States": {
-    "lat": 34.4295248,
-    "lng": -119.8722818
-  },
-  "Riverside, CA, United States": {
-    "lat": 33.9533487,
-    "lng": -117.3961564
-  },
-  "Lompoc, CA, United States": {
-    "lat": 34.6391501,
-    "lng": -120.4579409
-  },
-  "Redlands, CA, United States": {
-    "lat": 34.0555693,
-    "lng": -117.1825381
-  },
-  "The Goodland, Calle Real, Goleta, CA, United States": {
-    "lat": 34.441407,
-    "lng": -119.820868
-  },
-  "North Fairview Avenue, Goleta, CA, United States": {
-    "lat": 34.4569408,
-    "lng": -119.8305924
-  },
-  "Las Vegas, NV, United States": {
-    "lat": 36.1699412,
-    "lng": -115.1398296
-  },
-  "Ventura, CA, United States": {
-    "lat": 34.274646,
-    "lng": -119.2290316
-  },
-  "Redondo Beach, CA, United States": {
-    "lat": 33.8491816,
-    "lng": -118.3884078
-  },
-  "Bacara Resort & Spa, Goleta, CA, United States": {
-    "lat": 34.4351448,
-    "lng": -119.9203386
-  },
-  "Québec, Canada": {
-    "lat": 46.8138783,
-    "lng": -71.2079809
-  },
-  "Romania": {
-    "lat": 45.943161,
-    "lng": 24.96676
-  },
-  "Nevada, United States": {
-    "lat": 38.8026097,
-    "lng": -116.419389
-  },
-  "Technology Drive, Goleta, CA, United States": {
-    "lat": 34.4303768,
-    "lng": -119.8277522
-  },
-  "Yellow Belly, De La Vina Street, Santa Barbara, CA, United States": {
-    "lat": 34.4349644,
-    "lng": -119.7246112
-  },
-  "Goleta, CA, United States": {
-    "lat": 34.4358294,
-    "lng": -119.8276389
-  },
-  "Calle Real, Goleta, CA, United States": {
-    "lat": 34.4352457,
-    "lng": -119.8710939
-  },
-  "Florida, United States": {
-    "lat": 27.6648274,
-    "lng": -81.5157535
-  },
-  "Goleta Beach Park, Sandspit Road, Goleta, CA, United States": {
-    "lat": 34.4168342,
-    "lng": -119.8322099
-  },
-  "Virginia, United States": {
-    "lat": 37.4315734,
-    "lng": -78.6568942
-  },
   "UCSB, Santa Barbara, CA, United States": {
     "lat": 34.4139629,
     "lng": -119.848947
   },
   "UCLA, Los Angeles, CA, United States": {
+    "lat": 34.068921,
+    "lng": -118.4451811
+  },
+  "ucsb": {
+    "lat": 34.4139629,
+    "lng": -119.848947
+  },
+  "UCSB, Santa Barbara, CA, United StatesQ": {
+    "lat": 34.4139629,
+    "lng": -119.848947
+  },
+  "Denver, CO, United States": {
+    "lat": 39.7392358,
+    "lng": -104.990251
+  },
+  "ucla": {
     "lat": 34.068921,
     "lng": -118.4451811
   }

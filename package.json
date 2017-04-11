@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@mapbox/polyline": "^0.2.0",
+    "async-parallel": "^1.0.7",
     "backbone-sql": "^0.6.5",
     "bluebird": "^3.4.7",
     "body-parser": "^1.16.1",

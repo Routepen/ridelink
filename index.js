@@ -14,8 +14,8 @@ const _ = require("lodash");
 const app = express();
 const GoogleMapsAPI = require('googlemaps');
 const jsonfile = require('jsonfile');
-const jsonUpdate = require('json-update');
-
+const async = require('async');
+//const jsonUpdate = require('json-update');
 
 const auth = require("./auth");
 const mail = require("./mail");
@@ -99,31 +99,42 @@ app.get('/', function (req, res) {
 	//res.render('index', {data:data});
 });
 
-const search = require('./search');
+const geocode = require('./geocode');
 
 app.get('/search', (req, res) => {
 	//TODO do error handling on user sending in invalid origin/destination
   var returnVal = new Promise((response, reject) => {
-    geocode(req.query.origin, req.query.destination, gmAPI, response, reject);
+	geocode(req.query.origin, req.query.destination, gmAPI, response, reject);
   }).then((data) => {
-	Route.find({}, function(err, routes){
-		routes.forEach(function(route){
-			console.log(route.origin, route.destination);
+		//console.log(data[0], data[1]);
+		var geocodedRoutes = [];
+		var counter = 0;
+		Route.find({}, function(err, routes){
+			if(err){
+				console.log("there is an error here on route.find");
+			}
+			routes.forEach(function(route){
+				//TODO make asynchronous multiple calls to and return an array of results
+				var geocodedRoute = new Promise((response, reject)=>{
+					geocode(route.origin, route.destination, gmAPI, response, reject);
+				}).then((geocodedData) => {
+					console.log("You've reached here", geocodedData);
+				});
+				//console.log(route.origin, route.destination);
+			});
 		});
-	});
-	//TODO geocode the origin and destination if it's not in the cache already, write to the cache
-	//TODO query database for all routes with distance off less than 9% and != current date
-	// TODO Fill in Maps API call and send JSON to front end to parse
-    var credentials = {
-  		user: req.user,
-  		url: req.url
-  	};
-    //add filter right here
-    console.log(data[0]);
-    res.render("search_route", credentials);
-  }).catch((err)=>{
+
+		//TODO query database for all routes with distance off less than 9% and != current date
+		// TODO Fill in Maps API call and send JSON to front end to parse
+		var credentials = {
+			user: req.user,
+			url: req.url
+		};
+		res.render("search_route", credentials);
+	}).catch((err)=>{
+	console.log("There is some error");
     console.log(err);
-    res.status(300).send('Danny is a little bitch');
+    //res.status(300).send('Danny is a little bitch');
   });
 
 	/*
@@ -141,8 +152,6 @@ app.get('/search', (req, res) => {
 
 
 	*/
-
-
 });
 
 app.get('/route', function (req, res) {
