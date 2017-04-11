@@ -116,7 +116,7 @@ app.get('/search', (req, res) => {
     res.render("search_route", credentials);
   }).catch((err)=>{
     console.log(err);
-    res.status(300).send('Victor is a little bitch');
+    res.status(300).send('Danny is a little bitch');
   });
 
 	/*
