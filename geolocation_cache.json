@@ -22,5 +22,61 @@
   "ucla": {
     "lat": 34.068921,
     "lng": -118.4451811
+  },
+  "UlocalCSB, Santa Barbara, CA, United States": {
+    "lat": 34.4209942,
+    "lng": -119.6746102
+  },
+  "San Francisco, CA, United States": {
+    "lat": 37.7749295,
+    "lng": -122.4194155
+  },
+  "San Diego, CA, United States": {
+    "lat": 32.715738,
+    "lng": -117.1610838
+  },
+  "47520 Avalon Heights Terrace, Fremont, CA, United States": {
+    "lat": 37.4881311,
+    "lng": -121.9083315
+  },
+  "47520 180th Street West, Lancaster, CA, United States": {
+    "lat": 34.74452700000001,
+    "lng": -118.447558
+  },
+  "A S D F, Scenic Drive, Santa Barbara, CA, United States": {
+    "lat": 34.4254413,
+    "lng": -119.6642867
+  },
+  "Consumers Law Group Ads Inc, East Valley Road, Santa Barbara, CA, United States": {
+    "lat": 34.436486,
+    "lng": -119.6317727
+  },
+  "1854 Pepper Drive, Altadena, CA, United States": {
+    "lat": 34.1778503,
+    "lng": -118.1063277
+  },
+  "Sacramento, CA, United States": {
+    "lat": 38.5815719,
+    "lng": -121.4943996
+  },
+  "San Jose, CA, United States": {
+    "lat": 37.3382082,
+    "lng": -121.8863286
+  },
+  "Palo Alto, CA, United States": {
+    "lat": 37.4418834,
+    "lng": -122.1430195
+  },
+  "1925 Hollister Avenue, Goleta, CA, United States": {
+    "lat": 34.4295579,
+    "lng": -119.9004902
+  },
+  "4752 Calle Camarada, Santa Barbara, CA, United States": {
+    "lat": 34.428783,
+    "lng": -119.788704
+  },
+  "Walnut, CA, United States": {
+    "lat": 34.0202894,
+    "lng": -117.8653386
   }
 }

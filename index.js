@@ -109,31 +109,44 @@ app.get('/search', (req, res) => {
 		//console.log(data[0], data[1]);
 		var geocodedRoutes = [];
 		var counter = 0;
-		Route.find({}, function(err, routes){
-			if(err){
-				console.log("there is an error here on route.find");
-			}
-			routes.forEach(function(route){
-				//TODO make asynchronous multiple calls to and return an array of results
-				var geocodedRoute = new Promise((response, reject)=>{
-					geocode(route.origin, route.destination, gmAPI, response, reject);
-				}).then((geocodedData) => {
-					console.log("You've reached here", geocodedData);
+		let routePromise = new Promise((resolve, reject) => {
+			Route.find({}, function (err, routes) {
+				//TODO query database for all routes with > current date
+				//if(current date < date in the route)
+				//else
+				routes.forEach(function (route) {
+					var geocodedRoute = new Promise((response, reject) = > {
+						geocode(route.origin, route.destination, gmAPI, response, reject);
+					})
+					.then((geocodedData) => {
+						geocodedRoutes[counter] = geocodedData;
+						counter++;
+					})
+					.catch((err) => {
+							console.err("Route.find error");
+						console.err(err);
+					});
 				});
-				//console.log(route.origin, route.destination);
+
+			});
+		})
+		.then(() => {
+			//TODO 9% compare data[0] and data[1] with geocodedRoutes
+
+			geocodedRoutes.forEach(function(route){
+
 			});
 		});
 
-		//TODO query database for all routes with distance off less than 9% and != current date
-		// TODO Fill in Maps API call and send JSON to front end to parse
+	// TODO Fill in Maps API call and send JSON to front end to parse
 		var credentials = {
 			user: req.user,
 			url: req.url
 		};
 		res.render("search_route", credentials);
 	}).catch((err)=>{
-	console.log("There is some error");
-    console.log(err);
+	console.err("Global error");
+    console.err(err);
     //res.status(300).send('Danny is a little bitch');
   });
 
