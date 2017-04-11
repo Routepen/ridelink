@@ -2,7 +2,7 @@ const GoogleMapsAPI = require('googlemaps');
 const jsonfile = require('jsonfile');
 const jsonUpdate = require('json-update');
 
-function search(origin, destination, gmAPI, resFunct, rejFunct){
+function geoencoding(origin, destination, gmAPI, resFunct, rejFunct){
   var file = './geolocation_cache.json';
 
   //Data[0] is originCoordinate and Data[1] is destinationCoordinate
