@@ -107,16 +107,16 @@ app.get('/search', (req, res) => {
   var returnVal = new Promise((response, reject) => {
     search(req.query.origin, req.query.destination, gmAPI, response, reject);
   }).then((data) => {
-    var req = {
+    var credentials = {
   		user: req.user,
   		url: req.url
   	};
     //add filter right here
     console.log(data[0]);
-    res.render("search_route", req);
+    res.render("search_route", credentials);
   }).catch((err)=>{
     console.log(err);
-    res.status(300).send('you a little bitch');
+    res.status(300).send('Victor is a little bitch');
   });
 
 	/*

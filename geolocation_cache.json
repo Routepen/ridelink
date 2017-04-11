@@ -74,5 +74,25 @@
   "Yellow Belly, De La Vina Street, Santa Barbara, CA, United States": {
     "lat": 34.4349644,
     "lng": -119.7246112
+  },
+  "Goleta, CA, United States": {
+    "lat": 34.4358294,
+    "lng": -119.8276389
+  },
+  "Calle Real, Goleta, CA, United States": {
+    "lat": 34.4352457,
+    "lng": -119.8710939
+  },
+  "Florida, United States": {
+    "lat": 27.6648274,
+    "lng": -81.5157535
+  },
+  "Goleta Beach Park, Sandspit Road, Goleta, CA, United States": {
+    "lat": 34.4168342,
+    "lng": -119.8322099
+  },
+  "Virginia, United States": {
+    "lat": 37.4315734,
+    "lng": -78.6568942
   }
 }
