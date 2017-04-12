@@ -101,68 +101,55 @@ app.get('/', function (req, res) {
 });
 
 app.get('/search', (req, res) => {
+
 	//TODO do error handling on user sending in invalid origin/destination
   let getOrigin = geocode(req.query.origin, gmAPI);
   let getDestination = geocode(req.query.destination, gmAPI);
-  Promise.all([getOrigin, getDestination]).then(data => {
-		//console.log(data[0], data[1]);
-		var geocodedRoutes = [];
-		var counter = 0;
-		let routePromise = new Promise((resolve, reject) => {
-    //{"date" : {"$gte" : new Date(Date.now())}} occurs
-		Route.find({"date" : {"$gte" : new Date(Date.now())}}, function (err, routes) {
-				routes.forEach(function (route) {
-          let getOrigin = geocode(route.origin, gmAPI);
-          let getDestination = geocode(route.destination, gmAPI);
-					Promise.all([getOrigin, getDestination]).then(geocodedData => {
-						geocodedRoutes[counter] = geocodedData;
-						counter++;
-					})
-					.catch((err) => {
-						console.err("Route.find error");
-		        console.err(err);
-					});
-				});
-
-			});
-	   })
-		.then(() => {
-      var resultGeocodedRoutes = {};
-			//TODO 9% compare data[0] and data[1] with geocodedRoutes
-			geocodedRoutes.forEach(function(route){
+  Promise.all([getOrigin, getDestination]).then((data) => {
+    new Promise((resolve, reject) => {
+      //{"date" : {"$gte" : new Date(Date.now())}} occurs
+      var closeRoutes = [];
+      Route.find({}, function (err, routes) {
+        let counter = 0;
+        routes.forEach(function (route) {
+          console.log("Called API for search ", counter++, " times");
           var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
-            console.log(util.inspect(JSON.parse(body), {depth:null}))
-        	});
-			});
-		});
-
-	// TODO Fill in Maps API call and send JSON to front end to parse
-		var credentials = {
-			user: req.user,
-			url: req.url
-		};
-		res.render("search_route", credentials);
-	}).catch((err)=>{
-	   console.err("Global error");
-     console.err(err);
-    //res.status(300).send('Danny is a little bitch');
+            //subtract distances
+            console.log(util.inspect(JSON.parse(body), {depth:null}));
+          })
+        });
+      });
+      resolve(closeRoutes);
+    })
+    .then((closeRoutes) => {
+      //render
+      // TODO Fill in Maps API call and send JSON to front end to parse
+      var credentials = {
+        user: req.user,
+        url: req.url,
+        closeRoutes: closeRoutes
+      };
+      res.render("search_route", credentials);
+    });
+  })
+  .catch((err)=>{
+    console.err("Global error");
+    console.err(err);
+    res.status(300).send('Victor is a little bitch');
   });
 
 	/*
 	var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
 		console.log(util.inspect(JSON.parse(body), {depth:null}))
 	});
-
 	var geocodeParams = {
 		"address": req.body.origin,
 	};
-
 	gmAPI.geocode(geocodeParams, function(err, result){
 		console.log(result.results[0].geometry.location);
 	});
-
-
 	*/
+
 });
 
 app.get('/route', function (req, res) {

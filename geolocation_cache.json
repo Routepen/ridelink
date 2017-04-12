@@ -122,5 +122,13 @@
   "Embarcadero del Norte, Isla Vista, CA, United States": {
     "lat": 34.4140959,
     "lng": -119.8553903
+  },
+  "Los Agaves, Market Place Drive, Goleta, CA, United States": {
+    "lat": 34.4295248,
+    "lng": -119.8722818
+  },
+  "UCSB Bus Loop, Isla Vista, CA, United States": {
+    "lat": 34.4152272,
+    "lng": -119.8482359
   }
 }
