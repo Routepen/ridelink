@@ -104,16 +104,18 @@ app.get('/search', (req, res) => {
 	//TODO do error handling on user sending in invalid origin/destination
 
   geocode(req.query.origin, req.query.destination, gmAPI).then((data) => {
-  //console.log(data[0], data[1]);
     var counter = 0;
     new Promise((resolve, reject) => {
       //{"date" : {"$gte" : new Date(Date.now())}} occurs
       var closeRoutes = [];
       Route.find({}, function (err, routes) {
+        let counter = 0;
         routes.forEach(function (route) {
+          console.log("Called API for search ", counter++, " times");
           var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
-          //subtract distances
-          console.log(util.inspect(JSON.parse(body), {depth:null}));
+            //subtract distances
+            console.log(util.inspect(JSON.parse(body), {depth:null}));
+          })
         });
       });
       resolve(closeRoutes);
@@ -127,7 +129,6 @@ app.get('/search', (req, res) => {
         closeRoutes: closeRoutes
       };
       res.render("search_route", credentials);
-      })
     });
   })
   .catch((err)=>{

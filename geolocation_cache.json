@@ -106,5 +106,21 @@
   "World Way, Los Angeles, CA, United States": {
     "lat": 33.9444316,
     "lng": -118.3965756
+  },
+  "Lolë Atelier Santa Barbara, State Street, Santa Barbara, CA, United States": {
+    "lat": 34.4191897,
+    "lng": -119.6983852
+  },
+  "w": {
+    "lat": 37.4052049,
+    "lng": -122.1049137
+  },
+  "Los Angeles, CA, United States": {
+    "lat": 34.0522342,
+    "lng": -118.2436849
+  },
+  "Embarcadero del Norte, Isla Vista, CA, United States": {
+    "lat": 34.4140959,
+    "lng": -119.8553903
   }
 }

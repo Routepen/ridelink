@@ -30,8 +30,9 @@ function geocodeHelper(origin, destination, gmAPI, resFunct, rejFunct){
     return new Promise((resolve, reject)=>{
       if(data[0] == undefined){
         gmAPI.geocode( { "address": origin }, function(err, result){
-          if(err)
+          if(err) {
             reject(err);
+          }
             //if (err) TODO return to home page with a message saying incorrect destination. Try client side verification not server
           data[0] = result.results[0].geometry.location;
           var newEntry = {};
