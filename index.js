@@ -102,39 +102,50 @@ app.get('/', function (req, res) {
 
 app.get('/search', (req, res) => {
 	//TODO do error handling on user sending in invalid origin/destination
+  let getOrigin = geocode(req.query.origin, gmAPI);
+  let getDestination = geocode(req.query.destination, gmAPI);
+  Promise.all([getOrigin, getDestination]).then(data => {
+		//console.log(data[0], data[1]);
+		var geocodedRoutes = [];
+		var counter = 0;
+		let routePromise = new Promise((resolve, reject) => {
+    //{"date" : {"$gte" : new Date(Date.now())}} occurs
+		Route.find({"date" : {"$gte" : new Date(Date.now())}}, function (err, routes) {
+				routes.forEach(function (route) {
+          let getOrigin = geocode(route.origin, gmAPI);
+          let getDestination = geocode(route.destination, gmAPI);
+					Promise.all([getOrigin, getDestination]).then(geocodedData => {
+						geocodedRoutes[counter] = geocodedData;
+						counter++;
+					})
+					.catch((err) => {
+						console.err("Route.find error");
+		        console.err(err);
+					});
+				});
 
-  geocode(req.query.origin, req.query.destination, gmAPI).then((data) => {
-    var counter = 0;
-    new Promise((resolve, reject) => {
-      //{"date" : {"$gte" : new Date(Date.now())}} occurs
-      var closeRoutes = [];
-      Route.find({}, function (err, routes) {
-        let counter = 0;
-        routes.forEach(function (route) {
-          console.log("Called API for search ", counter++, " times");
+			});
+	   })
+		.then(() => {
+      var resultGeocodedRoutes = {};
+			//TODO 9% compare data[0] and data[1] with geocodedRoutes
+			geocodedRoutes.forEach(function(route){
           var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
-            //subtract distances
-            console.log(util.inspect(JSON.parse(body), {depth:null}));
-          })
-        });
-      });
-      resolve(closeRoutes);
-    })
-    .then((closeRoutes) => {
-      //render
-      // TODO Fill in Maps API call and send JSON to front end to parse
-      var credentials = {
-        user: req.user,
-        url: req.url,
-        closeRoutes: closeRoutes
-      };
-      res.render("search_route", credentials);
-    });
-  })
-  .catch((err)=>{
-    console.err("Global error");
-    console.err(err);
-    res.status(300).send('Victor is a little bitch');
+            console.log(util.inspect(JSON.parse(body), {depth:null}))
+        	});
+			});
+		});
+
+	// TODO Fill in Maps API call and send JSON to front end to parse
+		var credentials = {
+			user: req.user,
+			url: req.url
+		};
+		res.render("search_route", credentials);
+	}).catch((err)=>{
+	   console.err("Global error");
+     console.err(err);
+    //res.status(300).send('Danny is a little bitch');
   });
 
 	/*
@@ -581,15 +592,20 @@ app.post('/route/new', function (req, res) {
 	var originCoor, destinationCoor;
 	//TODO geocode the origin and distance (check to see if it's in the cache already), then enter it as total distance
 
-  geocode(req.body.origin, req.body.destination, gmAPI).then(data => {
+  let getOrigin = geocode(req.body.origin, gmAPI);
+  let getDestination = geocode(req.body.origin, gmAPI);
+  Promise.all([getOrigin, getDestination]).then(data => {
+    let originCoor = data[0];
+    let destinationCoor = data[1];
+
     var newRoute;
     try {
       newRoute = Route({
     		shortId: random(5),
     		origin: req.body.origin,
     		destination: req.body.destination,
-  		  originCoor: data[0],
-  		  destinationCoor: data[1],
+  		  originCoor: originCoor,
+  		  destinationCoor: destinationCoor,
     		seats: req.body.seats,
     		date: date,
     		time: req.body.time,
@@ -874,8 +890,10 @@ app.post('/route/update', function(req, res) {
     //   req.body[updating] = t;
     // }
 
-    console.log()
+
     if (updating == "stops[]" && !req.body[updating]) { req.body['stops[]'] = []; }
+
+    let updateCoords = Promise.resolve(); // do nothing unless coords need updating
 
     if (req.body[updating] && req.body[updating] !== "") {
       var updating2 = updating;
@@ -883,12 +901,24 @@ app.post('/route/update', function(req, res) {
         updating2 = "stops";
       }
       route[updating2] = req.body[updating];
+
+      if (updating == "origin") {
+        updateCoords = new Promise((resolve, reject) => {
+          geocode(req.query.origin, gmAPI).then(data => {
+            route.originCoor = data;
+          });
+        });
+      }
+
     }
 
-		route.save(function(err) {
-			if (err) { console.log(err); }
-			res.end();
-		})
+    updateCoords.then( () => {
+      route.save(err => {
+        if (err) { console.log(err); return res.end("failure"); }
+        res.end("");
+      })
+    });
+
 	});
 });
 
