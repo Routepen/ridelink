@@ -1,13 +1,5 @@
 {
-  "w": {
-    "lat": 40.5662552,
-    "lng": -105.1015483
-  },
-  "l": {
-    "lat": 51.4427238,
-    "lng": 6.0608726
-  },
-  "UCSB, Santa Barbara, CA, United States": {
+  "ucsb": {
     "lat": 34.4139629,
     "lng": -119.848947
   },
@@ -15,50 +7,8 @@
     "lat": 32.8800604,
     "lng": -117.2340135
   },
-  "Bacara Resort & Spa, Goleta, CA, United States": {
-    "lat": 34.4351448,
-    "lng": -119.9203386
-  },
-  "Hollister Avenue, Goleta, CA, United States": {
-    "lat": 34.4358997,
-    "lng": -119.8314693
-  },
-  "Redondo Beach, CA, United States": {
-    "lat": 33.8491816,
-    "lng": -118.3884078
-  },
-  "UCSB Bus Loop, Isla Vista, CA, United States": {
-    "lat": 34.4152272,
-    "lng": -119.8482359
-  },
-  "Dos Pueblos High School, Alameda Avenue, Goleta, CA, United States": {
-    "lat": 34.4392099,
-    "lng": -119.8792207
-  },
-  "Draughtsmen Aleworks, Santa Felicia Drive, Goleta, CA, United States": {
-    "lat": 34.432227,
-    "lng": -119.8761
-  },
-  "Walgreens, Calle Real, Goleta, CA, United States": {
-    "lat": 34.441789,
-    "lng": -119.828063
-  },
-<<<<<<< HEAD
-  "ucsd": {
-    "lat": 32.8800604,
-    "lng": -117.2340135
-  },
-  "ucsb": {
+  "UCSB, Santa Barbara, CA, United States": {
     "lat": 34.4139629,
     "lng": -119.848947
-=======
-  "ucsb": {
-    "lat": 34.4139629,
-    "lng": -119.848947
-  },
-  "ucsd": {
-    "lat": 32.8800604,
-    "lng": -117.2340135
->>>>>>> 4befbeb5fe5b8087c870ccccfbaa70a52811a54f
   }
 }

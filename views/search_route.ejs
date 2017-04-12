@@ -54,16 +54,17 @@
       </tr>
       </thead>
       <tbody id="tbody">
-        <% for(var i=0; i < closeRoutes.length; i++) { %>
+        <% for (var i = 0; i < closeRoutes.length; i++) { %>
           <tr class="riderElement riderElement-inverse clickable">
-            <td> <%= i %> </td>
-            <td> <%= closeRoutes[i].driver %> </td>
-            <td> <%= closeRoutes[i].origin %> </td>
-            <td> <%= closeRoutes[i].destination %> </td>
-            <td> <%= closeRoutes[i].getMonth() +  "/" closeRoutes[i].getDate() %> </td>
-            <td> <button type="button" class="btn btn-success"> Signup </button> </td>
+              <td> <%= i+1 %> </td>
+              <td> <%= closeRoutes[i].driver %> </td>
+              <td> <%= closeRoutes[i].origin %> </td>
+              <td> <%= closeRoutes[i].destination %> </td>
+              <td> <%= closeRoutes[i].inconvenience %> </td>
+              <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
+              <td> <button type="button" class="btn btn-success"> Signup </button> </td>
           </tr>
-          <% } %>
+        <% } %>
         <!--<tr class="riderElement riderElement-inverse clickable">
           <td>1</td>
           <td>Rider</td>
