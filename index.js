@@ -110,12 +110,10 @@ app.get('/search', (req, res) => {
 		var geocodedRoutes = [];
 		var counter = 0;
 		let routePromise = new Promise((resolve, reject) => {
-			Route.find({}, function (err, routes) {
-				//TODO query database for all routes with > current date
-				//if(current date < date in the route)
-				//else
+      //Get all documents that have date after today
+			Route.find({"date" : {"$gte" : new Date(Date.now())}}, function (err, routes) {
 				routes.forEach(function (route) {
-					var geocodedRoute = new Promise((response, reject) = > {
+					var geocodedRoute = new Promise((response, reject) => {
 						geocode(route.origin, route.destination, gmAPI, response, reject);
 					})
 					.then((geocodedData) => {
@@ -124,7 +122,7 @@ app.get('/search', (req, res) => {
 					})
 					.catch((err) => {
 							console.err("Route.find error");
-						console.err(err);
+			        console.err(err);
 					});
 				});
 
@@ -132,7 +130,6 @@ app.get('/search', (req, res) => {
 		})
 		.then(() => {
 			//TODO 9% compare data[0] and data[1] with geocodedRoutes
-
 			geocodedRoutes.forEach(function(route){
 
 			});
@@ -593,12 +590,6 @@ app.post('/route/new', function (req, res) {
 
 	var originCoor, destinationCoor;
 	//TODO geocode the origin and distance (check to see if it's in the cache already), then enter it as total distance
-	gmAPI.geocode(req.body.destination, function(err, result){
-		destinationCoor = result.results[0].geometry.location;
-	});
-	gmAPI.geocode(req.body.origin, function(err, result){
-		originCoor = result.results[0].geometry.location;
-	});
 
 	var newRoute;
   try {
