@@ -128,7 +128,7 @@ app.get('/search', (req, res) => {
               var distance = util.inspect(JSON.parse(body).routes[0].legs[0].distance, {depth:null});
 
               // Temporarily has 1 == 1 because distance not stored in DB
-              //TODO should be dbentry.distance .some threshold to distance variable
+              //TODO should be dbentry.distance .some threshold to distance variable +=9% of original distance
               if( 1 == 1 ){
                 closeRoutes.push(route);
               }
