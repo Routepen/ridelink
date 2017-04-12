@@ -110,7 +110,8 @@ app.get('/search', (req, res) => {
   		var geocodedRoutes = [];
   		var counter = 0;
   		let routePromise = new Promise((resolve, reject) => {
-  			Route.find({"date" : {"$gte" : new Date(Date.now())}}, function (err, routes) {
+        //{"date" : {"$gte" : new Date(Date.now())}} occurs
+  			Route.find({}, function (err, routes) {
     				routes.forEach(function (route) {
     					var geocodedRoute = new Promise((response, reject) => {
     						geocode(route.origin, route.destination, gmAPI, response, reject);
@@ -146,7 +147,6 @@ app.get('/search', (req, res) => {
 	}).catch((err)=>{
 	   console.err("Global error");
      console.err(err);
-     res.send("Hey");
     //res.status(300).send('Danny is a little bitch');
   });
 
