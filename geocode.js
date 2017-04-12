@@ -68,7 +68,7 @@ function geocodeHelper(origin, destination, gmAPI, resFunct, rejFunct){
   .then( function(data){
     resFunct([data[0], data[1]]);
   }).catch((err) => {
-    console.log('rejected');
+    console.log('rejected', err);
     rejFunct(err);
   });
   return 0;
