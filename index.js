@@ -104,46 +104,49 @@ const geocode = require('./geocode');
 app.get('/search', (req, res) => {
 	//TODO do error handling on user sending in invalid origin/destination
   var returnVal = new Promise((response, reject) => {
-	geocode(req.query.origin, req.query.destination, gmAPI, response, reject);
+	   geocode(req.query.origin, req.query.destination, gmAPI, response, reject);
   }).then((data) => {
-		//console.log(data[0], data[1]);
-		var geocodedRoutes = [];
-		var counter = 0;
-		let routePromise = new Promise((resolve, reject) => {
-      //Get all documents that have date after today
-			Route.find({"date" : {"$gte" : new Date(Date.now())}}, function (err, routes) {
-				routes.forEach(function (route) {
-					var geocodedRoute = new Promise((response, reject) => {
-						geocode(route.origin, route.destination, gmAPI, response, reject);
-					})
-					.then((geocodedData) => {
-						geocodedRoutes[counter] = geocodedData;
-						counter++;
-					})
-					.catch((err) => {
-							console.err("Route.find error");
-			        console.err(err);
-					});
-				});
+  		//console.log(data[0], data[1]);
+  		var geocodedRoutes = [];
+  		var counter = 0;
+  		let routePromise = new Promise((resolve, reject) => {
+  			Route.find({"date" : {"$gte" : new Date(Date.now())}}, function (err, routes) {
+    				routes.forEach(function (route) {
+    					var geocodedRoute = new Promise((response, reject) => {
+    						geocode(route.origin, route.destination, gmAPI, response, reject);
+    					})
+    					.then((geocodedData) => {
+    						geocodedRoutes[counter] = geocodedData;
+    						counter++;
+    					})
+    					.catch((err) => {
+    							console.err("Route.find error");
+    			        console.err(err);
+    					});
+    				});
 
-			});
-		})
-		.then(() => {
-			//TODO 9% compare data[0] and data[1] with geocodedRoutes
-			geocodedRoutes.forEach(function(route){
+    			});
+    	   })
+  		.then(() => {
+        var resultGeocodedRoutes = {};
+  			//TODO 9% compare data[0] and data[1] with geocodedRoutes
+  			geocodedRoutes.forEach(function(route){
+            var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
+              console.log(util.inspect(JSON.parse(body), {depth:null}))
+          	});
+  			});
+  		});
 
-			});
-		});
-
-	// TODO Fill in Maps API call and send JSON to front end to parse
-		var credentials = {
-			user: req.user,
-			url: req.url
-		};
-		res.render("search_route", credentials);
+  	// TODO Fill in Maps API call and send JSON to front end to parse
+  		var credentials = {
+  			user: req.user,
+  			url: req.url
+  		};
+  		res.render("search_route", credentials);
 	}).catch((err)=>{
-	console.err("Global error");
-    console.err(err);
+	   console.err("Global error");
+     console.err(err);
+     res.send("Hey");
     //res.status(300).send('Danny is a little bitch');
   });
 
