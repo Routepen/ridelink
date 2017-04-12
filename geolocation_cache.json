@@ -42,5 +42,13 @@
   "Walgreens, Calle Real, Goleta, CA, United States": {
     "lat": 34.441789,
     "lng": -119.828063
+  },
+  "ucsb": {
+    "lat": 34.4139629,
+    "lng": -119.848947
+  },
+  "ucsd": {
+    "lat": 32.8800604,
+    "lng": -117.2340135
   }
 }
