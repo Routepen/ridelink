@@ -2,7 +2,14 @@ const GoogleMapsAPI = require('googlemaps');
 const jsonfile = require('jsonfile');
 const jsonUpdate = require('json-update');
 
-function geocode(origin, destination, gmAPI, resFunct, rejFunct){
+
+function geocode(origin, destination, gmAPI) {
+  return new Promise((resolve, reject) => {
+    geocodeHelper(origin, destination, gmAPI, resolve, reject);
+  });
+}
+
+function geocodeHelper(origin, destination, gmAPI, resFunct, rejFunct){
   var file = './geolocation_cache.json';
 
   //Data[0] is originCoordinate and Data[1] is destinationCoordinate

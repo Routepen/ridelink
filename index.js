@@ -13,6 +13,7 @@ const util = require('util');
 const _ = require("lodash");
 const app = express();
 const GoogleMapsAPI = require('googlemaps');
+const geocode = require('./geocode');
 const jsonfile = require('jsonfile');
 const async = require('async');
 //const jsonUpdate = require('json-update');
@@ -99,13 +100,9 @@ app.get('/', function (req, res) {
 	//res.render('index', {data:data});
 });
 
-const geocode = require('./geocode');
-
 app.get('/search', (req, res) => {
 	//TODO do error handling on user sending in invalid origin/destination
-  var returnVal = new Promise((response, reject) => {
-	geocode(req.query.origin, req.query.destination, gmAPI, response, reject);
-  }).then((data) => {
+	geocode(req.query.origin, req.query.destination, gmAPI).then((data) => {
 		//console.log(data[0], data[1]);
 		var geocodedRoutes = [];
 		var counter = 0;
@@ -113,10 +110,7 @@ app.get('/search', (req, res) => {
       //Get all documents that have date after today
 			Route.find({"date" : {"$gte" : new Date(Date.now())}}, function (err, routes) {
 				routes.forEach(function (route) {
-					var geocodedRoute = new Promise((response, reject) => {
-						geocode(route.origin, route.destination, gmAPI, response, reject);
-					})
-					.then((geocodedData) => {
+          geocode(route.origin, route.destination, gmAPI).then((geocodedData) => {
 						geocodedRoutes[counter] = geocodedData;
 						counter++;
 					})
@@ -591,56 +585,58 @@ app.post('/route/new', function (req, res) {
 	var originCoor, destinationCoor;
 	//TODO geocode the origin and distance (check to see if it's in the cache already), then enter it as total distance
 
-	var newRoute;
-  try {
-    newRoute = Route({
-  		shortId: random(5),
-  		origin: req.body.origin,
-  		destination: req.body.destination,
-		originCoor: originCoor,
-		destinationCoor: destinationCoor,
-  		seats: req.body.seats,
-  		date: date,
-  		time: req.body.time,
-  		driver: req.user._id,
-  		riders:[],
-  		riderStatus: {},
-  		confirmedRiders: [],
-  		dropOffs: {},
-  		inconvenience: req.body.charge,
-  		requireInitialDeposit: false,//req.body.requireInitialDeposit,
-      isWaitlisted: false,
-      stops: req.body["stops[]"]
+  geocode(req.body.origin, req.body.destination, GoogleMapsAPI).then(data => {
+    var newRoute;
+    try {
+      newRoute = Route({
+    		shortId: random(5),
+    		origin: req.body.origin,
+    		destination: req.body.destination,
+  		  originCoor: data[0],
+  		  destinationCoor: data[1],
+    		seats: req.body.seats,
+    		date: date,
+    		time: req.body.time,
+    		driver: req.user._id,
+    		riders:[],
+    		riderStatus: {},
+    		confirmedRiders: [],
+    		dropOffs: {},
+    		inconvenience: req.body.charge,
+    		requireInitialDeposit: false,//req.body.requireInitialDeposit,
+        isWaitlisted: false,
+        stops: req.body["stops[]"]
+    	});
+    }
+    catch(e) {
+      res.status(400);
+      return res.end();
+    }
+
+  	if (req.body.confirmedEmail) {
+  		req.user.confirmedEmail = req.body.confirmedEmail;
+  	}
+  	req.user.routes.push(newRoute);
+  	req.user.save(function(err) {
+  		if (err) console.log(err);
   	});
-  }
-  catch(e) {
-    res.status(400);
-    return res.end();
-  }
 
-	if (req.body.confirmedEmail) {
-		req.user.confirmedEmail = req.body.confirmedEmail;
-	}
-	req.user.routes.push(newRoute);
-	req.user.save(function(err) {
-		if (err) console.log(err);
-	});
-
-	newRoute.save(function(err){
-		if(err) throw err;
-		console.log("Route created!");
-    User.findById(newRoute.driver, function(err, driver) {
-      newRoute.driver = driver;
-      mail.sendMail({
-  			notifyDriver: {
-  				routeCreated: true
-  			},
-  			recipient: req.user,
-        route: newRoute
-  		});
-      return res.end("/route?id=" + (newRoute.shortId || newRoute._id));
-    });
-	});
+  	newRoute.save(function(err){
+  		if(err) throw err;
+  		console.log("Route created!");
+      User.findById(newRoute.driver, function(err, driver) {
+        newRoute.driver = driver;
+        mail.sendMail({
+    			notifyDriver: {
+    				routeCreated: true
+    			},
+    			recipient: req.user,
+          route: newRoute
+    		});
+        return res.end("/route?id=" + (newRoute.shortId || newRoute._id));
+      });
+  	});
+  });
 });
 
 app.get('/sendMail', function(req, res) {
