@@ -103,9 +103,8 @@ const geocode = require('./geocode');
 
 app.get('/search', (req, res) => {
 	//TODO do error handling on user sending in invalid origin/destination
-  var returnVal = new Promise((response, reject) => {
-	   geocode(req.query.origin, req.query.destination, gmAPI, response, reject);
-  }).then((data) => {
+  
+  gecode(req.query.origin, req.query.destination, gmAPI).then((data) => {
   		//console.log(data[0], data[1]);
   		var geocodedRoutes = [];
   		var counter = 0;
