@@ -902,11 +902,17 @@ app.post('/route/update', function(req, res) {
       }
       route[updating2] = req.body[updating];
 
-      if (updating == "origin") {
+      if (updating == "origin" || updating == "destination") {
         updateCoords = new Promise((resolve, reject) => {
-          geocode(req.query.origin, gmAPI).then(data => {
-            route.originCoor = data;
+          geocode(req.query[updating], gmAPI).then(data => {
+            route[updating + "Coor"] = data;
           });
+        });
+      }
+
+      if (updating == "stops") {
+        updateCoords = new Promise((resolve, reject) => {
+          // TODO manage stops
         });
       }
 
