@@ -30,5 +30,17 @@
   "UCSB Bus Loop, Isla Vista, CA, United States": {
     "lat": 34.4152272,
     "lng": -119.8482359
+  },
+  "Dos Pueblos High School, Alameda Avenue, Goleta, CA, United States": {
+    "lat": 34.4392099,
+    "lng": -119.8792207
+  },
+  "Draughtsmen Aleworks, Santa Felicia Drive, Goleta, CA, United States": {
+    "lat": 34.432227,
+    "lng": -119.8761
+  },
+  "Walgreens, Calle Real, Goleta, CA, United States": {
+    "lat": 34.441789,
+    "lng": -119.828063
   }
 }

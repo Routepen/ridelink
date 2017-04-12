@@ -108,28 +108,35 @@ app.get('/search', (req, res) => {
 
   Promise.all([getOrigin, getDestination])
   .then((data) => {
-    console.log(data);
     new Promise((resolve, reject) => {
       //{"date" : {"$gte" : new Date(Date.now())}} occurs
       var closeRoutes = [];
       Route.find({}, function (err, routes) {
         let counter = 0;
         routes.forEach(function (route) {
-          console.log("Called API for search ", ++counter, " times");
           var requestURL = `http://45.79.65.63:5000/route/v1/driving/${route['originCoor'].lng},${route['originCoor'].lat};` +
           `${data[0].lng},${data[0].lat};${data[1].lng},${data[1].lat};` +
           `${route['destinationCoor'].lng},${route['destinationCoor'].lat}?steps=false`;
 
-          console.log(requestURL);
           request(requestURL, function (err, res, body) {
               var distance = util.inspect(JSON.parse(body).routes[0].legs[0].distance, {depth:null});
+
+              if(err){
+                console.log(err);
+                res.status(300).end('error with requesting to API');
+              }
+
               if( 1 == 1 ){
-                console.log(route);
+                closeRoutes.push(route);
+                counter++;
+              }
+
+              if(counter == routes.length){
+                resolve(closeRoutes);
               }
           });
         });
       });
-      resolve(closeRoutes);
     })
     .then((closeRoutes) => {
       //render
@@ -139,6 +146,7 @@ app.get('/search', (req, res) => {
         url: req.url,
         closeRoutes: closeRoutes
       };
+      console.log(credentials.closeRoutes);
       res.render("search_route", credentials);
     });
   })
