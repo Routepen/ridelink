@@ -105,7 +105,9 @@ app.get('/search', (req, res) => {
 	//TODO do error handling on user sending in invalid origin/destination
   let getOrigin = geocode(req.query.origin, gmAPI);
   let getDestination = geocode(req.query.destination, gmAPI);
-  Promise.all([getOrigin, getDestination]).then((data) => {
+
+  Promise.all([getOrigin, getDestination])
+  .then((data) => {
     new Promise((resolve, reject) => {
       //{"date" : {"$gte" : new Date(Date.now())}} occurs
       var closeRoutes = [];

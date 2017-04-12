@@ -130,5 +130,13 @@
   "UCSB Bus Loop, Isla Vista, CA, United States": {
     "lat": 34.4152272,
     "lng": -119.8482359
+  },
+  "Long Beach, CA, United States": {
+    "lat": 33.7700504,
+    "lng": -118.1937395
+  },
+  "UCSB Student Health, Isla Vista, CA, United States": {
+    "lat": 34.4154273,
+    "lng": -119.8526283
   }
 }
