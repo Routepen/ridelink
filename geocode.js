@@ -33,7 +33,7 @@ function geocodeHelper(place, gmAPI, resFunct, rejFunct){
             //if (err) TODO return to home page with a message saying incorrect destination. Try client side verification not server
           data = result.results[0].geometry.location;
           var newEntry = {};
-          newEntry[origin] = data;
+          newEntry[place] = data;
           jsonUpdate.update(file, newEntry);
           resFunct([data[0], data[1]]);
         });
