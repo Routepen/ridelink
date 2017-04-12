@@ -74,5 +74,37 @@
   "UCSB, Santa Barbara, CA, United States": {
     "lat": 34.4139629,
     "lng": -119.848947
+  },
+  "Lompoc, CA, United States": {
+    "lat": 34.6391501,
+    "lng": -120.4579409
+  },
+  "Riverside, CA, United States": {
+    "lat": 33.9533487,
+    "lng": -117.3961564
+  },
+  "l": {
+    "lat": 51.4427238,
+    "lng": 6.0608726
+  },
+  "e": {
+    "lat": 51.4556432,
+    "lng": 7.0115552
+  },
+  "m": {
+    "lat": 40.72961919999999,
+    "lng": -73.596724
+  },
+  "s": {
+    "lat": 37.4051042,
+    "lng": -122.1037599
+  },
+  "W": {
+    "lat": 37.4052049,
+    "lng": -122.1049137
+  },
+  "World Way, Los Angeles, CA, United States": {
+    "lat": 33.9444316,
+    "lng": -118.3965756
   }
 }

@@ -102,47 +102,38 @@ app.get('/', function (req, res) {
 
 app.get('/search', (req, res) => {
 	//TODO do error handling on user sending in invalid origin/destination
-  
-	  geocode(req.query.origin, req.query.destination, gmAPI).then((data) => {
-  		//console.log(data[0], data[1]);
-  		var geocodedRoutes = [];
-  		var counter = 0;
-  		let routePromise = new Promise((resolve, reject) => {
-        //{"date" : {"$gte" : new Date(Date.now())}} occurs
-  			Route.find({"date" : {"$gte" : new Date(Date.now())}}, function (err, routes) {
-    				routes.forEach(function (route) {
-    					geocode(route.origin, route.destination, gmAPI).then((geocodedData) => {
-    						geocodedRoutes[counter] = geocodedData;
-    						counter++;
-    					})
-    					.catch((err) => {
-    							console.err("Route.find error");
-    			        console.err(err);
-    					});
-    				});
 
-    			});
-    	   })
-  		.then(() => {
-        var resultGeocodedRoutes = {};
-  			//TODO 9% compare data[0] and data[1] with geocodedRoutes
-  			geocodedRoutes.forEach(function(route){
-            var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
-              console.log(util.inspect(JSON.parse(body), {depth:null}))
-          	});
-  			});
-  		});
-
-  	// TODO Fill in Maps API call and send JSON to front end to parse
-  		var credentials = {
-  			user: req.user,
-  			url: req.url
-  		};
-  		res.render("search_route", credentials);
-	}).catch((err)=>{
-	   console.err("Global error");
-     console.err(err);
-    //res.status(300).send('Danny is a little bitch');
+  geocode(req.query.origin, req.query.destination, gmAPI).then((data) => {
+  //console.log(data[0], data[1]);
+    var counter = 0;
+    new Promise((resolve, reject) => {
+      //{"date" : {"$gte" : new Date(Date.now())}} occurs
+      var closeRoutes = [];
+      Route.find({}, function (err, routes) {
+        routes.forEach(function (route) {
+          var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
+          //subtract distances
+          console.log(util.inspect(JSON.parse(body), {depth:null}));
+        });
+      });
+      resolve(closeRoutes);
+    })
+    .then((closeRoutes) => {
+      //render
+      // TODO Fill in Maps API call and send JSON to front end to parse
+      var credentials = {
+        user: req.user,
+        url: req.url,
+        closeRoutes: closeRoutes
+      };
+      res.render("search_route", credentials);
+      })
+    });
+  })
+  .catch((err)=>{
+    console.err("Global error");
+    console.err(err);
+    res.status(300).send('Victor is a little bitch');
   });
 
 	/*

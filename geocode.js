@@ -2,15 +2,6 @@ const GoogleMapsAPI = require('googlemaps');
 const jsonfile = require('jsonfile');
 const jsonUpdate = require('json-update');
 
-<<<<<<< HEAD
-function geocode(origin, destination, gmAPI){
-  return new Promise((response, reject) => {
-     geocodehelper(origin, destination, gmAPI, response, reject);
-  })
-}
-
-function geocodehelper(origin, destination, gmAPI, resFunct, rejFunct){
-=======
 
 function geocode(origin, destination, gmAPI) {
   return new Promise((resolve, reject) => {
@@ -19,7 +10,6 @@ function geocode(origin, destination, gmAPI) {
 }
 
 function geocodeHelper(origin, destination, gmAPI, resFunct, rejFunct){
->>>>>>> e3187db5de901e86b83a82336d6a343d15dc1547
   var file = './geolocation_cache.json';
 
   //Data[0] is originCoordinate and Data[1] is destinationCoordinate
@@ -81,7 +71,7 @@ function geocodeHelper(origin, destination, gmAPI, resFunct, rejFunct){
     console.log('rejected', err);
     rejFunct(err);
   });
-  return 0;
+  return jsonFilePromise;
 }
 
 module.exports = geocode;
