@@ -108,17 +108,25 @@ app.get('/search', (req, res) => {
 
   Promise.all([getOrigin, getDestination])
   .then((data) => {
+    console.log(data);
     new Promise((resolve, reject) => {
       //{"date" : {"$gte" : new Date(Date.now())}} occurs
       var closeRoutes = [];
       Route.find({}, function (err, routes) {
         let counter = 0;
         routes.forEach(function (route) {
-          console.log("Called API for search ", counter++, " times");
-          var dummy = request('http://45.79.65.63:5000/route/v1/driving/-122,37;-122,37.001?steps=true', function (err, res, body) {
-            //subtract distances
-            console.log(util.inspect(JSON.parse(body), {depth:null}));
-          })
+          console.log("Called API for search ", ++counter, " times");
+          var requestURL = `http://45.79.65.63:5000/route/v1/driving/${route['originCoor'].lng},${route['originCoor'].lat};` +
+          `${data[0].lng},${data[0].lat};${data[1].lng},${data[1].lat};` +
+          `${route['destinationCoor'].lng},${route['destinationCoor'].lat}?steps=false`;
+
+          console.log(requestURL);
+          request(requestURL, function (err, res, body) {
+              var distance = util.inspect(JSON.parse(body).routes[0].legs[0].distance, {depth:null});
+              if( 1 == 1 ){
+                console.log(route);
+              }
+          });
         });
       });
       resolve(closeRoutes);

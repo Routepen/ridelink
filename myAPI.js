@@ -18,4 +18,3 @@ request('http://45.79.65.63:5000/route/v1/driving/-119.8489,34.4140;-119.772587,
     console.log( JSON.parse(body).routes[0].distance);
     //console.log(util.inspect(JSON.parse(body).routes[0].legs[0].distance, {depth:null}))
 });
-

@@ -35,11 +35,11 @@ function geocodeHelper(place, gmAPI, resFunct, rejFunct){
           var newEntry = {};
           newEntry[place] = data;
           jsonUpdate.update(file, newEntry);
-          resFunct([data[0], data[1]]);
+          resFunct(data);
         });
       }
       else {
-        resFunct([data[0], data[1]]);
+        resFunct(data);
       }
     });
   })

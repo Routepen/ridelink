@@ -1,142 +1,34 @@
 {
-  "ucsb": {
-    "lat": 34.4139629,
-    "lng": -119.848947
-  },
-  "UCSB, Santa Barbara, CA, United StatesQ": {
-    "lat": 34.4139629,
-    "lng": -119.848947
-  },
-  "Denver, CO, United States": {
-    "lat": 39.7392358,
-    "lng": -104.990251
-  },
-  "ucla": {
-    "lat": 34.068921,
-    "lng": -118.4451811
-  },
-  "UlocalCSB, Santa Barbara, CA, United States": {
-    "lat": 34.4209942,
-    "lng": -119.6746102
-  },
-  "San Francisco, CA, United States": {
-    "lat": 37.7749295,
-    "lng": -122.4194155
-  },
-  "San Diego, CA, United States": {
-    "lat": 32.715738,
-    "lng": -117.1610838
-  },
-  "47520 Avalon Heights Terrace, Fremont, CA, United States": {
-    "lat": 37.4881311,
-    "lng": -121.9083315
-  },
-  "47520 180th Street West, Lancaster, CA, United States": {
-    "lat": 34.74452700000001,
-    "lng": -118.447558
-  },
-  "A S D F, Scenic Drive, Santa Barbara, CA, United States": {
-    "lat": 34.4254413,
-    "lng": -119.6642867
-  },
-  "Consumers Law Group Ads Inc, East Valley Road, Santa Barbara, CA, United States": {
-    "lat": 34.436486,
-    "lng": -119.6317727
-  },
-  "1854 Pepper Drive, Altadena, CA, United States": {
-    "lat": 34.1778503,
-    "lng": -118.1063277
-  },
-  "Sacramento, CA, United States": {
-    "lat": 38.5815719,
-    "lng": -121.4943996
-  },
-  "San Jose, CA, United States": {
-    "lat": 37.3382082,
-    "lng": -121.8863286
-  },
-  "Palo Alto, CA, United States": {
-    "lat": 37.4418834,
-    "lng": -122.1430195
-  },
-  "1925 Hollister Avenue, Goleta, CA, United States": {
-    "lat": 34.4295579,
-    "lng": -119.9004902
-  },
-  "4752 Calle Camarada, Santa Barbara, CA, United States": {
-    "lat": 34.428783,
-    "lng": -119.788704
-  },
-  "Walnut, CA, United States": {
-    "lat": 34.0202894,
-    "lng": -117.8653386
-  },
-  "UCSB, Santa Barbara, CA, United States": {
-    "lat": 34.4139629,
-    "lng": -119.848947
-  },
-  "Lompoc, CA, United States": {
-    "lat": 34.6391501,
-    "lng": -120.4579409
-  },
-  "Riverside, CA, United States": {
-    "lat": 33.9533487,
-    "lng": -117.3961564
+  "w": {
+    "lat": 40.5662552,
+    "lng": -105.1015483
   },
   "l": {
     "lat": 51.4427238,
     "lng": 6.0608726
   },
-  "e": {
-    "lat": 51.4556432,
-    "lng": 7.0115552
+  "UCSB, Santa Barbara, CA, United States": {
+    "lat": 34.4139629,
+    "lng": -119.848947
   },
-  "m": {
-    "lat": 40.72961919999999,
-    "lng": -73.596724
+  "UCSD, San Diego, CA, United States": {
+    "lat": 32.8800604,
+    "lng": -117.2340135
   },
-  "s": {
-    "lat": 37.4051042,
-    "lng": -122.1037599
+  "Bacara Resort & Spa, Goleta, CA, United States": {
+    "lat": 34.4351448,
+    "lng": -119.9203386
   },
-  "W": {
-    "lat": 37.4052049,
-    "lng": -122.1049137
+  "Hollister Avenue, Goleta, CA, United States": {
+    "lat": 34.4358997,
+    "lng": -119.8314693
   },
-  "World Way, Los Angeles, CA, United States": {
-    "lat": 33.9444316,
-    "lng": -118.3965756
-  },
-  "Lolë Atelier Santa Barbara, State Street, Santa Barbara, CA, United States": {
-    "lat": 34.4191897,
-    "lng": -119.6983852
-  },
-  "w": {
-    "lat": 37.4052049,
-    "lng": -122.1049137
-  },
-  "Los Angeles, CA, United States": {
-    "lat": 34.0522342,
-    "lng": -118.2436849
-  },
-  "Embarcadero del Norte, Isla Vista, CA, United States": {
-    "lat": 34.4140959,
-    "lng": -119.8553903
-  },
-  "Los Agaves, Market Place Drive, Goleta, CA, United States": {
-    "lat": 34.4295248,
-    "lng": -119.8722818
+  "Redondo Beach, CA, United States": {
+    "lat": 33.8491816,
+    "lng": -118.3884078
   },
   "UCSB Bus Loop, Isla Vista, CA, United States": {
     "lat": 34.4152272,
     "lng": -119.8482359
-  },
-  "Long Beach, CA, United States": {
-    "lat": 33.7700504,
-    "lng": -118.1937395
-  },
-  "UCSB Student Health, Isla Vista, CA, United States": {
-    "lat": 34.4154273,
-    "lng": -119.8526283
   }
 }
