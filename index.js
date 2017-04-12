@@ -119,18 +119,23 @@ app.get('/search', (req, res) => {
           `${route['destinationCoor'].lng},${route['destinationCoor'].lat}?steps=false`;
 
           request(requestURL, function (err, res, body) {
+
+              counter++; // using counter to keep track of how many completed requests *less clunky option to Promise*
               var distance = util.inspect(JSON.parse(body).routes[0].legs[0].distance, {depth:null});
 
+              // Short error handling for testing
               if(err){
                 console.log(err);
                 res.status(300).end('error with requesting to API');
               }
 
+              // Temporarily has 1 == 1 because distance not stored in DB
+              //TODO should be dbentry.distance .some threshold to distance variable
               if( 1 == 1 ){
                 closeRoutes.push(route);
-                counter++;
               }
 
+              // If all requests have been returned then resolve with the array of close routes
               if(counter == routes.length){
                 resolve(closeRoutes);
               }
