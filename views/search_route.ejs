@@ -44,13 +44,26 @@
       <thead>
       <tr class="riderElement-inverse">
           <th>#</th>
-          <th> Role </th>
+          <th> Driver </th>
+          <!--<th> Full? </th> -->
           <th> Origin </th>
           <th> Destination </th>
           <th> Cost </th>
+          <th> Date </th>
+          <th> Signup Ride </th> <!-- Render buttons for one click signup -->
       </tr>
       </thead>
       <tbody id="tbody">
+        <% for(var i=0; i < closeRoutes.length; i++) { %>
+          <tr class="riderElement riderElement-inverse clickable">
+            <td> <%= i %> </td>
+            <td> <%= closeRoutes[i].driver %> </td>
+            <td> <%= closeRoutes[i].origin %> </td>
+            <td> <%= closeRoutes[i].destination %> </td>
+            <td> <%= closeRoutes[i].getMonth() +  "/" closeRoutes[i].getDate() %> </td>
+            <td> <button type="button" class="btn btn-success"> Signup </button> </td>
+          </tr>
+          <% } %>
         <!--<tr class="riderElement riderElement-inverse clickable">
           <td>1</td>
           <td>Rider</td>
@@ -95,11 +108,9 @@
             me.setUpDropOff(map);
             me.setMarkers();
         });
-
     }
 
     initMap();
-
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer>
