@@ -10,5 +10,13 @@
   "UCSB, Santa Barbara, CA, United States": {
     "lat": 34.4139629,
     "lng": -119.848947
+  },
+  "Palo Alto, CA, United States": {
+    "lat": 37.4418834,
+    "lng": -122.1430195
+  },
+  "UCSB Bus Loop, Isla Vista, CA, United States": {
+    "lat": 34.4152272,
+    "lng": -119.8482359
   }
 }

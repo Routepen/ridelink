@@ -7,14 +7,19 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
+
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
     <!--<link rel="icon" href="../../favicon.ico"> -->
 
     <title>RoutePen</title>
 
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/css/jquery-ui.css">
+
 
     <!--<link href="/css/new_landing.css" rel="stylesheet"> -->
 
@@ -38,15 +43,42 @@
 
 <% include ./partials/navbar %>
 
-<div class="row">
-  <div class="col-md-4 col-offset-md-4">
-    <h3> Want a notification every time a new relevant route is added for you?
-    <input id="email-notification" class="controls" type="text" placeholder="Email...">
-    <input id="date-notification" class="controls" type="text" placeholder="Date...">
-    <button type="button" class="btn btn-info"> Signup All Routes </button>
+<div class="modal fade" id="notificationsModal" tabIndex="-1" role="dialog" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Rider notifications. Get an email every time there is a relevant ride to you until the date you specify. </h4>
+          <hr>
+      </div>
+      <div class="modal-body">
+        <input id="email-notification" class="controls" type="text" placeholder="Email...">
+        <input id="date-notification" class="controls" type="text" placeholder="Date...">
+        <input type="submit" class="btn btn-success" data-dismiss="modal" value="Submit">
+      </div>
+        <hr>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Done">
+      </div>
+    </div>
   </div>
-  <div class="col-md-4">
-    <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
+</div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 col-offset-md-4">
+      <h5> Want a notification every time a new relevant route is added for you? </h5>
+      <!-- Make a popup window instead -->
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 offset-md-4">
+      <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
+    </div>
+    <div class="col-md-4">
+      <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
+    </div>
   </div>
 </div>
 
@@ -94,6 +126,12 @@
 
 
 <script type="text/javascript">
+
+    function toggleNotifications(){
+        $("#notificationsModal").modal('toggle');
+    }
+
+
     var mapHandler;
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
@@ -103,6 +141,7 @@
         });
 
         mapHandler = new showRoute(map);
+        AutocompleteHandler(); //Inside of navbar
     }
     var markers = {}, infoWindows = {};
 
@@ -123,7 +162,6 @@
         });
     }
 
-    initMap();
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer>
