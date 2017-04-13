@@ -14,11 +14,18 @@
     <title>RoutePen</title>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+     <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="Stylesheet" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<!--     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> -->
     <!-- Bootstrap core CSS -->
+
     <link href="/css/bootstrap.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="/css/jquery-ui.css">
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css' rel='stylesheet'type='text/css'>
 
 
     <!--<link href="/css/new_landing.css" rel="stylesheet"> -->
@@ -28,6 +35,10 @@
 
     <!-- Custom styles for this template -->
     <link href="/css/main.css" rel="stylesheet">
+
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -48,11 +59,12 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Rider notifications. Get an email every time there is a relevant ride to you until the date you specify. </h4>
+        <h4 class="modal-title">Rider notifications. Get emails on all relevant rides </h4>
           <hr>
       </div>
       <div class="modal-body">
         <input id="email-notification" class="controls" type="text" placeholder="Email...">
+        <b> until </b>
         <input id="date-notification" class="controls" type="text" placeholder="Date...">
         <input type="submit" class="btn btn-success" data-dismiss="modal" value="Submit">
       </div>
@@ -64,68 +76,65 @@
   </div>
 </div>
 
+<div id="content" class="fill">
+  <div class="col-md-7">
+    <div class="container" style="padding-top: 10px;">
+      <div class="row">
+        <div class="col-md-4 col-offset-md-4">
+          <h5> Want a notification every time a new relevant route is added for you? </h5>
+          <!-- Make a popup window instead -->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 offset-md-4">
+          <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
+        </div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
+        </div>
+      </div>
+    </div>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-4 col-offset-md-4">
-      <h5> Want a notification every time a new relevant route is added for you? </h5>
-      <!-- Make a popup window instead -->
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4 offset-md-4">
-      <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
-    </div>
-    <div class="col-md-4">
-      <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
-    </div>
-  </div>
-</div>
-
-<div style="padding-top: 40px"></div>
-    <div class="col-md-8 col-sm-12" style="overflow: scroll">
-    <table class="table">
-      <thead>
-      <tr class="riderElement-inverse">
-          <th>#</th>
-          <th> Driver </th>
-          <!--<th> Full? </th> -->
-          <th> Origin </th>
-          <th> Destination </th>
-          <th> Cost </th>
-          <th> Date </th>
-          <th> Signup Ride </th> <!-- Render buttons for one click signup -->
-      </tr>
-      </thead>
-      <tbody id="tbody">
-        <% for (var i = 0; i < closeRoutes.length; i++) { %>
-          <tr class="riderElement riderElement-inverse clickable">
-              <td> <%= i+1 %> </td>
-              <td> <%= closeRoutes[i].driver %> </td>
-              <td> <%= closeRoutes[i].origin %> </td>
-              <td> <%= closeRoutes[i].destination %> </td>
-              <td> <%= closeRoutes[i].inconvenience %> </td>
-              <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
-              <td> <button type="button" class="btn btn-success"> Signup </button> </td>
+    <div style="padding-top: 40px"></div>
+    <div style="overflow: scroll">
+        <table class="table">
+          <thead>
+          <tr class="riderElement-inverse">
+              <th>#</th>
+              <th> Driver </th>
+              <!--<th> Full? </th> -->
+              <th> Origin </th>
+              <th> Destination </th>
+              <th> Cost </th>
+              <th> Date </th>
+              <th> Signup Ride </th> <!-- Render buttons for one click signup -->
           </tr>
-        <% } %>
-        <!--<tr class="riderElement riderElement-inverse clickable">
-          <td>1</td>
-          <td>Rider</td>
-          <td>Santa Barbara</td>
-          <td>San Francisco</td>
-          <td>$20</td>
-        </tr>-->
-      </tbody>
-    </table>
-  </div>
-  <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
+          </thead>
+          <tbody id="tbody">
+            <% for (var i = 0; i < closeRoutes.length; i++) { %>
+              <tr class="riderElement riderElement-inverse clickable">
+                  <td> <%= i+1 %> </td>
+                  <td> <%= closeRoutes[i].driver %> </td>
+                  <td> <%= closeRoutes[i].origin %> </td>
+                  <td> <%= closeRoutes[i].destination %> </td>
+                  <td> <%= closeRoutes[i].inconvenience %> </td>
+                  <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
+                  <td> <button type="button" class="btn btn-success"> Signup </button> </td>
+              </tr>
+            <% } %>
+            </tbody>
+          </table>
+      </div>
+      <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
+    </div>
+    <div class="col-md-5" id="map"></div>
 </div>
-
-<div id="map"></div>
-
 
 <script type="text/javascript">
+
+    $(function () {
+        $("#date-notification").datepicker();
+    });
 
     function toggleNotifications(){
         $("#notificationsModal").modal('toggle');

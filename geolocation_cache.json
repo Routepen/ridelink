@@ -18,5 +18,13 @@
   "UCSB Bus Loop, Isla Vista, CA, United States": {
     "lat": 34.4152272,
     "lng": -119.8482359
+  },
+  "Fremont, CA, United States": {
+    "lat": 37.5482697,
+    "lng": -121.9885719
+  },
+  "University of Southern California, Los Angeles, CA, United States": {
+    "lat": 34.0223519,
+    "lng": -118.285117
   }
 }
