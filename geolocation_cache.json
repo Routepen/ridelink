@@ -30,5 +30,21 @@
   "ucsd": {
     "lat": 32.8800604,
     "lng": -117.2340135
+  },
+  "Los Angeles, CA, United States": {
+    "lat": 34.0522342,
+    "lng": -118.2436849
+  },
+  "Los Agaves, Market Place Drive, Goleta, CA, United States": {
+    "lat": 34.4295248,
+    "lng": -119.8722818
+  },
+  "Long Beach, CA, United States": {
+    "lat": 33.7700504,
+    "lng": -118.1937395
+  },
+  "San Francisco, CA, United States": {
+    "lat": 37.7749295,
+    "lng": -122.4194155
   }
 }
