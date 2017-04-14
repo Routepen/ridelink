@@ -241,10 +241,10 @@
       this.setupPlaceChangedListener(dropOffAutocomplete, this.rideRequested);
     }
 
-    pickUpInput = document.getElementById("editOriginInput");
-    if (pickUpInput) {
+    this.pickUpInput = document.getElementById("editOriginInput");
+    if (this.pickUpInput) {
       this.pickUpAutocomplete = new google.maps.places.Autocomplete(
-              pickUpInput, {placeIdOnly: true});
+              this.pickUpInput, {placeIdOnly: true});
       var me = this;
       this.setupPlaceChangedListener(this.pickUpAutocomplete, function() {
         me.changeRoute('origin');
@@ -252,10 +252,10 @@
     }
 
 
-    destinationInput = document.getElementById("editDestinationInput");
-    if (destinationInput) {
+    this.destinationInput = document.getElementById("editDestinationInput");
+    if (this.destinationInput) {
       this.destinationAutocomplete = new google.maps.places.Autocomplete(
-              destinationInput, {placeIdOnly: true});
+              this.destinationInput, {placeIdOnly: true});
       var me = this;
       this.setupPlaceChangedListener(this.destinationAutocomplete, function() {
         me.changeRoute('destination');
@@ -273,12 +273,14 @@
 
     var place = autocomplete.getPlace();
     if (!place || !place.place_id) {
-        window.alert("Please select an option from the dropdown list.");
-        callback = callback || function() {};
-        return callback(new Error("invalid place"));
-    }
+        //window.alert("Please select an option from the dropdown list.");
+        if (location == "origin") { routeData[location] = this.pickUpInput.value; }
+        else { routeData[location] = this.destinationInput.value; }
 
-    routeData[location] = place.name;
+    }
+    else {
+        routeData[location] = place.name;
+    }
 
     this.drawMap(function() {
       restoreMapText(location);
@@ -608,8 +610,9 @@
     };
     data[id] = newValue;
 
-    $.post("/route/update", data, function() {
-
+    $.post("/route/update", data, function(data) {
+      routeData.originCoor = data.originCoor;
+      routeData.destinationCoor = data.destinationCoor;
     });
   }
 
@@ -1099,11 +1102,12 @@
     var data = {
       routeId: routeData._id,
       stops: stopList,
-      updating: "stops[]"
+      updating: "stops[]",
+      distance: mapHandler.distance
     }
 
     $.post("/route/update", data, function(data, result) {
-
+      routeData.stopsCoor = data.stopsCoor;
     });
   }
 

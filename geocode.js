@@ -27,8 +27,10 @@ function geocodeHelper(place, gmAPI, resFunct, rejFunct){
       // If the place was not found in the cache
       if(data == undefined){
         gmAPI.geocode( { "address": place }, (err, result) => {
+          console.log(place, err, result);
           if(err) {
-            reject(err);
+            console.log(err);
+            return reject(err);
           }
             //if (err) TODO return to home page with a message saying incorrect destination. Try client side verification not server
           data = result.results[0].geometry.location;

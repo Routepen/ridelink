@@ -25,6 +25,7 @@ var routeSchema = new Schema({
         type:Schema.ObjectId,
         ref:'users'
     }],
+    stopsCoor: [{"lat":Number, "lng": Number}],
     stops: [String],
     dropOffs: Schema.Types.Mixed,
     riderStatus: Schema.Types.Mixed,

@@ -604,10 +604,21 @@ app.post('/route/new', function (req, res) {
 	//TODO geocode the origin and distance (check to see if it's in the cache already), then enter it as total distance
 
   let getOrigin = geocode(req.body.origin, gmAPI);
-  let getDestination = geocode(req.body.origin, gmAPI);
-  Promise.all([getOrigin, getDestination]).then(data => {
+  let getDestination = geocode(req.body.destination, gmAPI);
+  let promises = [getOrigin, getDestination];
+
+  let stops = req.body["stops[]"];
+  if (typeof(stops) == "string") { stops = [stops]; }
+
+  console.log(stops);
+  for (var i = 0; i < stops.length; i++) {
+    console.log(stops[i]);
+    promises.push(geocode(stops[i], gmAPI));
+  }
+  Promise.all(promises).then(data => {
     let originCoor = data[0];
     let destinationCoor = data[1];
+    let stopsCoor = data.splice(2);
 
     var newRoute;
     try {
@@ -629,6 +640,7 @@ app.post('/route/new', function (req, res) {
     		requireInitialDeposit: false,//req.body.requireInitialDeposit,
         isWaitlisted: false,
         stops: req.body["stops[]"],
+        stopsCoor: stopsCoor,
         distance: req.body.distance
     	});
     }
@@ -905,38 +917,65 @@ app.post('/route/update', function(req, res) {
 
     if (updating == "stops[]" && !req.body[updating]) { req.body['stops[]'] = []; }
 
-    let updateCoords = Promise.resolve(); // do nothing unless coords need updating
+    let updateCoords; // a promise to update coordinates
 
     if (req.body[updating] && req.body[updating] !== "") {
       var updating2 = updating;
       if (updating == "stops[]") {
+        updateCoords = new Promise((resolve, reject) => {
+          let promises = [];
+          let stops = req.body["stops[]"];
+          if (typeof(stops) == "string") { stops = [stops]; }
+
+          console.log("stops", stops);
+          for (var i = 0; i < stops.length; i++) {
+            promises.push(geocode(stops[i], gmAPI));
+          }
+          Promise.all(promises).then(data => {
+            console.log(data);
+            route.stopsCoor = data;
+            resolve();
+          });
+        });
+
         updating2 = "stops";
       }
       route[updating2] = req.body[updating];
 
       if (updating == "origin" || updating == "destination") {
         updateCoords = new Promise((resolve, reject) => {
-          geocode(req.query[updating], gmAPI).then(data => {
+          geocode(req.body[updating], gmAPI).then(data => {
             route[updating + "Coor"] = data;
+            resolve();
           });
         });
       }
-
-      route.distance = parseFloat(req.body.distance);
-
-      if (updating == "stops") {
-        updateCoords = new Promise((resolve, reject) => {
-          // TODO manage stops
-        });
+      else {
+        updateCoords = Promise.resolve(); // do nothing unless coords need updating
       }
+
+      console.log("got distance", req.body.distance);
+      route.distance = parseFloat(req.body.distance);
 
     }
 
     updateCoords.then( () => {
+      console.log("1", route.stopsCoor);
       route.save(err => {
+        console.log("2", route.stopsCoor);
+        console.log(err);
         if (err) { console.log(err); return res.end("failure"); }
-        res.end("");
+        res.json(
+          {
+            originCoor: route.originCoor,
+            destinationCoor: route.destinationCoor,
+            stopsCoor: route.stopsCoor
+          }
+        );
       })
+    })
+    .catch(e => {
+      console.log(e);
     });
 
 	});
