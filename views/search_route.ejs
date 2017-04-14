@@ -114,7 +114,7 @@
               <% for (var i = 0; i < closeRoutes.length; i++) { %>
                   <tr class="riderElement riderElement-inverse clickable">
                       <td> <%= i+1 %> </td>
-                      <td> <%= closeRoutes[i].driver %> </td>
+                      <td> <%= closeRoutes[i].driver.facebook.name %> </td>
                       <td> <%= closeRoutes[i].origin %> </td>
                       <td> <%= closeRoutes[i].destination %> </td>
                       <td> <%= closeRoutes[i].inconvenience %> </td>
@@ -131,7 +131,8 @@
 </div>
 
 <script type="text/javascript">
-
+    var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
+    console.log(closeRoutes);
     $(function () {
         $("#date-notification").datepicker();
     });

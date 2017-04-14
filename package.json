@@ -36,6 +36,7 @@
     "passport-facebook": "^2.1.1",
     "pg": "^6.1.2",
     "pg-pool": "^1.6.0",
+    "phantomjs": "^2.1.7",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "request": "^2.71.0",

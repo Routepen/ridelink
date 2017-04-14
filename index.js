@@ -111,7 +111,7 @@ app.get('/search', (req, res) => {
     new Promise((resolve, reject) => {
       //{"date" : {"$gte" : new Date(Date.now())}} occurs
       var closeRoutes = [];
-      Route.find({}, function (err, routes) {
+      Route.find({}).populate('driver').exec(function (err, routes) {
         let counter = 0;
         routes.forEach(function (route) {
           var requestURL = `http://45.79.65.63:5000/route/v1/driving/${route['originCoor'].lng},${route['originCoor'].lat};` +

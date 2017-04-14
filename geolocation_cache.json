@@ -26,5 +26,9 @@
   "University of Southern California, Los Angeles, CA, United States": {
     "lat": 34.0223519,
     "lng": -118.285117
+  },
+  "ucsd": {
+    "lat": 32.8800604,
+    "lng": -117.2340135
   }
 }
