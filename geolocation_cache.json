@@ -1,3 +1,10 @@
 {
-  
+  "ucsb": {
+    "lat": 34.4139629,
+    "lng": -119.848947
+  },
+  "UCSD, San Diego, CA, United States": {
+    "lat": 32.8800604,
+    "lng": -117.2340135
+  }
 }

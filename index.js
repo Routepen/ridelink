@@ -132,7 +132,8 @@ app.get('/search', (req, res) => {
               //TODO should be dbentry.distance .some threshold to distance variable +=9% of original distance
               var routeDist = parseInt(route.distance);
               console.log('route distance is ', routeDist, ' and distance is ', distance);
-              if( (routeDist * 0.9 >= distance &&  routeDist < distance) || (distance * 0.9 <= routeDist && distance > routeDist )){
+              console.log(routeDist/distance);
+              if( routeDist/distance >= 0.8   &&  routeDist/distance < 1 ){
                 closeRoutes.push(route);
               }
 
