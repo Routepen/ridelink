@@ -154,6 +154,7 @@ class DriverInput extends Component {
       charge: charge.value.replace('$', ''),
       date: date.value,
       time: time.value,
+      distance: this.state.route.distance || 0
     };
 
     var email = document.getElementById("confirmed_email_input");

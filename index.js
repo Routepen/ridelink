@@ -228,7 +228,7 @@ app.get('/route', function (req, res) {
       paymentConfirmed: req.query.status == "paymentConfirmed"
 		};
 
-		res.render('route', {data:data});
+		res.render('route_old', data);
 	}
 
 	var id = req.query.id;
@@ -625,7 +625,8 @@ app.post('/route/new', function (req, res) {
     		inconvenience: req.body.charge,
     		requireInitialDeposit: false,//req.body.requireInitialDeposit,
         isWaitlisted: false,
-        stops: req.body["stops[]"]
+        stops: req.body["stops[]"],
+        distance: req.body.distance
     	});
     }
     catch(e) {
@@ -917,6 +918,8 @@ app.post('/route/update', function(req, res) {
           });
         });
       }
+
+      route.distance = parseFloat(req.body.distance);
 
       if (updating == "stops") {
         updateCoords = new Promise((resolve, reject) => {
