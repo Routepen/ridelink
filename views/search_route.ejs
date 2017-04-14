@@ -85,14 +85,21 @@
                     <!-- Make a popup window instead -->
                   </div>
             </div>
-           <div class="row">
-                <div class="col-md-4 offset-md-4">
-                    <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
-                </div>
-                <div class="col-md-4">
-                    <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
-                </div>
-            </div>
+            <div class="row">
+                 <div class="col-md-4 offset-md-4">
+                     <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
+                 </div>
+                 <div class="col-md-4">
+                     <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
+                 </div>
+             </div>
+             <br/><br/>
+             <div class="row">
+                  <span style="font-size:20px; color: white">From: <%= origin %></span>
+              </div>
+              <div class="row">
+                   <span style="font-size:20px; color: white">To:  <%= destination %></span>
+              </div>
         </div>
 
       <div style="padding-top: 40px"></div>
