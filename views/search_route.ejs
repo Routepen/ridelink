@@ -50,7 +50,7 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body style="background-color:#0c84e4; overflow: hidden">
+<body style="background-color:#0c84e4; overflow:hidden;">
 
 <% include ./partials/navbar %>
 
@@ -96,7 +96,7 @@
         </div>
 
       <div style="padding-top: 40px"></div>
-      <div style="overflow: scroll">
+      <div>
           <table class="table">
               <thead>
                 <tr class="riderElement-inverse">
@@ -110,19 +110,21 @@
                     <th> Signup Ride </th> <!-- Render buttons for one click signup -->
                 </tr>
               </thead>
-            <tbody id="tbody">
-              <% for (var i = 0; i < closeRoutes.length; i++) { %>
-                  <tr class="riderElement riderElement-inverse clickable">
-                      <td> <%= i+1 %> </td>
-                      <td> <%= closeRoutes[i].driver.facebook.name %> </td>
-                      <td> <%= closeRoutes[i].origin %> </td>
-                      <td> <%= closeRoutes[i].destination %> </td>
-                      <td> <%= closeRoutes[i].inconvenience %> </td>
-                      <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
-                      <td> <button type="button" class="btn btn-success"> Signup </button> </td>
-                  </tr>
-                <% } %>
-              </tbody>
+            </table>
+            <table class="table" style="overflow-y: scroll; height: 350px; display: inline-block;">
+                <tbody id="tbody">
+                    <% for (var i = 0; i < closeRoutes.length; i++) { %>
+                        <tr class="riderElement riderElement-inverse clickable">
+                            <td> <%= i+1 %> </td>
+                            <td> <%= closeRoutes[i].driver.facebook.name %> </td>
+                            <td> <%= closeRoutes[i].origin %> </td>
+                            <td> <%= closeRoutes[i].destination %> </td>
+                            <td> <%= closeRoutes[i].inconvenience %> </td>
+                            <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
+                            <td> <button type="button" class="btn btn-success"> Signup </button> </td>
+                        </tr>
+                      <% } %>
+                  </tbody>
             </table>
         </div>
         <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
@@ -131,6 +133,7 @@
 </div>
 
 <script type="text/javascript">
+
     var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
     console.log(closeRoutes);
     $(function () {
@@ -151,7 +154,7 @@
         });
 
         mapHandler = new showRoute(map);
-        AutocompleteHandler(); //Inside of navbar
+        new AutocompleteHandler(); //Inside of navbar
     }
     var markers = {}, infoWindows = {};
 
