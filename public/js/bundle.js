@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "fcd6af6ffa6ef4c2e2c4"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "d55deda5789dec818e0c"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -10198,9 +10198,14 @@ var Stops = _wrapComponent('Stops')(function (_Component) {
       // let stops = this.stops;
       // stops.push({index:stops.length, finalized: false});
       // this.stops = stops;
-      var index = Math.max.apply(null, this.state.route.stops.map(function (s) {
-        return s.index;
-      })) + 1;
+      var index;
+      if (this.state.route.stops.length == 0) {
+        index = 0;
+      } else {
+        index = Math.max.apply(null, this.state.route.stops.map(function (s) {
+          return s.index;
+        })) + 1;
+      }
       this.state.route.stops.push({ index: index, finalized: false, place: {} });
       this.setFocusOn = index;
       this.setState(this.state);

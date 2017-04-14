@@ -30,5 +30,25 @@
   "ucsd": {
     "lat": 32.8800604,
     "lng": -117.2340135
+  },
+  "San Francisco, CA, United States": {
+    "lat": 37.7749295,
+    "lng": -122.4194155
+  },
+  "Monterey, CA, United States": {
+    "lat": 36.6002378,
+    "lng": -121.8946761
+  },
+  "Fresno, CA, United States": {
+    "lat": 36.7468422,
+    "lng": -119.7725868
+  },
+  "Salinas, CA, United States": {
+    "lat": 36.6777372,
+    "lng": -121.6555013
+  },
+  "Bakersfield, CA, United States": {
+    "lat": 35.3732921,
+    "lng": -119.0187125
   }
 }
