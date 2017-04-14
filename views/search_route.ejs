@@ -171,16 +171,33 @@
         this.destinationPlaceId = null;
         this.travelMode = 'DRIVING';
         this.directionsService = new google.maps.DirectionsService;
-        this.directionsDisplay = new google.maps.DirectionsRenderer;
-        this.directionsDisplay.setMap(map);
         this.geocoder = new google.maps.Geocoder();
 
+        addRoute.call(this, "<%= origin %>", "<%= destination %>", [], this.map);
+
         var me = this;
-      /*  this.drawMap(function() {
-            me.setUpDropOff(map);
-            me.setMarkers();
+        closeRoutes.forEach(function(route) {
+          addRoute.call(me, route.origin, route.destination, route.waypoints, me.map);
         });
-*/
+    }
+
+    function addRoute(origin, destination, waypoints, map, callback) {
+      var directionsDisplay = new google.maps.DirectionsRenderer;
+      directionsDisplay.setMap(map);
+
+      var me = this;
+      this.directionsService.route({
+        origin: origin,
+        destination:  destination,
+        travelMode: this.travelMode,
+      }, function(response, status) {
+        if (status === 'OK') {
+          directionsDisplay.setDirections(response);
+          if (callback) callback();
+        } else {
+          window.alert('Directions request failed due to ' + status);
+        }
+      });
     }
 
 </script>
