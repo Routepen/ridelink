@@ -118,7 +118,7 @@
                 </tr>
               </thead>
             </table>
-            <table class="table" style="overflow-y: scroll; height: 350px; display: inline-block;">
+            <table class="table" style="overflow-y: scroll; height: 200px; display: inline-block;">
                 <tbody id="tbody">
                     <% for (var i = 0; i < closeRoutes.length; i++) { %>
                         <tr class="riderElement riderElement-inverse clickable">
@@ -128,7 +128,7 @@
                             <td> <%= closeRoutes[i].destination %> </td>
                             <td> <%= closeRoutes[i].inconvenience %> </td>
                             <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
-                            <td> <button type="button" class="btn btn-success"> Signup </button> </td>
+                            <td> <button type="button" class="btn btn-success" > Signup </button> </td>
                         </tr>
                       <% } %>
                   </tbody>
@@ -167,6 +167,7 @@
     }
     var markers = {}, infoWindows = {};
 
+
     function showRoute(map) {
         this.map = map;
         this.originPlaceId = null;
@@ -187,7 +188,6 @@
       var directionsDisplay = new google.maps.DirectionsRenderer;
       directionsDisplay.setMap(map);
 
-      var me = this;
       this.directionsService.route({
         origin: origin,
         destination:  destination,

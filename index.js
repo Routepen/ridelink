@@ -111,7 +111,7 @@ app.get('/search', (req, res) => {
     new Promise((resolve, reject) => {
       //{"date" : {"$gte" : new Date(Date.now())}} occurs
       var closeRoutes = [];
-      Route.find({}).populate('driver').exec(function (err, routes) {
+      Route.find({"date" : {"$gte" : new Date(Date.now())}}).sort({date:'ascending'}).populate('driver').exec(function (err, routes) {
         let counter = 0;
         routes.forEach(function (route) {
           var requestURL = `http://45.79.65.63:5000/route/v1/driving/${route['originCoor'].lng},${route['originCoor'].lat};` +
@@ -133,7 +133,7 @@ app.get('/search', (req, res) => {
               var routeDist = parseInt(route.distance);
               console.log('route distance is ', routeDist, ' and distance is ', distance);
               console.log(routeDist/distance);
-              if( routeDist/distance >= 0.9   &&  routeDist/distance < 1 ){
+              if( routeDist/distance >= 0.9   &&  routeDist/distance < 1.2 ){
                 closeRoutes.push(route);
               }
 
@@ -610,7 +610,7 @@ app.post('/route/new', function (req, res) {
   let getDestination = geocode(req.body.destination, gmAPI);
   let promises = [getOrigin, getDestination];
 
-  let stops = req.body["stops[]"];
+  let stops = req.body["stops[]"] || [];
   if (typeof(stops) == "string") { stops = [stops]; }
 
   console.log(stops);

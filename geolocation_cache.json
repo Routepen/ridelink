@@ -30,5 +30,41 @@
   "UCLA, Los Angeles, CA, United States": {
     "lat": 34.068921,
     "lng": -118.4451811
+  },
+  "UCSD Bookstore, San Diego, CA, United States": {
+    "lat": 32.8794408,
+    "lng": -117.2369353
+  },
+  "UCSB Bus Loop, Isla Vista, CA, United States": {
+    "lat": 34.4152272,
+    "lng": -119.8482359
+  },
+  "Pomona, CA, United States": {
+    "lat": 34.055103,
+    "lng": -117.7499909
+  },
+  "Thousand Oaks, CA, United States": {
+    "lat": 34.1705609,
+    "lng": -118.8375937
+  },
+  "Irvine, CA, United States": {
+    "lat": 33.6839473,
+    "lng": -117.7946942
+  },
+  "San Jose, CA, United States": {
+    "lat": 37.3382082,
+    "lng": -121.8863286
+  },
+  "Berkeley, CA, United States": {
+    "lat": 37.8715926,
+    "lng": -122.272747
+  },
+  "San Luis Obispo, CA, United States": {
+    "lat": 35.2827524,
+    "lng": -120.6596156
+  },
+  "Cal Poly, San Luis Obispo, CA, United States": {
+    "lat": 35.3050053,
+    "lng": -120.6624942
   }
 }
