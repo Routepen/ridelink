@@ -151,6 +151,8 @@ app.get('/search', (req, res) => {
       var credentials = {
         user: req.user,
         url: req.url,
+        origin: req.query.origin,
+        destination: req.query.destination,
         closeRoutes: closeRoutes
       };
       console.log(credentials.closeRoutes);

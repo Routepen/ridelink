@@ -6,5 +6,29 @@
   "UCSD, San Diego, CA, United States": {
     "lat": 32.8800604,
     "lng": -117.2340135
+  },
+  "San Francisco, CA, United States": {
+    "lat": 37.7749295,
+    "lng": -122.4194155
+  },
+  "UCSB, Santa Barbara, CA, United States": {
+    "lat": 34.4139629,
+    "lng": -119.848947
+  },
+  "l": {
+    "lat": 51.4427238,
+    "lng": 6.0608726
+  },
+  "w": {
+    "lat": 37.4052049,
+    "lng": -122.1049137
+  },
+  "ucsd": {
+    "lat": 32.8800604,
+    "lng": -117.2340135
+  },
+  "UCLA, Los Angeles, CA, United States": {
+    "lat": 34.068921,
+    "lng": -118.4451811
   }
 }

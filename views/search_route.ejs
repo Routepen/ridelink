@@ -85,14 +85,21 @@
                     <!-- Make a popup window instead -->
                   </div>
             </div>
-           <div class="row">
-                <div class="col-md-4 offset-md-4">
-                    <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
-                </div>
-                <div class="col-md-4">
-                    <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
-                </div>
-            </div>
+            <div class="row">
+                 <div class="col-md-4 offset-md-4">
+                     <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
+                 </div>
+                 <div class="col-md-4">
+                     <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
+                 </div>
+             </div>
+             <br/><br/>
+             <div class="row">
+                  <span style="font-size:20px; color: white">From: <%= origin %></span>
+              </div>
+              <div class="row">
+                   <span style="font-size:20px; color: white">To:  <%= destination %></span>
+              </div>
         </div>
 
       <div style="padding-top: 40px"></div>
@@ -166,16 +173,33 @@
         this.destinationPlaceId = null;
         this.travelMode = 'DRIVING';
         this.directionsService = new google.maps.DirectionsService;
-        this.directionsDisplay = new google.maps.DirectionsRenderer;
-        this.directionsDisplay.setMap(map);
         this.geocoder = new google.maps.Geocoder();
 
+        addRoute.call(this, "<%= origin %>", "<%= destination %>", [], this.map);
+
         var me = this;
-      /*  this.drawMap(function() {
-            me.setUpDropOff(map);
-            me.setMarkers();
+        closeRoutes.forEach(function(route) {
+          addRoute.call(me, route.origin, route.destination, route.waypoints, me.map);
         });
-*/
+    }
+
+    function addRoute(origin, destination, waypoints, map, callback) {
+      var directionsDisplay = new google.maps.DirectionsRenderer;
+      directionsDisplay.setMap(map);
+
+      var me = this;
+      this.directionsService.route({
+        origin: origin,
+        destination:  destination,
+        travelMode: this.travelMode,
+      }, function(response, status) {
+        if (status === 'OK') {
+          directionsDisplay.setDirections(response);
+          if (callback) callback();
+        } else {
+          window.alert('Directions request failed due to ' + status);
+        }
+      });
     }
 
 </script>
