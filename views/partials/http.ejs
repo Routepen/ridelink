@@ -1,0 +1,53 @@
+function http() {
+  this.callbacks = {};
+}
+
+http.prototype.confirmedRider = function(id, btn) {
+  var post = {
+    userId: id,
+    routeId: routeData._id
+  };
+
+  $(btn).button('loading');
+
+  var me = this;
+  $.post("/route/confirmrider", post, function(data, textStatus) {
+    var addedRider;
+    for (var i = 0; i < routeData.riders.length; i++) {
+      var rider = routeData.riders[i];
+      if (rider._id == id) {
+        addedRider = rider;
+        routeData.riders.splice(i, 1);
+        routeData.confirmedRiders.push(rider);
+      }
+    }
+    $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
+    me.ridersChanged();
+    $(btn).button('reset');
+    if (addedRider) {
+      if (addedRider.facebook.gender.toLowerCase() == "male") {
+        $('#riderPronounHeShe').html('he');
+        $('#riderPronounHisHer').html('his');
+        $('#riderPronounHimHer').html('him');
+      }
+      else {
+        $('#riderPronounHeShe').html('she');
+        $('#riderPronounHisHer').html('her');
+        $('#riderPronounHimHer').html('her');
+      }
+      $('#addedRider').html(addedRider.facebook.name.split(' ')[0]);
+      $('#tellDriverToWait').modal('show');
+    }
+  });
+}
+
+
+// "private" functions that call callbacks after specific events occur
+http.prototype.ridersChanged = function() {
+  if (this.callbacks.ridersChanged) { this.callbacks.ridersChanged(); }
+  else { console.log("Warning. ridersChanged callback undefined"); }
+}
+
+http.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
+}

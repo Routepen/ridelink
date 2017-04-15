@@ -1,0 +1,127 @@
+function heading() {
+  this.callbacks = {};
+
+  this.setUpHeading();
+}
+
+heading.prototype.setUpHeading = function() {
+  <% if (!isDriver || view == "rider") { %>
+
+    <% if (isRider) { %>
+      $("#dropOffText").show();
+    <% } else { %>
+      $("#dropOffTextEditable").show();
+    <% } %>
+
+    var dropOffInput = document.getElementById("pac-input");
+    if (dropOffInput) {
+      dropOffAutocomplete = new google.maps.places.Autocomplete(dropOffInput, {placeIdOnly: true});
+
+      var me = this;
+      dropOffAutocomplete.addListener('place_changed', function() {
+          me.dropOffInputted(dropOffAutocomplete);
+      });
+
+      $("#requestRideButtonConfirm").click(function() {
+        me.dropOffInputted(dropOffAutocomplete);
+      });
+
+      $("#requestRideButtonCancel").click(function() {
+        var input = $(dropOffInput);
+        input.val("");
+        input.focus();
+        input[0].selectionStart = input[0].selectionEnd = input.val().length;
+      });
+
+    }
+
+  <% } %>
+
+  <% if (!confirmedRider) { %>
+
+    $('#dropOffText').click(function() {
+      $('#dropOffText').hide();
+      $('#dropOffTextEditable').show();
+      var input = $('#dropOffTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
+
+  <% } %>
+}
+
+heading.prototype.riderLocationChanged = function() {
+  var userId = "<%- ( user ? user : {_id:''} )._id %>";
+  if (userId == routeData.driver._id) {
+    alert("You can't sign up for your own ride");
+    return;
+  }
+
+  var editable = $('#dropOffTextEditable');
+  var address = editable.find('input').val();
+
+  $('#riderDropOff').html(address);
+  $('#confirmAddRider').modal('show');
+}
+
+
+heading.prototype.addOrUpdateRider = function(btn) {
+  $(btn).button('loading');
+  $('#cancelRequestButton').show();
+
+  var user = <%- user ? JSON.stringify(user) : '{}'%>
+  var userId = user._id;
+
+  var text = $('#dropOffText'), editable = $('#dropOffTextEditable');
+  text.show();
+  editable.hide();
+  var address = editable.find('input').val();
+  text.find('span').html(address);
+
+
+  data = {
+    routeId: "<%= routeData._id %>",
+    address: address,
+    baggage: $('#sel1').val()
+  };
+
+  $.post("/route/addrider", data, function(data, text) {
+    var found = false;
+    for (var i = 0; i < routeData.riders.length; i++) {
+      if (routeData.riders[i]._id == userId) {
+        found = true;
+        break;
+      }
+    }
+    if (found) {
+      routeData.dropOffs[userId] = address;
+    }
+    else {
+      routeData.riders.push(user);
+      routeData.dropOffs = routeData.dropOffs || {};
+      routeData.dropOffs[userId] = address;
+    }
+    routeData.riderStatus = routeData.riderStatus || {};
+    routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};
+    routeData.riderStatus[userId]['baggage'] = $('#sel1').val();
+
+    mapHandler.hideTestMarker();
+    mapHandler.setMarkers();
+    setUpTable();
+    $('#numConfirmedRiders').html(routeData.confirmedRiders.length);
+
+    $(btn).button('reset');
+    $('#confirmAddRider').modal('hide');
+  });
+}
+
+
+// "private" functions that call callbacks after specific events occur
+heading.prototype.dropOffInputted = function(autocomplete) {
+  if (this.callbacks.dropOffInputted) { this.callbacks.dropOffInputted(autocomplete); }
+  else { console.log("Warning. dropOffInputted callback undefined"); }
+}
+
+heading.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
+}

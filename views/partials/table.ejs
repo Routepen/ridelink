@@ -1,0 +1,167 @@
+function table(table, routeData) {
+  this.table = table;
+  this.routeData = routeData;
+
+  this.setUpTable();
+}
+
+table.prototype.drawMap = function(callback) {
+
+}
+
+table.prototype.setUpTable = function() {
+  console.log("setting up table");
+  var table = this.table;
+  var routeData = this.routeData;
+  var me = this;
+
+
+  if (routeData.confirmedRiders.length + routeData.riders.length == 0) {
+    //$(table).hide();
+    $('#tableMessage').html("No riders have signed up yet");
+    $('#tableMessage').show();
+  }
+  else {
+    //$(table).show();
+    $('#tableMessage').html("");
+    $('#tableMessage').hide();
+  }
+
+  var tbody = document.getElementById("riderTable");
+  tbody.innerHTML = "";
+
+  routeData.confirmedRiders.forEach(function(rider, i) {
+    var rider = routeData.confirmedRiders[i];
+    var color = "green", title="confirmed";
+    var status = "";
+
+    if (routeData.riderStatus[rider._id].paid) {
+      status="Paid";
+    }
+    else {
+      if (routeData.requireInitialDeposit) {
+        status="Awaiting payment";
+      }
+      else {
+        status = "Confirmed";
+      }
+    }
+
+    tbody.innerHTML += '<tr class="riderElement" id="rider' + rider._id + '">' +
+        "<td> " + (i+1) + " </td>" +
+        "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
+        '<td> ' + me.getTdElement(rider, status) + '</td>' +
+        '<td> ' + routeData.riderStatus[rider._id].baggage + '</td>' +
+        "</tr>";
+  });
+
+  routeData.confirmedRiders.forEach(function(rider) {
+    <% if (isDriver && view != "rider") { %>
+      if (status != "Paid") {
+        me.initializeTdElement(rider, status);
+      }
+    <% } %>
+  });
+
+
+  var waitlisted = routeData.confirmedRiders.length >= routeData.seats;
+  if (waitlisted && routeData.riders.length > 0) {
+    tbody = document.getElementById("waitlistRiderTable");
+    tbody.innerHTML = "";
+    $('#waitListTable').show();
+  }
+  else {
+    $('#waitListTable').hide();
+  }
+
+  routeData.riders.forEach(function(rider, i) {
+    var status = "Ride Requested"
+
+    tbody.innerHTML += '<tr class="riderElement" id="rider' + routeData.riders[i]._id + '">' +
+        '<td>' + (i+1) + '</td>' +
+        "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
+        '<td>' + me.getTdElement(rider, status) + '</td>' +
+        '<td> ' + routeData.riderStatus[rider._id].baggage + '</td>' +
+      '</tr>';
+  });
+
+  <% if (isDriver && view != "rider") { %>
+    routeData.riders.forEach(function(rider) {
+      if (routeData.confirmedRiders.length < routeData.seats) { me.initializeTdElement(rider, status); }
+    });
+  <% } %>
+}
+
+table.prototype.getTdElement = function(rider, status) {
+
+  var clickable = false;
+
+  var innerButton = "", button2 = "";
+  var cancelButton =
+    '<button type="button" class="btn btn-default btn-xs editable-cancel" style="margin-left: 10px" onclick="restoreTdElement(\'' + rider._id + '\')">' +
+      'Cancel' +
+    '</button>';
+
+  if ((status == "Awaiting payment" && routeData.requireInitialDeposit) || (status == "Confirmed" && !routeData.requireInitialDeposit)) {
+    clickable = true;
+    innerButton =
+    '<button type="button" class="btn btn-primary btn-xs editable-submit" onclick="removeRider(\'' + rider._id + '\', this)">' +
+      'Remove Rider' +
+    '</button>';
+  }
+  if (status == "Ride Requested") {
+    clickable = true;
+    innerButton =
+    '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
+  }
+
+  var spanClass = "<%= isDriver  && view != "rider" ? "editableInput" : "" %>";
+  if (!clickable) { spanClass = ""; }
+
+  if (!routeData.requireInitialDeposit && status == "Awaiting payment") {
+    button2 =
+    '<button class="btn btn-success btn-xs" style="margin-right: 10px;" onclick="javascript:markPaid(\'' + rider._id + '\', this)">Rider Paid</button>'
+  }
+
+  return '<div class="form-inline editableform">' +
+    '<div id="tr' + rider._id + 'TextEditable" style="display:none">' +
+      button2 +
+      innerButton +
+      cancelButton +
+    '</div>' +
+
+    '<div id="tr' + rider._id + 'Text" style="">' +
+      '<span class=' + spanClass + ' aria-hidden="true">' + status + '</span>' +
+    '</div>' +
+  '</div>';
+}
+
+table.prototype.initializeTdElement = function(rider, status) {
+  var divId = 'tr' + rider._id + 'Text';
+  var editableId = divId + 'Editable';
+  console.log("initing", document.getElementById(divId));
+  console.log($('#' + divId + '>span'));
+  $('#' + divId + '>span').click(function() {
+    console.log('clicked');
+    $('#' + divId).hide();
+    $('#' + editableId).show();
+  });
+}
+
+
+table.prototype.hightlightInTable = function(riderId) {
+  $("#riderTable").find("tr").each(function(i, elem) {
+    if (elem.id == "rider" + riderId) {
+      $(elem).addClass("highlighted");
+    }
+    else {
+      $(elem).removeClass("highlighted");
+    }
+  });
+}
+
+table.prototype.unHighlightTable = function() {
+  $("#riderTable").find("tr").each(function(i, elem) {
+    $(elem).removeClass("highlighted");
+  });
+}

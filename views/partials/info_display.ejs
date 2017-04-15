@@ -1,0 +1,317 @@
+function infoDisplay(div, routeData) {
+  this.div = div;
+  this.routeData = routeData;
+
+  this.stopLocations = {};
+  this.count = 0;
+
+  this.setUpStops();
+}
+
+
+infoDisplay.prototype.setUpEditability = function() {
+  <% if (isDriver  && view != "rider") { %>
+    $('#originText>span').click(function() {
+      $('#originText').hide();
+      $('#originTextEditable').show();
+      var input = $('#originTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
+
+    $('#destinationText>span').click(function() {
+      $('#destinationText').hide();
+      $('#destinationTextEditable').show();
+      var input = $('#destinationTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
+
+    $('#seatsText>span').click(function() {
+      $('#seatsText').hide();
+      $('#seatsTextEditable').show();
+      var input = $('#seatsTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
+
+    $('#dateText>span').click(function() {
+      $('#dateText').hide();
+      $('#dateTextEditable').show();
+      var input = $('#dateTextEditable').find('input');
+      input.focus();
+      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    });
+
+    $(function () {
+        $("#editDateInput").datepicker();
+    });
+
+    $("#editTimeInput").timepicker({
+        template: false,
+        showInputs: false,
+        minuteStep: 5,
+    });
+
+    $('#timeText>span').click(function() {
+      $('#timeText').hide();
+      $('#timeTextEditable').show();
+      var input = $('#timeTextEditable').find('input');
+      input.focus();
+    });
+  <% } %>
+}
+
+infoDisplay.prototype.errorMessageFromEditable = function(id, newValue){
+  if (id == "seats" && newValue != "" + parseInt(newValue)) { return "Please enter a number for the number of people you can take"; }
+  if (id == "date" && newValue.split('/').length != 3) { return "Please enter a valid date"; }
+  if (id == "time" && newValue == "") { return "Please enter the time you are leaving"; }
+
+  return "";
+}
+
+infoDisplay.prototype.restoreMapText = function(id) {
+  selector = "#" + id;
+  var textDiv = $(selector + 'Text');
+  var editableDiv = $(selector + 'TextEditable');
+  var span = textDiv.find('span');
+  var input = editableDiv.find('input');
+  var newValue = input.val().trim();
+  span.html(newValue);
+  textDiv.show();
+  editableDiv.hide();
+
+  data = {
+    routeId: routeData._id,
+    updating: id,
+    distance: mapHandler.distance
+  };
+  data[id] = newValue;
+
+  $.post("/route/update", data, function(data) {
+    routeData.originCoor = data.originCoor;
+    routeData.destinationCoor = data.destinationCoor;
+  });
+}
+
+infoDisplay.prototype.mapEditableDone = function(submit, id) {
+  if (submit) {
+    mapHandler.changeRoute(id);
+  }
+  else {
+    var selector = "#" + id;
+    var textDiv = $(selector + 'Text');
+    var editableDiv = $(selector + 'TextEditable');
+    var span = textDiv.find('span');
+    var input = editableDiv.find('input');
+
+    if (id == "dropOff") {
+      <% if (isRider) { %>
+        input.val(span.html().trim());
+        textDiv.show();
+        editableDiv.hide();
+      <% } else { %>
+        input.val("");
+      <% } %>
+    }
+    else {
+      input.val(span.html().trim());
+      textDiv.show();
+      editableDiv.hide();
+    }
+  }
+}
+
+infoDisplay.prototype.editableDone = function(submit, id) {
+  selector = "#" + id;
+  var textDiv = $(selector + 'Text');
+  var editableDiv = $(selector + 'TextEditable');
+  var span = textDiv.find('span');
+  var input = editableDiv.find('input');
+  var newValue = input.val().trim();
+
+  var error = errorMessageFromEditable(id, newValue);
+
+  if (error == "" || !submit) {
+    if (submit) {
+      var toSet = newValue;
+      if (id == "seats") {
+        toSet -= routeData.confirmedRiders.length;
+        if (toSet < 0) {
+          $("#lessThanZeroSeats").modal('show');
+          input.val(routeData.confirmedRiders.length);
+          toSet = 0;
+          newValue = routeData.confirmedRiders.length;
+        }
+        if (toSet == 0) {
+          $('#rideIsFull').show();
+        }
+        else {
+          $('#rideIsFull').hide();
+        }
+      }
+      if (id == "time") {
+        // var parts = toSet.split(":");
+        // var s = parseInt(parts[0]);
+        // if (!isNaN(s)) {
+        //   if (s == 0) {
+        //     t =  "12:" + parts[1] + " AM";
+        //   }
+        //   else if (s < 12) { toSet += " AM"; }
+        //   else if (s == 12) { toSet += " PM"; }
+        //   else {
+        //     if (parts.length > 1) {
+        //         toSet = (s-12) + ":" + parts[1] + " PM";
+        //     }
+        //   }
+        // }
+      }
+
+      span.html(toSet);
+      textDiv.show();
+      editableDiv.hide();
+
+      data = {
+        routeId: routeData._id,
+        updating: id
+      };
+      data[id] = newValue;
+
+      $.post("/route/update", data, function() {
+        routeData[id] = newValue;
+        setUpTable();
+        mapHandler.setMarkers();
+      });
+    }
+    else {
+      var html = span.html().trim();
+      input.val(html);
+      textDiv.show();
+      editableDiv.hide();
+    }
+    $('#alertbox').hide();
+  }
+  else {
+    $('#errorMessage').html(error);
+    $('#alertbox').show();
+  }
+}
+
+infoDisplay.prototype.restoreTdElement = function(riderId, status) {
+  var divId = 'tr' + riderId + 'Text';
+  var editableId = divId + 'Editable';
+  $('#' + divId).show();
+  $('#' + editableId).hide();
+}
+
+
+infoDisplay.prototype.setUpStops = function() {
+  var stops = this.routeData.stops;
+  var stopsDiv = $('#stops');
+  count = stops.length;
+
+  for (var i = 0; i < count; i++) {
+    var div = $('<div></div>');
+    var onclick = "removeStop(" + i + ")";
+
+    <% if (isDriver && view != "rider") { %>
+      var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size:18px" onclick="' + onclick + '">remove_circle</i>';
+      var stop = $('<span style="font-size:18px" class="">' + stops[i] + '</span>');
+    <% } else {%>
+      var cancel = '';
+      var stop = $('<span style="margin-left: 22px; font-size:18px">' + stops[i] + '</span>');
+    <% } %>
+
+    stopLocations[i] = div;
+
+    div.attr('id', 'stop' + i);
+
+    div.append(cancel);
+    div.append(stop);
+
+    stopsDiv.append(div);
+  }
+}
+
+infoDisplay.prototype.addStop = function() {
+  var stops = $('#stops');
+  var id = "stop" + count;
+  console.log("id", id);
+  var onclick = "removeStop(" + count + ")";
+
+  var div = $('<div></div>');
+  var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size: 18px" onclick="' + onclick + '">remove_circle</i>';
+  var stop = $('<input id="origin-input" name="origin" class="stop-input controls"' +
+         'type="text" placeholder="Enter a stop..." onPaste=""' +
+         'onkeydown="if (event.keyCode == 13) { return false;}"' +
+         ' style="margin-left: 0px !important; padding-left: 0px !important">');
+
+  div.attr('id', id);
+
+  div.append(cancel);
+  div.append(stop);
+
+  stops.append(div);
+  stopLocations[count] = div;
+
+  var autocomplete = new google.maps.places.Autocomplete(stop[0], {placeIdOnly: true});
+  var c = count;
+  mapHandler.setupPlaceChangedListener(autocomplete, function() {
+    stopChanged(c);
+  });
+
+  stop.focus();
+  count++;
+}
+
+infoDisplay.prototype.removeStop = function(i) {
+  stopLocations[i].remove();
+  delete stopLocations[i];
+  sendStopsToServer();
+  mapHandler.drawMap();
+}
+
+infoDisplay.prototype.stopChanged = function(i) {
+  var stopDiv = $('#stop' + i);
+
+  var div = $('<div></div>');
+  var onclick = "removeStop(" + i + ")";
+  var newLocation = stopDiv.find('input').val();
+
+  <% if (isDriver && view != "rider") { %>
+    var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size:18px" onclick="' + onclick + '">remove_circle</i>';
+    var stop = $('<span style="font-size:18px" class="editableInput">' + newLocation + '</span>');
+  <% } else {%>
+    var cancel = '<i class="material-icons" style="padding-right:10px; font-size:18px">remove_circle</i>';
+    var stop = $('<span style="font-size:18px">' + newLocation + '</span>');
+  <% } %>
+
+  div.attr('id', 'stop' + i);
+
+  div.append(cancel);
+  div.append(stop);
+
+  stopLocations[i] = div;
+  stopDiv.replaceWith(div);
+  sendStopsToServer();
+
+  mapHandler.drawMap();
+}
+
+infoDisplay.prototype.sendStopsToServer = function() {
+  var stopList = [];
+  for (key in stopLocations) {
+    stopList.push(stopLocations[key].find('span').html());
+  }
+
+  var data = {
+    routeId: routeData._id,
+    stops: stopList,
+    updating: "stops[]",
+    distance: mapHandler.distance
+  }
+
+  $.post("/route/update", data, function(data, result) {
+    routeData.stopsCoor = data.stopsCoor;
+  });
+}

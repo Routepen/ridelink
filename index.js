@@ -610,7 +610,7 @@ app.post('/route/new', function (req, res) {
   let getDestination = geocode(req.body.destination, gmAPI);
   let promises = [getOrigin, getDestination];
 
-  let stops = req.body["stops[]"];
+  let stops = req.body["stops[]"] || [];
   if (typeof(stops) == "string") { stops = [stops]; }
 
   console.log(stops);
