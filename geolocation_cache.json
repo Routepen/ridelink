@@ -66,5 +66,9 @@
   "Cal Poly, San Luis Obispo, CA, United States": {
     "lat": 35.3050053,
     "lng": -120.6624942
+  },
+  "Ventura, CA, United States": {
+    "lat": 34.274646,
+    "lng": -119.2290316
   }
 }

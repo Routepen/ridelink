@@ -1,0 +1,15 @@
+thead, tbody {
+  display:block;
+}
+tbody{
+  overflow-y: scroll;
+  height: 200px;
+  overflow-x: hidden;
+}
+
+.origin-destination-display{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
