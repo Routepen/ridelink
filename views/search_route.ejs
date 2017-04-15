@@ -61,7 +61,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Rider notifications. Get emails on all relevant rides </h4>
+                <h4 class="modal-title"> Email Notifications </h4>
                   <hr>
             </div>
             <div class="modal-body">
@@ -90,7 +90,7 @@
          </div>
           <div class"row">
             <div class="panels">
-                <div class="panel-heading">Want a notification every time a new relevant route is added for you?</div>
+                <div class="panel-heading">Receive instant email notifications when a new shared ride is relevant to you! Click Below</div>
                 <div class="panel-body">
                     <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
                 </div>
@@ -104,7 +104,7 @@
            </div>-->
 
           <div class="row">
-              <button type="button" class="btn btn-warning" style="margin-left: 20px;" onclick="checkall();"> Check all </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
+              <button type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" onclick="checkall();"> Check all </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
               <button type="button" class="btn btn-success" style="float: right; margin-right:20px"> Signup </button>
           </div>
           <div>
@@ -126,7 +126,7 @@
                     <tbody id="tbody">
                         <% for (var i = 0; i < closeRoutes.length; i++) { %>
                             <tr class="closeRoutesRow riderElement riderElement-inverse clickable">
-                                <td> <div class="checkbox"> <label> <input type="checkbox"> </label> </div> </td>
+                                <td> <input class="myCheckbox" type="checkbox"> </td>
                                 <td> <%= i+1 %> </td>
                                 <td> <%= closeRoutes[i].driver.facebook.name %> </td>
                                 <td> <%= closeRoutes[i].origin %> </td>
@@ -173,22 +173,12 @@
     function toggleNotifications(){
         $("#notificationsModal").modal('toggle');
     }
-    /*
+
     function checkall(){
-      var table = document.getElementById("tbody");
-      for (var i = 0, row; row = table.rows[i]; i++) {
-         //iterate through rows
-         //rows would be accessed using the "row" variable assigned in the for loop
-         row.cells[0].checked = true;
-      }
-      $('.closeRoutesRow tr').each(function () {
-         $(".checkbox").find('td input:checked').each(function () {
-           document.getElementById(".checkbox").checked = true;
-         });
-        });
+      $('.myCheckbox').each(function(){ this.checked = true; });
     }
 
-*/
+
     var mapHandler;
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {

@@ -13,3 +13,9 @@ tbody{
   flex-wrap: wrap;
   justify-content: center;
 }
+
+/*
+td > input[type="checkbox"]:checked {
+    color: #4caf50 ;
+}
+*/
