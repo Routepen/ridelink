@@ -133,7 +133,7 @@ app.get('/search', (req, res) => {
               var routeDist = parseInt(route.distance);
               console.log('route distance is ', routeDist, ' and distance is ', distance);
               console.log(routeDist/distance);
-              if( routeDist/distance >= 0.8   &&  routeDist/distance < 1 ){
+              if( routeDist/distance >= 0.9   &&  routeDist/distance < 1 ){
                 closeRoutes.push(route);
               }
 
