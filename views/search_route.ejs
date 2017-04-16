@@ -128,7 +128,7 @@
                             <td> <%= closeRoutes[i].destination %> </td>
                             <td> <%= closeRoutes[i].inconvenience %> </td>
                             <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
-                            <td> <button type="button" class="btn btn-success" > Signup </button> </td>
+                            <td> <button type="button" class="btn btn-success" onclick="buttonClicked(<%= closeRoutes[i]._id %>)"> Signup </button> </td>
                         </tr>
                       <% } %>
                   </tbody>
@@ -143,6 +143,10 @@
 
     var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
     console.log(closeRoutes);
+
+    function buttonClicked(routeId) {
+      
+    }
 
 
     $(function () {
