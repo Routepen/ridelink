@@ -35,6 +35,8 @@
 
     <!-- Custom styles for this template -->
     <link href="/css/main.css" rel="stylesheet">
+    <link href="/css/search_route.css" rel="stylesheet">
+
 
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
@@ -59,7 +61,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Rider notifications. Get emails on all relevant rides </h4>
+                <h4 class="modal-title"> Email Notifications </h4>
                   <hr>
             </div>
             <div class="modal-body">
@@ -78,74 +80,93 @@
 
 <div id="content" class="fill">
     <div class="col-md-7">
-        <div class="container" style="padding-top: 10px;">
-            <div class="row">
-                  <div class="col-md-4 col-offset-md-4">
-                      <h5> Want a notification every time a new relevant route is added for you? </h5>
-                    <!-- Make a popup window instead -->
-                  </div>
-            </div>
-            <div class="row">
-                 <div class="col-md-4 offset-md-4">
-                     <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
-                 </div>
-                 <div class="col-md-4">
-                     <button type="button" class="btn btn-success"> Signup All Routes </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
-                 </div>
+        <div class="row" style="padding-top: 10px">
+            <div class="row origin-destination-display">
+                 <span style="font-size:20px; color: white">From: <%= origin %></span>
              </div>
-             <br/><br/>
-             <div class="row">
-                  <span style="font-size:20px; color: white">From: <%= origin %></span>
-              </div>
-              <div class="row">
-                   <span style="font-size:20px; color: white">To:  <%= destination %></span>
-              </div>
-        </div>
+             <div class="row origin-destination-display">
+                  <span style="font-size:20px; color: white">To:  <%= destination %></span>
+             </div>
+         </div>
+          <div class"row">
+            <div class="panels">
+                <div class="panel-heading">Receive instant email notifications when a new shared ride is relevant to you! Click Below</div>
+                <div class="panel-body">
+                    <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
+                </div>
+            </div>
+          </div>
+          <!--
+          <div class="row">
+               <div class="col-md-4 offset-md-4">
+                   <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
+               </div>
+           </div>-->
 
-      <div style="padding-top: 40px"></div>
-      <div>
-          <table class="table">
-              <thead>
-                <tr class="riderElement-inverse">
-                    <th>#</th>
-                    <th> Driver </th>
-                    <!--<th> Full? </th> -->
-                    <th> Origin </th>
-                    <th> Destination </th>
-                    <th> Cost </th>
-                    <th> Date </th>
-                    <th> Signup Ride </th> <!-- Render buttons for one click signup -->
-                </tr>
-              </thead>
-            </table>
-            <table class="table" style="overflow-y: scroll; height: 200px; display: inline-block;">
-                <tbody id="tbody">
-                    <% for (var i = 0; i < closeRoutes.length; i++) { %>
-                        <tr class="riderElement riderElement-inverse clickable">
-                            <td> <%= i+1 %> </td>
-                            <td> <%= closeRoutes[i].driver.facebook.name %> </td>
-                            <td> <%= closeRoutes[i].origin %> </td>
-                            <td> <%= closeRoutes[i].destination %> </td>
-                            <td> <%= closeRoutes[i].inconvenience %> </td>
-                            <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
-                            <td> <button type="button" class="btn btn-success" onclick="buttonClicked(<%= closeRoutes[i]._id %>)"> Signup </button> </td>
-                        </tr>
-                      <% } %>
-                  </tbody>
-            </table>
+          <div class="row">
+              <button type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" onclick="checkall();"> Check all </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
+              <button type="button" class="btn btn-success" style="float: right; margin-right:20px"> Signup </button>
+          </div>
+          <div>
+              <table class="table">
+                  <thead>
+                    <tr class="riderElement-inverse">
+                        <th> </th>
+                        <th>#</th>
+                        <th> Driver </th>
+                        <!--<th> Full? </th> -->
+                        <th> Origin </th>
+                        <th> Destination </th>
+                        <th> Cost </th>
+                        <th> Date </th>
+                    </tr>
+                  </thead>
+              <!--  </table>
+                <table class="table"> -->
+                    <tbody id="tbody">
+                        <% for (var i = 0; i < closeRoutes.length; i++) { %>
+                            <tr class="closeRoutesRow riderElement riderElement-inverse clickable">
+                                <td> <input class="myCheckbox" type="checkbox"> </td>
+                                <td> <%= i+1 %> </td>
+                                <td> <%= closeRoutes[i].driver.facebook.name %> </td>
+                                <td> <%= closeRoutes[i].origin %> </td>
+                                <td> <%= closeRoutes[i].destination %> </td>
+                                <td> <%= closeRoutes[i].inconvenience %> </td>
+                                <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
+                            </tr>
+                          <% } %>
+                      </tbody>
+                </table>
+            </div>
+            <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
         </div>
-        <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
-    </div>
     <div class="col-md-5" id="map"></div>
 </div>
 
 <script type="text/javascript">
+// Autoscaling table
+    var $table = $('table'),
+        $bodyCells = $table.find('tbody tr:first').children(),
+        colWidth;
+
+    // Get the tbody columns width array
+    colWidth = $bodyCells.map(function() {
+        return $(this).width();
+    }).get();
+
+    // Set the width of thead columns
+    $table.find('thead tr').children().each(function(i, v) {
+        $(v).width(colWidth[i]);
+    });
+
+
+
 
     var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
     console.log(closeRoutes);
 
     function buttonClicked(routeId) {
-      
+
     }
 
 
@@ -155,6 +176,10 @@
 
     function toggleNotifications(){
         $("#notificationsModal").modal('toggle');
+    }
+
+    function checkall(){
+      $('.myCheckbox').each(function(){ this.checked = true; });
     }
 
 
