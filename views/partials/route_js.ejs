@@ -36,6 +36,12 @@
       var httpManager = new http();
       var headingManager = new heading();
 
+      var infoDisplay = new InfoDisplay(routeData, mapHandler);
+      infoDisplay.setUpEditability();
+      infoDisplay.addListener('valueChanged', function(name, value) {
+        console.log(name, value);
+      });
+
       httpManager.addListener('ridersChanged', function() {
         mapHandler.drawMap(function() {
           mapHandler.setMarkers();

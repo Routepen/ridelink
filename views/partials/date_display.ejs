@@ -1,0 +1,65 @@
+function DateDisplay(id, name) {
+  this.id = id;
+  this.name = name;
+
+  this.callbacks = {};
+
+  this.setUpEditablity();
+}
+
+DateDisplay.prototype.setUpEditablity = function() {
+  var textSelector = '#' + this.id;
+  var spanSelector = textSelector + '>span';
+  var editableSelector = textSelector + "Editable";
+
+  var text = $(textSelector);
+  var span = $(spanSelector);
+  var editable = $(editableSelector);
+  var input = editable.find('input');
+
+  span.click(function() {
+    text.hide();
+
+    editable.show();
+    input.focus();
+    input[0].selectionStart = input[0].selectionEnd = input.val().length;
+  });
+
+
+  var confirmButton = $(textSelector + "ButtonConfirm");
+  var cancelButton =  $(textSelector + "ButtonCancel");
+
+  cancelButton.click(function() {
+
+    input.val(span.html().trim());
+
+    editable.hide();
+    text.show();
+  });
+
+  var me = this;
+  confirmButton.click(function() {
+    var date = input.val();
+
+    me.dateChanged(date);
+
+    span.html(date);
+    input.val(date);
+
+    editable.hide();
+    text.show();
+  });
+
+  $("#editDateInput").datepicker();
+
+}
+
+// "private" functions that call callbacks after specific events occur
+DateDisplay.prototype.dateChanged = function(date) {
+  if (this.callbacks.valueChanged) { this.callbacks.valueChanged(date); }
+  else { console.log("Warning. valueChanged callback undefined"); }
+}
+
+DateDisplay.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
+}

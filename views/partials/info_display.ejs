@@ -1,68 +1,56 @@
-function infoDisplay(div, routeData) {
-  this.div = div;
+<% include ./location_display %>
+<% include ./date_display %>
+<% include ./text_display %>
+<% include ./time_display %>
+
+
+function InfoDisplay(routeData, mapHandler) {
   this.routeData = routeData;
+  this.mapHandler = mapHandler;
 
   this.stopLocations = {};
   this.count = 0;
+
+  this.callbacks = {};
 
   this.setUpStops();
 }
 
 
-infoDisplay.prototype.setUpEditability = function() {
+InfoDisplay.prototype.setUpEditability = function() {
   <% if (isDriver  && view != "rider") { %>
-    $('#originText>span').click(function() {
-      $('#originText').hide();
-      $('#originTextEditable').show();
-      var input = $('#originTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+
+    var me = this;
+
+    let originDisplay = new LocationDisplay("originText", "origin", mapHandler);
+    originDisplay.addListener('valueChanged', function(newValue) {
+        me.valueChanged("origin", newValue);
     });
 
-    $('#destinationText>span').click(function() {
-      $('#destinationText').hide();
-      $('#destinationTextEditable').show();
-      var input = $('#destinationTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    let destinationDisplay = new LocationDisplay("destinationText", "destination", mapHandler);
+    destinationDisplay.addListener('valueChanged', function(newValue) {
+        me.valueChanged("destination", newValue);
     });
 
-    $('#seatsText>span').click(function() {
-      $('#seatsText').hide();
-      $('#seatsTextEditable').show();
-      var input = $('#seatsTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    let textDisplay = new TextDisplay("seatsText", "seats");
+    textDisplay.addListener('valueChanged', function(newValue) {
+        me.valueChanged("seats", newValue);
     });
 
-    $('#dateText>span').click(function() {
-      $('#dateText').hide();
-      $('#dateTextEditable').show();
-      var input = $('#dateTextEditable').find('input');
-      input.focus();
-      input[0].selectionStart = input[0].selectionEnd = input.val().length;
+    let dateDisplay = new DateDisplay("dateText", "date");
+    dateDisplay.addListener('valueChanged', function(newValue) {
+        me.valueChanged("date", newValue);
     });
 
-    $(function () {
-        $("#editDateInput").datepicker();
+    let timeDisplay = new TimeDisplay("timeText", "time");
+    timeDisplay.addListener('valueChanged', function(newValue) {
+      me.valueChanged("time", newValue);
     });
 
-    $("#editTimeInput").timepicker({
-        template: false,
-        showInputs: false,
-        minuteStep: 5,
-    });
-
-    $('#timeText>span').click(function() {
-      $('#timeText').hide();
-      $('#timeTextEditable').show();
-      var input = $('#timeTextEditable').find('input');
-      input.focus();
-    });
   <% } %>
 }
 
-infoDisplay.prototype.errorMessageFromEditable = function(id, newValue){
+InfoDisplay.prototype.errorMessageFromEditable = function(id, newValue){
   if (id == "seats" && newValue != "" + parseInt(newValue)) { return "Please enter a number for the number of people you can take"; }
   if (id == "date" && newValue.split('/').length != 3) { return "Please enter a valid date"; }
   if (id == "time" && newValue == "") { return "Please enter the time you are leaving"; }
@@ -70,7 +58,7 @@ infoDisplay.prototype.errorMessageFromEditable = function(id, newValue){
   return "";
 }
 
-infoDisplay.prototype.restoreMapText = function(id) {
+InfoDisplay.prototype.restoreMapText = function(id) {
   selector = "#" + id;
   var textDiv = $(selector + 'Text');
   var editableDiv = $(selector + 'TextEditable');
@@ -94,7 +82,7 @@ infoDisplay.prototype.restoreMapText = function(id) {
   });
 }
 
-infoDisplay.prototype.mapEditableDone = function(submit, id) {
+InfoDisplay.prototype.mapEditableDone = function(submit, id) {
   if (submit) {
     mapHandler.changeRoute(id);
   }
@@ -122,7 +110,7 @@ infoDisplay.prototype.mapEditableDone = function(submit, id) {
   }
 }
 
-infoDisplay.prototype.editableDone = function(submit, id) {
+InfoDisplay.prototype.editableDone = function(submit, id) {
   selector = "#" + id;
   var textDiv = $(selector + 'Text');
   var editableDiv = $(selector + 'TextEditable');
@@ -197,7 +185,7 @@ infoDisplay.prototype.editableDone = function(submit, id) {
   }
 }
 
-infoDisplay.prototype.restoreTdElement = function(riderId, status) {
+InfoDisplay.prototype.restoreTdElement = function(riderId, status) {
   var divId = 'tr' + riderId + 'Text';
   var editableId = divId + 'Editable';
   $('#' + divId).show();
@@ -205,7 +193,7 @@ infoDisplay.prototype.restoreTdElement = function(riderId, status) {
 }
 
 
-infoDisplay.prototype.setUpStops = function() {
+InfoDisplay.prototype.setUpStops = function() {
   var stops = this.routeData.stops;
   var stopsDiv = $('#stops');
   count = stops.length;
@@ -233,7 +221,7 @@ infoDisplay.prototype.setUpStops = function() {
   }
 }
 
-infoDisplay.prototype.addStop = function() {
+InfoDisplay.prototype.addStop = function() {
   var stops = $('#stops');
   var id = "stop" + count;
   console.log("id", id);
@@ -264,14 +252,14 @@ infoDisplay.prototype.addStop = function() {
   count++;
 }
 
-infoDisplay.prototype.removeStop = function(i) {
+InfoDisplay.prototype.removeStop = function(i) {
   stopLocations[i].remove();
   delete stopLocations[i];
   sendStopsToServer();
   mapHandler.drawMap();
 }
 
-infoDisplay.prototype.stopChanged = function(i) {
+InfoDisplay.prototype.stopChanged = function(i) {
   var stopDiv = $('#stop' + i);
 
   var div = $('<div></div>');
@@ -298,7 +286,7 @@ infoDisplay.prototype.stopChanged = function(i) {
   mapHandler.drawMap();
 }
 
-infoDisplay.prototype.sendStopsToServer = function() {
+InfoDisplay.prototype.sendStopsToServer = function() {
   var stopList = [];
   for (key in stopLocations) {
     stopList.push(stopLocations[key].find('span').html());
@@ -314,4 +302,15 @@ infoDisplay.prototype.sendStopsToServer = function() {
   $.post("/route/update", data, function(data, result) {
     routeData.stopsCoor = data.stopsCoor;
   });
+}
+
+
+// "private" functions that call callbacks after specific events occur
+InfoDisplay.prototype.valueChanged = function(name, value) {
+  if (this.callbacks.valueChanged) { this.callbacks.valueChanged(name, value); }
+  else { console.log("Warning. valueChanged callback undefined"); }
+}
+
+InfoDisplay.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
 }

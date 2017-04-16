@@ -1,0 +1,65 @@
+function TextDisplay(id, name) {
+  this.id = id;
+  this.name = name;
+
+  this.callbacks = {};
+
+  this.setUpEditablity();
+}
+
+TextDisplay.prototype.setUpEditablity = function() {
+  var textSelector = '#' + this.id;
+  var spanSelector = textSelector + '>span';
+  var editableSelector = textSelector + "Editable";
+
+  var text = $(textSelector);
+  var span = $(spanSelector);
+  var editable = $(editableSelector);
+  var input = editable.find('input');
+
+  span.click(function() {
+    text.hide();
+
+    editable.show();
+    input.focus();
+    input[0].selectionStart = input[0].selectionEnd = input.val().length;
+  });
+
+
+  var confirmButton = $(textSelector + "ButtonConfirm");
+  var cancelButton =  $(textSelector + "ButtonCancel");
+
+  cancelButton.click(function() {
+
+    input.val(span.html().trim());
+
+    editable.hide();
+    text.show();
+  });
+
+  var me = this;
+  confirmButton.click(function() {
+    var textVal = input.val();
+
+    me.textChanged(textVal);
+
+    span.html(textVal);
+    input.val(textVal);
+
+    editable.hide();
+    text.show();
+  });
+
+}
+
+
+
+// "private" functions that call callbacks after specific events occur
+TextDisplay.prototype.textChanged = function(text) {
+  if (this.callbacks.valueChanged) { this.callbacks.valueChanged(text); }
+  else { console.log("Warning. valueChanged callback undefined"); }
+}
+
+TextDisplay.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
+}

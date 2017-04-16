@@ -1,0 +1,69 @@
+function TimeDisplay(id, name) {
+  this.id = id;
+  this.name = name;
+
+  this.callbacks = {};
+
+  this.setUpEditablity();
+}
+
+TimeDisplay.prototype.setUpEditablity = function() {
+  var textSelector = '#' + this.id;
+  var spanSelector = textSelector + '>span';
+  var editableSelector = textSelector + "Editable";
+
+  var text = $(textSelector);
+  var span = $(spanSelector);
+  var editable = $(editableSelector);
+  var input = editable.find('input');
+
+  span.click(function() {
+    text.hide();
+
+    editable.show();
+    input.focus();
+    input[0].selectionStart = input[0].selectionEnd = input.val().length;
+  });
+
+
+  var confirmButton = $(textSelector + "ButtonConfirm");
+  var cancelButton =  $(textSelector + "ButtonCancel");
+
+  cancelButton.click(function() {
+
+    input.val(span.html().trim());
+
+    editable.hide();
+    text.show();
+  });
+
+  var me = this;
+  confirmButton.click(function() {
+    var time = input.val();
+
+    me.timeChanged(time);
+
+    span.html(time);
+    input.val(time);
+
+    editable.hide();
+    text.show();
+  });
+
+  $("#editTimeInput").timepicker({
+      template: false,
+      showInputs: false,
+      minuteStep: 5,
+  });
+
+}
+
+// "private" functions that call callbacks after specific events occur
+TimeDisplay.prototype.timeChanged = function(time) {
+  if (this.callbacks.valueChanged) { this.callbacks.valueChanged(time); }
+  else { console.log("Warning. valueChanged callback undefined"); }
+}
+
+TimeDisplay.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
+}

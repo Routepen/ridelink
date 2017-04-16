@@ -16,7 +16,6 @@ function mapManager(map, routeData) {
 
   var me = this;
   this.drawMap(function() {
-    me.setUpDropOff(map);
     me.setMarkers();
   });
 
@@ -224,34 +223,6 @@ mapManager.prototype.rideRequested = function(autocomplete) {
   <% } %>
 }
 
-
-mapManager.prototype.setUpDropOff = function(map) {
-  this.pickUpInput = document.getElementById("editOriginInput");
-  if (this.pickUpInput) {
-    this.pickUpAutocomplete = new google.maps.places.Autocomplete(
-            this.pickUpInput, {placeIdOnly: true});
-    var me = this;
-    this.setupPlaceChangedListener(this.pickUpAutocomplete, function() {
-      me.changeRoute('origin');
-    });
-  }
-
-
-  this.destinationInput = document.getElementById("editDestinationInput");
-  if (this.destinationInput) {
-    this.destinationAutocomplete = new google.maps.places.Autocomplete(
-            this.destinationInput, {placeIdOnly: true});
-    var me = this;
-    this.setupPlaceChangedListener(this.destinationAutocomplete, function() {
-      me.changeRoute('destination');
-    });
-  }
-
-  var geocoder = this.geocoder;
-  var me = this;
-}
-
-
 mapManager.prototype.changeRoute = function(location) {
   var autocomplete;
   if (location == "origin") { autocomplete = this.pickUpAutocomplete; }
@@ -279,6 +250,10 @@ mapManager.prototype.setupPlaceChangedListener = function(autocomplete, onChange
   autocomplete.addListener('place_changed', onChanged);
 
 };
+
+mapManager.prototype.bindAutocompleteToMap = function(autocomplete) {
+  autocomplete.bindTo('bounds', this.map);
+}
 
 mapManager.prototype.hideTestMarker = function() {
   if (this.testMarker) {

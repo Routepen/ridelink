@@ -257,10 +257,10 @@ Use javascript to input into textarea
           <div id="originTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">my_location</i>
             <input id="editOriginInput" type="text" class="form-control input-sm" style="width:60%" value="<%= routeData.origin %>">
-            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:mapEditableDone(true, 'origin')">
+            <button id="originTextButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:mapEditableDone(false, 'origin')">
+            <button id="originTextButtonCancel" type="button" class="btn btn-default btn-sm editable-cancel">
               <i class="glyphicon glyphicon-remove"></i>
             </button>
           </div>
@@ -272,7 +272,7 @@ Use javascript to input into textarea
 
         <div id="stops"></div>
         <% if (isDriver && view != "rider") { %>
-          <button class="btn btn-primary" style="width:200px; margin-left: 12px;" onclick="addStop(); return false;">
+          <button class="btn btn-primary" style="width:200px; margin-left: 12px;">
             Add Stop
           </button>
         <% } %>
@@ -280,11 +280,11 @@ Use javascript to input into textarea
         <div class="form-inline editableform">
           <div id="destinationTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">my_location</i>
-            <input id="editDestinationInput" type="text" class="form-control input-sm" style="width:60%" value="<%= routeData.destination %>"  onkeydown="if (event.keyCode == 13) { mapEditableDone(true, 'destination'); }">
-            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:mapEditableDone(true, 'destination')">
+            <input id="editDestinationInput" type="text" class="form-control input-sm" style="width:60%" value="<%= routeData.destination %>">
+            <button id="destinationTextButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:mapEditableDone(false, 'destination')">
+            <button id="destinationTextButtonCancel" type="button" class="btn btn-default btn-sm editable-cancel">
               <i class="glyphicon glyphicon-remove"></i>
             </button>
           </div>
@@ -301,11 +301,11 @@ Use javascript to input into textarea
           <div id="seatsTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">event_seat</i>
             <span style="">Total riders you can take:</span>
-            <input id="editSeatsInput" type="text" class="form-control input-sm" value="<%= routeData.seats %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'seats'); }">
-            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'seats')">
+            <input id="editSeatsInput" type="text" class="form-control input-sm" value="<%= routeData.seats %>">
+            <button id="seatsTextButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'seats')">
+            <button id="seatsTextButtonCancel" type="button" class="btn btn-default btn-sm editable-cancel">
               <i class="glyphicon glyphicon-remove"></i>
             </button>
           </div>
@@ -323,11 +323,11 @@ Use javascript to input into textarea
         <div class="form-inline editableform">
           <div id="dateTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">event</i>
-            <input id="editDateInput" type="text" class="form-control input-sm" value="<%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'date'); }">
-            <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'date')">
+            <input id="editDateInput" type="text" class="form-control input-sm" value="<%= (routeData.date.getMonth() + 1) + '/' + routeData.date.getDate() + '/' +  routeData.date.getFullYear() %>">
+            <button id="dateTextButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'date')">
+            <button id="dateTextButtonCancel" type="button" class="btn btn-default btn-sm editable-cancel">
               <i class="glyphicon glyphicon-remove"></i>
             </button>
           </div>
@@ -344,11 +344,11 @@ Use javascript to input into textarea
           <div class="form-inline editableform">
             <div id="timeTextEditable" style="display:none">
               <i class="material-icons" style="font-size:18px">event</i>
-              <input id="editTimeInput" type="text" class="form-control input-sm" value="<%= routeData.time %>"  onkeydown="if (event.keyCode == 13) { editableDone(true, 'time'); }">
-              <button type="button" class="btn btn-primary btn-sm editable-submit" onclick="javascript:editableDone(true, 'time')">
+              <input id="editTimeInput" type="text" class="form-control input-sm" value="<%= routeData.time %>">
+              <button id="timeTextButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
                 <i class="glyphicon glyphicon-ok"></i>
               </button>
-              <button type="button" class="btn btn-default btn-sm editable-cancel" onclick="javascript:editableDone(false, 'time')">
+              <button id="timeTextButtonCancel" type="button" class="btn btn-default btn-sm editable-cancel">
                 <i class="glyphicon glyphicon-remove"></i>
               </button>
             </div>
