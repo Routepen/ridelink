@@ -171,19 +171,12 @@
   }
 
 
-  function setUpTextInfo() {
-    if (routeData.requireInitialDeposit) {
-      $('#infoText').html("Initial Deposit is Required");
-    }
-  }
-
   function submitPayment() {
     $.post('/route/riderpaid', {routeId: "<%= routeId %>"}, function(error, message) {
 
     });
   }
 
-  setUpTextInfo();
   checkSeatsLeft();
 
   <% if (isRider && !confirmedRider) { %>

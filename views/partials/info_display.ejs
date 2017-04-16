@@ -2,6 +2,7 @@
 <% include ./date_display %>
 <% include ./text_display %>
 <% include ./time_display %>
+<% include ./stops %>
 
 
 function InfoDisplay(routeData, mapHandler) {
@@ -12,8 +13,6 @@ function InfoDisplay(routeData, mapHandler) {
   this.count = 0;
 
   this.callbacks = {};
-
-  this.setUpStops();
 }
 
 
@@ -22,29 +21,35 @@ InfoDisplay.prototype.setUpEditability = function() {
 
     var me = this;
 
-    let originDisplay = new LocationDisplay("originText", "origin", mapHandler);
+    var originDisplay = new LocationDisplay("originText", "origin", this.mapHandler);
     originDisplay.addListener('valueChanged', function(newValue) {
         me.valueChanged("origin", newValue);
     });
 
-    let destinationDisplay = new LocationDisplay("destinationText", "destination", mapHandler);
+    var destinationDisplay = new LocationDisplay("destinationText", "destination", this.mapHandler);
     destinationDisplay.addListener('valueChanged', function(newValue) {
         me.valueChanged("destination", newValue);
     });
 
-    let textDisplay = new TextDisplay("seatsText", "seats");
+    var textDisplay = new TextDisplay("seatsText", "seats");
     textDisplay.addListener('valueChanged', function(newValue) {
         me.valueChanged("seats", newValue);
     });
 
-    let dateDisplay = new DateDisplay("dateText", "date");
+    var dateDisplay = new DateDisplay("dateText", "date");
     dateDisplay.addListener('valueChanged', function(newValue) {
         me.valueChanged("date", newValue);
     });
 
-    let timeDisplay = new TimeDisplay("timeText", "time");
+    var timeDisplay = new TimeDisplay("timeText", "time");
     timeDisplay.addListener('valueChanged', function(newValue) {
       me.valueChanged("time", newValue);
+    });
+
+    var stops = new Stops(this.routeData, this.mapHandler);
+    stops.setUpStops();
+    stops.addListener('valueChanged', function(newValue) {
+      me.valueChanged("stops", newValue);
     });
 
   <% } %>
@@ -190,100 +195,6 @@ InfoDisplay.prototype.restoreTdElement = function(riderId, status) {
   var editableId = divId + 'Editable';
   $('#' + divId).show();
   $('#' + editableId).hide();
-}
-
-
-InfoDisplay.prototype.setUpStops = function() {
-  var stops = this.routeData.stops;
-  var stopsDiv = $('#stops');
-  count = stops.length;
-
-  for (var i = 0; i < count; i++) {
-    var div = $('<div></div>');
-    var onclick = "removeStop(" + i + ")";
-
-    <% if (isDriver && view != "rider") { %>
-      var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size:18px" onclick="' + onclick + '">remove_circle</i>';
-      var stop = $('<span style="font-size:18px" class="">' + stops[i] + '</span>');
-    <% } else {%>
-      var cancel = '';
-      var stop = $('<span style="margin-left: 22px; font-size:18px">' + stops[i] + '</span>');
-    <% } %>
-
-    stopLocations[i] = div;
-
-    div.attr('id', 'stop' + i);
-
-    div.append(cancel);
-    div.append(stop);
-
-    stopsDiv.append(div);
-  }
-}
-
-InfoDisplay.prototype.addStop = function() {
-  var stops = $('#stops');
-  var id = "stop" + count;
-  console.log("id", id);
-  var onclick = "removeStop(" + count + ")";
-
-  var div = $('<div></div>');
-  var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size: 18px" onclick="' + onclick + '">remove_circle</i>';
-  var stop = $('<input id="origin-input" name="origin" class="stop-input controls"' +
-         'type="text" placeholder="Enter a stop..." onPaste=""' +
-         'onkeydown="if (event.keyCode == 13) { return false;}"' +
-         ' style="margin-left: 0px !important; padding-left: 0px !important">');
-
-  div.attr('id', id);
-
-  div.append(cancel);
-  div.append(stop);
-
-  stops.append(div);
-  stopLocations[count] = div;
-
-  var autocomplete = new google.maps.places.Autocomplete(stop[0], {placeIdOnly: true});
-  var c = count;
-  mapHandler.setupPlaceChangedListener(autocomplete, function() {
-    stopChanged(c);
-  });
-
-  stop.focus();
-  count++;
-}
-
-InfoDisplay.prototype.removeStop = function(i) {
-  stopLocations[i].remove();
-  delete stopLocations[i];
-  sendStopsToServer();
-  mapHandler.drawMap();
-}
-
-InfoDisplay.prototype.stopChanged = function(i) {
-  var stopDiv = $('#stop' + i);
-
-  var div = $('<div></div>');
-  var onclick = "removeStop(" + i + ")";
-  var newLocation = stopDiv.find('input').val();
-
-  <% if (isDriver && view != "rider") { %>
-    var cancel = '<i class="material-icons clickable" style="padding-right:10px; font-size:18px" onclick="' + onclick + '">remove_circle</i>';
-    var stop = $('<span style="font-size:18px" class="editableInput">' + newLocation + '</span>');
-  <% } else {%>
-    var cancel = '<i class="material-icons" style="padding-right:10px; font-size:18px">remove_circle</i>';
-    var stop = $('<span style="font-size:18px">' + newLocation + '</span>');
-  <% } %>
-
-  div.attr('id', 'stop' + i);
-
-  div.append(cancel);
-  div.append(stop);
-
-  stopLocations[i] = div;
-  stopDiv.replaceWith(div);
-  sendStopsToServer();
-
-  mapHandler.drawMap();
 }
 
 InfoDisplay.prototype.sendStopsToServer = function() {
