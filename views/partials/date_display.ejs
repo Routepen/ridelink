@@ -12,46 +12,57 @@ DateDisplay.prototype.setUpEditablity = function() {
   var spanSelector = textSelector + '>span';
   var editableSelector = textSelector + "Editable";
 
-  var text = $(textSelector);
-  var span = $(spanSelector);
-  var editable = $(editableSelector);
-  var input = editable.find('input');
-
-  span.click(function() {
-    text.hide();
-
-    editable.show();
-    input.focus();
-    input[0].selectionStart = input[0].selectionEnd = input.val().length;
-  });
-
-
-  var confirmButton = $(textSelector + "ButtonConfirm");
-  var cancelButton =  $(textSelector + "ButtonCancel");
-
-  cancelButton.click(function() {
-
-    input.val(span.html().trim());
-
-    editable.hide();
-    text.show();
-  });
+  this.text = $(textSelector);
+  this.span = $(spanSelector);
+  this.editable = $(editableSelector);
+  this.input = this.editable.find('input');
 
   var me = this;
-  confirmButton.click(function() {
-    var date = input.val();
+  this.span.click(function() {
+    me.text.hide();
 
-    me.dateChanged(date);
-
-    span.html(date);
-    input.val(date);
-
-    editable.hide();
-    text.show();
+    me.editable.show();
+    me.input.focus();
+    me.input[0].selectionStart = me.input[0].selectionEnd = me.input.val().length;
   });
+
+
+  this.confirmButton = $(textSelector + "ButtonConfirm");
+  this.cancelButton =  $(textSelector + "ButtonCancel");
+
+  this.cancelButton.click(function() {
+
+    me.input.val(me.span.html().trim());
+
+    me.editable.hide();
+    me.text.show();
+  });
+
+
+  this.confirmButton.click(function() {
+    me.confirm();
+  });
+
+  this.input.keypress(function(e) {
+    if (e.which == 13) {
+      me.confirm();
+    }
+  })
 
   $("#editDateInput").datepicker();
 
+}
+
+DateDisplay.prototype.confirm = function() {
+  var date = this.input.val();
+
+  this.dateChanged(date);
+
+  this.span.html(date);
+  this.input.val(date);
+
+  this.editable.hide();
+  this.text.show();
 }
 
 // "private" functions that call callbacks after specific events occur

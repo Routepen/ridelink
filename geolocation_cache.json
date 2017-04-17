@@ -66,5 +66,33 @@
   "Ventura, CA, United States": {
     "lat": 34.274646,
     "lng": -119.2290316
+  },
+  "Monterey, CA, United States": {
+    "lat": 36.6002378,
+    "lng": -121.8946761
+  },
+  "San Francisco, CA, Unite": {
+    "lat": 37.7501694,
+    "lng": -122.3853697
+  },
+  "San Francisco Premium Outlets, Livermore Outlets Drive, Livermore, CA, United States": {
+    "lat": 37.6986774,
+    "lng": -121.8451423
+  },
+  "Monterey": {
+    "lat": 36.6002378,
+    "lng": -121.8946761
+  },
+  "Salinas, CA, United States": {
+    "lat": 36.6777372,
+    "lng": -121.6555013
+  },
+  "Salinas": {
+    "lat": 36.6777372,
+    "lng": -121.6555013
+  },
+  "Gorda, CA, United States": {
+    "lat": 35.8765304,
+    "lng": -121.4459342
   }
 }

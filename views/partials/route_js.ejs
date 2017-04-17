@@ -40,6 +40,19 @@
       infoDisplay.setUpEditability();
       infoDisplay.addListener('valueChanged', function(name, value) {
         console.log(name, value);
+        var data = {
+          routeId: routeData._id,
+          updating: name,
+          distance: mapHandler.distance
+        }
+        data[name] = value;
+
+        $.post("/route/update", data, function(data, result) {
+          routeData.stopsCoor = data.stopsCoor;
+          routeData.originCoor = data.originCoor;
+          routeData.destinationCoor = data.destinationCoor;
+        });
+
       });
 
       httpManager.addListener('ridersChanged', function() {

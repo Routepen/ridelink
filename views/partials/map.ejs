@@ -192,25 +192,28 @@ mapManager.prototype.rideRequested = function(autocomplete) {
         return;
     }
 
-    if (me.testMarker) {
-      me.testMarker.setMap(null);
-      me.testInfoWindow.close();
+    if (this.testMarker) {
+      this.testMarker.setMap(null);
+      this.testInfoWindow.close();
     }
 
-    var onclick = "riderLocationChanged(); setUpTable()";
-
-    contentString = '<button class="btn btn-success btn-xs" onclick="' + onclick + '">Requst Ride</button>'
-
-
-    me.testInfoWindow = new google.maps.InfoWindow({
-      content: contentString
-    });
-
-    me.geocoder.geocode( { 'address': address }, function(results, status) {
+    var me = this;
+    this.geocoder.geocode( { 'address': address }, function(results, status) {
       if (results.length == 0) {
         window.alert("Please use autocomplete when choosing a location.");
         return;
       }
+
+      var content = $('<button class="btn btn-success btn-xs">Requst Ride</button>');
+
+      content.click(function() {
+        me.rideRequestClicked(address);
+      })
+
+      me.testInfoWindow = new google.maps.InfoWindow({
+        content: content[0]
+      });
+
       me.testMarker = new google.maps.Marker({
         map: me.map,
         position: results[0].geometry.location
@@ -269,7 +272,10 @@ mapManager.prototype.userClicked = function(riderId) {
 }
 
 
-
+mapManager.prototype.rideRequestClicked = function(address) {
+  if (this.callbacks.onRideRequestClicked) { this.callbacks.onRideRequestClicked(address); }
+  else { console.log("Warning. onRideRequestClicked callback undefined"); }
+}
 
 mapManager.prototype.infoWindowClosed = function() {
   if (this.callbacks.onInfoWindowClosed) { this.callbacks.onInfoWindowClosed(); }

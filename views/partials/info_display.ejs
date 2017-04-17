@@ -23,33 +23,42 @@ InfoDisplay.prototype.setUpEditability = function() {
 
     var originDisplay = new LocationDisplay("originText", "origin", this.mapHandler);
     originDisplay.addListener('valueChanged', function(newValue) {
+        me.routeData.origin = newValue;
         me.valueChanged("origin", newValue);
+        me.mapHandler.drawMap();
     });
 
     var destinationDisplay = new LocationDisplay("destinationText", "destination", this.mapHandler);
     destinationDisplay.addListener('valueChanged', function(newValue) {
+        me.routeData.destination = newValue;
         me.valueChanged("destination", newValue);
+        me.mapHandler.drawMap();
     });
 
     var textDisplay = new TextDisplay("seatsText", "seats");
     textDisplay.addListener('valueChanged', function(newValue) {
+        me.routeData.seats = newValue;
         me.valueChanged("seats", newValue);
     });
 
     var dateDisplay = new DateDisplay("dateText", "date");
     dateDisplay.addListener('valueChanged', function(newValue) {
+        me.routeData.date = newValue;
         me.valueChanged("date", newValue);
     });
 
     var timeDisplay = new TimeDisplay("timeText", "time");
     timeDisplay.addListener('valueChanged', function(newValue) {
+      me.routeData.date = newValue;
       me.valueChanged("time", newValue);
     });
 
-    var stops = new Stops(this.routeData, this.mapHandler);
+    var stops = new Stops(this.routeData.stops, this.mapHandler);
     stops.setUpStops();
     stops.addListener('valueChanged', function(newValue) {
-      me.valueChanged("stops", newValue);
+      me.routeData.stops = newValue;
+      me.mapHandler.drawMap();
+      me.valueChanged("stops[]", newValue);
     });
 
   <% } %>
@@ -74,7 +83,7 @@ InfoDisplay.prototype.restoreMapText = function(id) {
   textDiv.show();
   editableDiv.hide();
 
-  data = {
+  var data = {
     routeId: routeData._id,
     updating: id,
     distance: mapHandler.distance
@@ -164,7 +173,7 @@ InfoDisplay.prototype.editableDone = function(submit, id) {
       textDiv.show();
       editableDiv.hide();
 
-      data = {
+      var data = {
         routeId: routeData._id,
         updating: id
       };
