@@ -56,6 +56,33 @@
 
 <% include ./partials/navbar %>
 
+<div class="modal fade" id="baggageModal" tabindex="-1" role="dialog" aria-labelledby="baggageModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="lessThanZeroSeatsTitle">Join Ride</h4>
+      </div>
+      <div class="modal-body">
+        How much baggage will you have
+        <div class="form-group">
+          <select class="form-control" id="sel1">
+            <option>None</option>
+            <option>A small bag</option>
+            <option>A large bag</option>
+            <option>Two bags</option>
+            <option>More than two bags</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="btn btn-success" onclick="addOrUpdateRider(this)" value="Join">
+        <input type="submit" class="btn btn-danger" data-dismiss="modal" value="Cancel">
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="notificationsModal" tabIndex="-1" role="dialog" >
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -105,7 +132,7 @@
 
           <div class="row">
               <button type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" onclick="checkall();"> Check all </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
-              <button type="button" class="btn btn-success" style="float: right; margin-right:20px" onclick = "signupButton()"> Signup </button>
+              <button type="button" class="btn btn-success" style="float: right; margin-right:20px" onclick = "baggageModal()"> Signup </button>
           </div>
           <div>
               <table class="table">
@@ -144,7 +171,8 @@
 </div>
 
 <script type="text/javascript">
-// Autoscaling table
+
+  // Autoscaling table
     var $table = $('table'),
         $bodyCells = $table.find('tbody tr:first').children(),
         colWidth;
@@ -182,12 +210,55 @@
       $('.myCheckbox').each(function(){ this.checked = true; });
     }
 
-    function signupButton(){
+
+    //Signup Process for batch sending
+    function baggageModal(){
+        $("#baggageModal").modal('toggle');
+    }
+
+    function addOrUpdateRider(){
+      //TODO add feedback that a new route has been created
+        var counter = 0;
+        data = {
+          routeId: closeRoutes._id,
+          address: address,
+          baggage: $('#sel1').val()
+        };
         $('.myCheckbox').each(function(){
-          if(this.checked === true){
-              
-          }
-       });
+            if(this.checked === true){
+                counter++;
+                $.post("/route/searchAddrider", data, function(data, text) {
+                  var found = false;
+                  for (var i = 0; i < routeData.riders.length; i++) {
+                    if (routeData.riders[i]._id == userId) {
+                      found = true;
+                      break;
+                    }
+                  }
+                  if (found) {
+                    routeData.dropOffs[userId] = address;
+                  }
+                  else {
+                    routeData.riders.push(user);
+                    routeData.dropOffs = routeData.dropOffs || {};
+                    routeData.dropOffs[userId] = address;
+                  }
+                  routeData.riderStatus = routeData.riderStatus || {};
+                  routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};
+                  routeData.riderStatus[userId]['baggage'] = $('#sel1').val();
+
+                  mapHandler.hideTestMarker();
+                  mapHandler.setMarkers();
+                  setUpTable();
+                  $('#numConfirmedRiders').html(routeData.confirmedRiders.length);
+
+                  $(btn).button('reset');
+                  $('#confirmAddRider').modal('hide');
+              });
+              //TODO AJAX request to add multiple riders
+            }
+        });
+        //TODO popup success dialog saying you've successfully signed up for [counter] number of routes
     }
 
 
