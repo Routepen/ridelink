@@ -6,5 +6,9 @@
   "UCSB, Santa Barbara, CA, United States": {
     "lat": 34.4139629,
     "lng": -119.848947
+  },
+  "ucla": {
+    "lat": 34.068921,
+    "lng": -118.4451811
   }
 }
