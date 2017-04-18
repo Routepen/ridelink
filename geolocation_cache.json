@@ -94,5 +94,9 @@
   "Gorda, CA, United States": {
     "lat": 35.8765304,
     "lng": -121.4459342
+  },
+  "San Francisco, CA, United States": {
+    "lat": 37.7749295,
+    "lng": -122.4194155
   }
 }
