@@ -28,8 +28,8 @@ var mongo_url = 'mongodb://127.0.0.1:27017/ridelink';
 if(process.env.NODE_ENV == "production") {
   mongo_url = 'mongodb://victorcheng:victor97@ds161169.mlab.com:61169/heroku_9170g7ps';
 }
-
-mongoose.connect(mongo_url,  {
+console.log(mongo_url);
+  mongoose.connect(mongo_url,  {
   server: {
     socketOptions: {
       socketTimeoutMS: 0,
