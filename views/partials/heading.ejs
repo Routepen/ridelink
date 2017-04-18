@@ -26,6 +26,11 @@ heading.prototype.setUpHeading = function() {
     });
 
   }
+
+  var me = this;
+  $('#showPostLink').click(function() {
+    me.showPostClicked();
+  });
 }
 
 heading.prototype.onUserStatusChanged = function() {
@@ -59,6 +64,11 @@ heading.prototype.dropOffInputted = function(autocomplete) {
 
 heading.prototype.cancelRiderRequest = function() {
   if (this.callbacks.cancelRiderRequest) { this.callbacks.cancelRiderRequest(); }
+  else { console.log("Warning. cancelRiderRequest callback undefined"); }
+}
+
+heading.prototype.showPostClicked = function() {
+  if (this.callbacks.showPostClicked) { this.callbacks.showPostClicked(); }
   else { console.log("Warning. cancelRiderRequest callback undefined"); }
 }
 

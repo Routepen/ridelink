@@ -7,6 +7,7 @@
   <% include ./http %>
   <% include ./heading %>
   <% include ./modals/join_ride %>
+  <% include ./modals/facebook %>
   <% include ./helpers/route_data_updater %>
 
   var routeData = <%- JSON.stringify(routeData) %>;
@@ -38,6 +39,7 @@
     var headingManager = new heading(user, userStatus, routeData);
     var routeDataUpdater = new RouteDataUpdater(routeData);
     var joinRideModal = new JoinRide();
+    var facebookModal = new Facebook();
 
     var infoDisplay = new InfoDisplay(routeData, mapHandler);
 
@@ -112,6 +114,10 @@
       });
     });
 
+    headingManager.addListener('showPostClicked', function() {
+      facebookModal.show();
+    });
+
     tableManager.addListener('confirmRiderClicked', function(riderId) {
       httpManager.confirmRider(riderId, routeData, function() {
         routeDataUpdater.confirmRider(riderId, routeData);
@@ -129,93 +135,7 @@
     });
   }
 
-  function markPaid(id, btn) {
-    var post = {
-      userId: id,
-      routeId: routeData._id
-    };
 
-    $(btn).button('loading');
-
-    $.post("/route/markpaid", post, function(data, textStatus) {
-      $(btn).button('reset');
-      routeData.riderStatus = routeData.riderStatus || {};
-      routeData.riderStatus[id] = routeData.riderStatus[id] || {};
-      routeData.riderStatus[id].paid = true;
-      setUpTable();
-    });
-  }
-
-  function removeRider(id, btn) {
-    var post = {
-      userId: id,
-      routeId: routeData._id
-    };
-
-    $(btn).button('loading');
-
-    $.post("/route/removerider", post, function(data, textStatus) {
-      for (var i = 0; i < routeData.confirmedRiders.length; i++) {
-        var rider = routeData.confirmedRiders[i];
-        if (rider._id == id) {
-          routeData.riders.push(rider);
-          routeData.confirmedRiders.splice(i, 1);
-        }
-      }
-      $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
-      setUpTable();
-      checkSeatsLeft();
-      mapHandler.drawMap(function() {
-        mapHandler.setMarkers();
-      });
-      $(btn).button('reset');
-    });
-  }
-
-  function cancelRequest(btn) {
-    var userId = user._id;
-    $(btn).button("loading");
-
-    var post = {
-      userId: userId,
-      routeId: routeData._id
-    };
-
-    $.post("/route/cancelrequest", post, function(data, textStatus) {
-      var riderDeleted;
-      for (var i = 0; i < routeData.riders.length; i++) {
-        var rider = routeData.riders[i];
-        if (rider._id == userId) {
-          riderDeleted = rider;
-          routeData.riders.splice(i, 1);
-        }
-      }
-      setUpTable();
-      if (riderDeleted && markers[riderDeleted._id]) {
-        markers[riderDeleted._id].setMap(null);
-        delete markers[riderDeleted._id];
-      }
-      if (riderDeleted && infoWindows[riderDeleted._id]) { delete infoWindows[riderDeleted._id]; }
-
-      mapHandler.drawMap(function() {
-        mapHandler.setMarkers();
-      });
-
-
-      $(btn).css('visibility', 'hidden');
-      $(btn).button('reset');
-
-      var textDiv = $('#dropOffText');
-      var editableDiv = $('#dropOffTextEditable');
-      var span = textDiv.find('span');
-      var input = editableDiv.find('input');
-      var newValue = "";
-      span.html(newValue);
-      textDiv.hide();
-      editableDiv.show();
-    });
-
-  }
 
   function checkSeatsLeft() {
     var seatsLeft = routeData.seats - routeData.confirmedRiders.length;
@@ -243,12 +163,6 @@
     }
   }
 
-
-  function submitPayment() {
-    $.post('/route/riderpaid', {routeId: "<%= routeId %>"}, function(error, message) {
-
-    });
-  }
 
   checkSeatsLeft();
 
