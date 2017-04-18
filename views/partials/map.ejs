@@ -258,7 +258,7 @@ mapManager.prototype.bindAutocompleteToMap = function(autocomplete) {
   autocomplete.bindTo('bounds', this.map);
 }
 
-mapManager.prototype.hideTestMarker = function() {
+mapManager.prototype.hideDropOffMarker = function() {
   if (this.testMarker) {
     this.testMarker.setMap(null);
     this.testInfoWindow.close();

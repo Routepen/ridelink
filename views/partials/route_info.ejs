@@ -126,7 +126,7 @@ Use javascript to input into textarea
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="lessThanZeroSeatsTitle">Join Ride</h4>
+        <h4 class="modal-title" id="confirmAddRiderTitle">Join Ride</h4>
       </div>
       <div class="modal-body">
         How much baggage will you have
@@ -141,7 +141,7 @@ Use javascript to input into textarea
         </div>
       </div>
       <div class="modal-footer">
-        <input type="submit" class="btn btn-success" onclick="addOrUpdateRider(this)" value="Join">
+        <input id="joinRideButtonConfirm" type="submit" class="btn btn-success" value="Join">
         <input type="submit" class="btn btn-danger" data-dismiss="modal" value="Cancel">
       </div>
     </div>
@@ -201,31 +201,33 @@ Use javascript to input into textarea
             <% if (user && routeData.dropOffs) { %>
              <% location = routeData.dropOffs[user._id] %>
             <% } %>
-            <div id="dropOffTextEditable" style="display:none">
-              <form action="javascript:return false">
-                <span> <i class="material-icons">place</i> </span> <input id="pac-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter dropoff address..." value="<%=location %>" autofocus>
-                <input type="hidden" name="routeId" value="<%= routeId %>">
-                <button id="requestRideButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
-                  <i class="glyphicon glyphicon-ok"></i>
+            <div id="dropOffContainer" style="display:none">
+              <div id="dropOffTextEditable" style="display:none">
+                <form action="javascript:return false">
+                  <span> <i class="material-icons">place</i> </span> <input id="pac-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter dropoff address..." value="<%=location %>" autofocus>
+                  <input type="hidden" name="routeId" value="<%= routeId %>">
+                  <button id="requestRideButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </button>
+                  <button id="requestRideButtonCancel" type="button" class="btn btn-default btn-sm editable-cancel">
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </button>
+                  <br><br>
+                </form>
+              </div>
+              <div id="dropOffText" style="display:none">
+                <% if (confirmedRider) { %>
+                  <text>You've got a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
+                  <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
+                <% } else { %>
+                  <text>You've requested a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
+                  <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span><br/>
+                <% } %>
+                <button id="cancelRequestButton" class="btn btn-primary btn-sm">
+                  Cancel Request
                 </button>
-                <button id="requestRideButtonCancel" type="button" class="btn btn-default btn-sm editable-cancel">
-                  <i class="glyphicon glyphicon-remove"></i>
-                </button>
-                <br><br>
-              </form>
+              </div>
             </div>
-            <div id="dropOffText" style="display:none">
-              <% if (confirmedRider) { %>
-                <text>You've got a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
-                <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
-              <% } else { %>
-                <text>You've requested a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
-                <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span><br/>
-              <% } %>
-            </div>
-            <button id="cancelRequestButton" style="display:none;" class="btn btn-primary btn-sm" onclick="javascript:cancelRequest(this)">
-              Cancel Request
-            </button>
 
             <% if (confirmedRider && !routeData.riderStatus[user._id].paid && routeData.requireInitialDeposit) { %>
               <button type="button" class="btn btn-primary" onclick="showPaymentModal()">Pay initial deposit</button>

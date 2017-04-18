@@ -1,0 +1,77 @@
+function DropOff(address) {
+  this.callbacks = {};
+  this.container = $("#dropOffContainer");
+  this.text = this.container.find("#dropOffText");
+  this.editable = this.container.find("#dropOffTextEditable");
+  this.address = address;
+  this.dropOffInput = document.getElementById("pac-input");
+  this.cancelRequestButton = $('#cancelRequestButton');
+
+}
+
+DropOff.prototype.show = function() {
+  this.container.show();
+  this.updateDisplay();
+
+  this.dropOffAutocomplete = new google.maps.places.Autocomplete(this.dropOffInput,
+     {placeIdOnly: true});
+
+  var me = this;
+  this.dropOffAutocomplete.addListener('place_changed', function() {
+      me.dropOffInputted(me.dropOffAutocomplete);
+  });
+
+  $("#requestRideButtonConfirm").click(function() {
+    me.dropOffInputted(me.dropOffAutocomplete);
+  });
+
+  $("#requestRideButtonCancel").click(function() {
+    var input = $(me.dropOffInput);
+    input.val("");
+    input.focus();
+    input[0].selectionStart = input[0].selectionEnd = input.val().length;
+  });
+
+  this.cancelRequestButton.click(function() {
+    me.cancelRiderRequest();
+  });
+}
+
+DropOff.prototype.setAddress = function(address) {
+  this.address = address;
+}
+
+
+
+DropOff.prototype.hide = function() {
+
+}
+
+
+DropOff.prototype.updateDisplay = function() {
+  if (this.address == "") {
+    this.editable.show();
+    this.text.hide();
+  }
+  else {
+    this.text.show();
+    this.editable.hide();
+  }
+  this.cancelRequestButton.button("loading");// needed for some reason
+  this.cancelRequestButton.button("reset");
+}
+
+// "private" functions that call callbacks after specific events occur
+DropOff.prototype.dropOffInputted = function(autocomplete) {
+  if (this.callbacks.dropOffInputted) { this.callbacks.dropOffInputted(autocomplete); }
+  else { console.log("Warning. dropOffInputted callback undefined"); }
+}
+
+DropOff.prototype.cancelRiderRequest = function() {
+  if (this.callbacks.cancelRiderRequest) { this.callbacks.cancelRiderRequest(); }
+  else { console.log("Warning. cancelRiderRequest callback undefined"); }
+}
+
+DropOff.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
+}

@@ -1,0 +1,27 @@
+function RouteDataUpdater(routeData) {
+  this.routeData = routeData;
+}
+
+RouteDataUpdater.prototype.addRider = function(user, userStatus, address, baggage) {
+  userStatus.isRider = true;
+
+  var userId = user._id;
+  var found = false;
+  for (var i = 0; i < this.routeData.riders.length; i++) {
+    if (this.routeData.riders[i]._id == userId) {
+      found = true;
+      break;
+    }
+  }
+  if (found) {
+    routeData.dropOffs[userId] = address;
+  }
+  else {
+    routeData.riders.push(user);
+    routeData.dropOffs = routeData.dropOffs || {};
+    routeData.dropOffs[userId] = address;
+  }
+  routeData.riderStatus = routeData.riderStatus || {};
+  routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};
+  routeData.riderStatus[userId].baggage = baggage;
+}

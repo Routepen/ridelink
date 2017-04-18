@@ -1,14 +1,13 @@
-function http() {
+function http(routeData) {
+  this.routeId = routeData._id;
   this.callbacks = {};
 }
 
-http.prototype.confirmedRider = function(id, btn) {
+http.prototype.confirmedRider = function(id) {
   var post = {
     userId: id,
     routeId: routeData._id
   };
-
-  $(btn).button('loading');
 
   var me = this;
   $.post("/route/confirmrider", post, function(data, textStatus) {
@@ -23,7 +22,6 @@ http.prototype.confirmedRider = function(id, btn) {
     }
     $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
     me.ridersChanged();
-    $(btn).button('reset');
     if (addedRider) {
       if (addedRider.facebook.gender.toLowerCase() == "male") {
         $('#riderPronounHeShe').html('he');
@@ -38,6 +36,19 @@ http.prototype.confirmedRider = function(id, btn) {
       $('#addedRider').html(addedRider.facebook.name.split(' ')[0]);
       $('#tellDriverToWait').modal('show');
     }
+  });
+}
+
+http.prototype.addRider = function(userId, address, baggage, callback) {
+  var data = {
+    routeId: this.routeId,
+    address: address,
+    baggage: baggage
+  };
+
+  var me = this;
+  $.post("/route/addrider", data, (data, text) => {
+    callback();
   });
 }
 

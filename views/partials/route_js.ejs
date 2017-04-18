@@ -6,9 +6,19 @@
   <% include ./clock %>
   <% include ./http %>
   <% include ./heading %>
+  <% include ./modals/join_ride %>
+  <% include ./helpers/route_data_updater %>
 
   var routeData = <%- JSON.stringify(routeData) %>;
+  if (!routeData.dropOffs) { routeData.dropOffs = {}; }
+
   var user = <%- JSON.stringify(user || '') %>
+  var userStatus = {
+    isRider: <%= isRider %>,
+    confirmedRider: <%= confirmedRider %>,
+    isDriver: <%= isDriver %>,
+    view: "<%= view %>"
+  };
 
 
   var mapHandler;
@@ -23,6 +33,13 @@
       });
 
       mapHandler = new mapManager(map, routeData);
+      var tableManager = new table(document.getElementById("tableDiv"), routeData);
+      var httpManager = new http(routeData);
+      var headingManager = new heading(user, userStatus, routeData);
+      var routeDataUpdater = new RouteDataUpdater(routeData);
+      var joinRideModal = new JoinRide();
+
+      var infoDisplay = new InfoDisplay(routeData, mapHandler);
 
       mapHandler.addListener('onInfoWindowClosed', function()  {
         tableManager.unHighlightTable();
@@ -32,11 +49,29 @@
         tableManager.hightlightInTable(riderId);
       });
 
-      var tableManager = new table(document.getElementById("tableDiv"), routeData);
-      var httpManager = new http();
-      var headingManager = new heading();
+      var riderJoinRequestAddress;
+      mapHandler.addListener('onRideRequestClicked', function(address) {
+        console.log(address);
+        riderJoinRequestAddress = address;
+        joinRideModal.show();
+      });
 
-      var infoDisplay = new InfoDisplay(routeData, mapHandler);
+      joinRideModal.addListener('joinRideClicked', function(baggage) {
+        console.log(baggage);
+        joinRideModal.grayOutButton();
+
+        httpManager.addRider(user._id, riderJoinRequestAddress, baggage, function() {
+          routeDataUpdater.addRider(user, userStatus, riderJoinRequestAddress, baggage);
+
+          joinRideModal.restoreButton();
+          joinRideModal.hide();
+          tableManager.setUpTable();
+          mapHandler.hideDropOffMarker();
+          mapHandler.setMarkers();
+          headingManager.onUserStatusChanged();
+        });
+      })
+
       infoDisplay.setUpEditability();
       infoDisplay.addListener('valueChanged', function(name, value) {
         console.log(name, value);
@@ -66,6 +101,13 @@
 
       headingManager.addListener('dropOffInputted', function(autocomplete) {
         mapHandler.rideRequested(autocomplete);
+      });
+
+      headingManager.addListener('cancelRiderRequest', function() {
+        console.log("cancelling");
+        // httpManager.cancelRiderRequest(function() {
+        //
+        // });
       });
   }
 
@@ -113,7 +155,7 @@
   }
 
   function cancelRequest(btn) {
-    var userId = "<%= userId %>";
+    var userId = user._id;
     $(btn).button("loading");
 
     var post = {
