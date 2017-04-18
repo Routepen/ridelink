@@ -22,5 +22,21 @@
   "w": {
     "lat": 37.4052049,
     "lng": -122.1049137
+  },
+  "Russia": {
+    "lat": 61.52401,
+    "lng": 105.318756
+  },
+  "Santa Barbara, CA, United States": {
+    "lat": 34.4208305,
+    "lng": -119.6981901
+  },
+  "Riverside, CA, United States": {
+    "lat": 33.9533487,
+    "lng": -117.3961564
+  },
+  "UCLA, Los Angeles, CA, United States": {
+    "lat": 34.068921,
+    "lng": -118.4451811
   }
 }
