@@ -22,9 +22,14 @@ const auth = require("./auth");
 const mail = require("./mail");
 const payment = require("./payments");
 
+
 mongoose.Promise = require('bluebird');
-var conn = mongoose.createConnection('ds161169.mlab.com:61169/heroku_9170g7ps');
-mongoose.connect('mongodb://victorcheng:victor97@ds161169.mlab.com:61169/heroku_9170g7ps',  {
+var mongo_url = 'mongodb://127.0.0.1:27017/ridelink';
+if(process.env.NODE_ENV == "production") {
+  mongo_url = 'mongodb://victorcheng:victor97@ds161169.mlab.com:61169/heroku_9170g7ps';
+}
+console.log(mongo_url);
+  mongoose.connect(mongo_url,  {
   server: {
     socketOptions: {
       socketTimeoutMS: 0,
@@ -426,14 +431,9 @@ app.post('/route/cancelrequest', function(req, res) {
 		return res.end("please log in ");
 	}
 
-	var removingId = req.body.userId;
+	var removingId = req.user._id;
 
 	Route.findById(req.body.routeId, function(err, route) {
-
-		if (req.user._id.toString() != removingId) {
-			console.log("hacking");
-			return res.end("failure");
-		}
 
 		var removed = false;
 		for (var i = 0; i < route.riders.length; i++) {

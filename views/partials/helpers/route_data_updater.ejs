@@ -25,3 +25,23 @@ RouteDataUpdater.prototype.addRider = function(user, userStatus, address, baggag
   routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};
   routeData.riderStatus[userId].baggage = baggage;
 }
+
+RouteDataUpdater.prototype.cancelRiderRequest = function(user, userStatus, routeData) {
+  userStatus.isRider = false;
+
+  var userId = user._id;
+  var riderDeleted;
+  for (var i = 0; i < routeData.riders.length; i++) {
+    var rider = routeData.riders[i];
+    if (rider._id == userId) {
+      riderDeleted = rider;
+      routeData.riders.splice(i, 1);
+    }
+  }
+
+  if (routeData.dropOffs) {
+    if (routeData.dropOffs[userId]) {
+      delete routeData.dropOffs[userId];
+    }
+  }
+}

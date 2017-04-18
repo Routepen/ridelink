@@ -218,11 +218,10 @@ Use javascript to input into textarea
               <div id="dropOffText" style="display:none">
                 <% if (confirmedRider) { %>
                   <text>You've got a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
-                  <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span>
                 <% } else { %>
                   <text>You've requested a ride with <%= routeData.driver.facebook.name.split(' ')[0] %> to</text>
-                  <span class="<%= confirmedRider ? "" : 'editableInput' %>"><%= location %></span><br/>
                 <% } %>
+                <span id="riderPickUpLocation"><%= location %></span><br/>
                 <button id="cancelRequestButton" class="btn btn-primary btn-sm">
                   Cancel Request
                 </button>

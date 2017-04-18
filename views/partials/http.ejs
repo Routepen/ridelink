@@ -52,6 +52,16 @@ http.prototype.addRider = function(userId, address, baggage, callback) {
   });
 }
 
+http.prototype.cancelRiderRequest = function(routeData, callback) {
+  var post = {
+    routeId: routeData._id
+  };
+
+  $.post("/route/cancelrequest", post, function(data, textStatus) {
+    callback();
+  });
+}
+
 
 // "private" functions that call callbacks after specific events occur
 http.prototype.ridersChanged = function() {

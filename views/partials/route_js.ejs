@@ -26,89 +26,91 @@
 
 
   function initMap() {
-      var map = new google.maps.Map(document.getElementById('map'), {
-        mapTypeControl: false,
-        center: {lat: 34.4140, lng: -119.8489},
-        zoom: 13
-      });
+    var map = new google.maps.Map(document.getElementById('map'), {
+      mapTypeControl: false,
+      center: {lat: 34.4140, lng: -119.8489},
+      zoom: 13
+    });
 
-      mapHandler = new mapManager(map, routeData);
-      var tableManager = new table(document.getElementById("tableDiv"), routeData);
-      var httpManager = new http(routeData);
-      var headingManager = new heading(user, userStatus, routeData);
-      var routeDataUpdater = new RouteDataUpdater(routeData);
-      var joinRideModal = new JoinRide();
+    mapHandler = new mapManager(map, routeData);
+    var tableManager = new table(document.getElementById("tableDiv"), routeData);
+    var httpManager = new http(routeData);
+    var headingManager = new heading(user, userStatus, routeData);
+    var routeDataUpdater = new RouteDataUpdater(routeData);
+    var joinRideModal = new JoinRide();
 
-      var infoDisplay = new InfoDisplay(routeData, mapHandler);
+    var infoDisplay = new InfoDisplay(routeData, mapHandler);
 
-      mapHandler.addListener('onInfoWindowClosed', function()  {
-        tableManager.unHighlightTable();
-      });
+    mapHandler.addListener('onInfoWindowClosed', function()  {
+      tableManager.unHighlightTable();
+    });
 
-      mapHandler.addListener('riderClicked', function(riderId)  {
-        tableManager.hightlightInTable(riderId);
-      });
+    mapHandler.addListener('riderClicked', function(riderId)  {
+      tableManager.hightlightInTable(riderId);
+    });
 
-      var riderJoinRequestAddress;
-      mapHandler.addListener('onRideRequestClicked', function(address) {
-        console.log(address);
-        riderJoinRequestAddress = address;
-        joinRideModal.show();
-      });
+    var riderJoinRequestAddress;
+    mapHandler.addListener('onRideRequestClicked', function(address) {
+      console.log(address);
+      riderJoinRequestAddress = address;
+      joinRideModal.show();
+    });
 
-      joinRideModal.addListener('joinRideClicked', function(baggage) {
-        console.log(baggage);
-        joinRideModal.grayOutButton();
+    joinRideModal.addListener('joinRideClicked', function(baggage) {
+      console.log(baggage);
+      joinRideModal.grayOutButton();
 
-        httpManager.addRider(user._id, riderJoinRequestAddress, baggage, function() {
-          routeDataUpdater.addRider(user, userStatus, riderJoinRequestAddress, baggage);
+      httpManager.addRider(user._id, riderJoinRequestAddress, baggage, function() {
+        routeDataUpdater.addRider(user, userStatus, riderJoinRequestAddress, baggage);
 
-          joinRideModal.restoreButton();
-          joinRideModal.hide();
-          tableManager.setUpTable();
-          mapHandler.hideDropOffMarker();
-          mapHandler.setMarkers();
-          headingManager.onUserStatusChanged();
-        });
-      })
-
-      infoDisplay.setUpEditability();
-      infoDisplay.addListener('valueChanged', function(name, value) {
-        console.log(name, value);
-        var data = {
-          routeId: routeData._id,
-          updating: name,
-          distance: mapHandler.distance
-        }
-        data[name] = value;
-
-        $.post("/route/update", data, function(data, result) {
-          routeData.stopsCoor = data.stopsCoor;
-          routeData.originCoor = data.originCoor;
-          routeData.destinationCoor = data.destinationCoor;
-        });
-
-      });
-
-      httpManager.addListener('ridersChanged', function() {
-        mapHandler.drawMap(function() {
-          mapHandler.setMarkers();
-        });
-
+        joinRideModal.restoreButton();
+        joinRideModal.hide();
         tableManager.setUpTable();
-        checkSeatsLeft();
+        mapHandler.hideDropOffMarker();
+        mapHandler.setMarkers();
+        headingManager.onUserStatusChanged();
+      });
+    })
+
+    infoDisplay.setUpEditability();
+    infoDisplay.addListener('valueChanged', function(name, value) {
+      console.log(name, value);
+      var data = {
+        routeId: routeData._id,
+        updating: name,
+        distance: mapHandler.distance
+      }
+      data[name] = value;
+
+      $.post("/route/update", data, function(data, result) {
+        routeData.stopsCoor = data.stopsCoor;
+        routeData.originCoor = data.originCoor;
+        routeData.destinationCoor = data.destinationCoor;
       });
 
-      headingManager.addListener('dropOffInputted', function(autocomplete) {
-        mapHandler.rideRequested(autocomplete);
+    });
+
+    httpManager.addListener('ridersChanged', function() {
+      mapHandler.drawMap(function() {
+        mapHandler.setMarkers();
       });
 
-      headingManager.addListener('cancelRiderRequest', function() {
-        console.log("cancelling");
-        // httpManager.cancelRiderRequest(function() {
-        //
-        // });
+      tableManager.setUpTable();
+      checkSeatsLeft();
+    });
+
+    headingManager.addListener('dropOffInputted', function(autocomplete) {
+      mapHandler.rideRequested(autocomplete);
+    });
+
+    headingManager.addListener('cancelRiderRequest', function() {
+      httpManager.cancelRiderRequest(routeData, function() {
+        routeDataUpdater.cancelRiderRequest(user, userStatus, routeData);
+        tableManager.setUpTable();
+        mapHandler.removeMarker(user._id);
+        headingManager.onUserStatusChanged();
       });
+    });
   }
 
   function markPaid(id, btn) {
