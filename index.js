@@ -86,7 +86,6 @@ app.use(session({
 	saveUninitialized: true,
 	secret: "Thisshouldbemademoresecure"
 }));
-app.use(cookieParser());
 
 // parse application/json
 app.use(bodyParser.json());
