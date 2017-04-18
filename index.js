@@ -14,7 +14,6 @@ const _ = require("lodash");
 const app = express();
 const GoogleMapsAPI = require('googlemaps');
 const geocode = require('./geocode');
-const jsonfile = require('jsonfile');
 const async = require('async');
 //const jsonUpdate = require('json-update');
 
