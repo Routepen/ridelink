@@ -45,3 +45,43 @@ RouteDataUpdater.prototype.cancelRiderRequest = function(user, userStatus, route
     }
   }
 }
+
+RouteDataUpdater.prototype.confirmRider = function(riderId, routeData) {
+  var addedRider;
+  for (var i = 0; i < routeData.riders.length; i++) {
+    var rider = routeData.riders[i];
+    if (rider._id == riderId) {
+      addedRider = rider;
+      routeData.riders.splice(i, 1);
+      routeData.confirmedRiders.push(rider);
+    }
+  }
+  routeData.dropOffs = routeData.dropOffs || {};
+    // $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
+    // me.ridersChanged();
+    // if (addedRider) {
+    //   if (addedRider.facebook.gender.toLowerCase() == "male") {
+    //     $('#riderPronounHeShe').html('he');
+    //     $('#riderPronounHisHer').html('his');
+    //     $('#riderPronounHimHer').html('him');
+    //   }
+    //   else {
+    //     $('#riderPronounHeShe').html('she');
+    //     $('#riderPronounHisHer').html('her');
+    //     $('#riderPronounHimHer').html('her');
+    //   }
+    //   $('#addedRider').html(addedRider.facebook.name.split(' ')[0]);
+    //   $('#tellDriverToWait').modal('show');
+    // }
+  // });
+}
+
+RouteDataUpdater.prototype.removeRider = function(riderId, routeData) {
+  for (var i = 0; i < routeData.confirmedRiders.length; i++) {
+    var rider = routeData.confirmedRiders[i];
+    if (rider._id == riderId) {
+      routeData.riders.push(rider);
+      routeData.confirmedRiders.splice(i, 1);
+    }
+  }
+}

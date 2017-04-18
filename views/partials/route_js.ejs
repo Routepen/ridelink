@@ -111,6 +111,22 @@
         headingManager.onUserStatusChanged();
       });
     });
+
+    tableManager.addListener('confirmRiderClicked', function(riderId) {
+      httpManager.confirmRider(riderId, routeData, function() {
+        routeDataUpdater.confirmRider(riderId, routeData);
+        tableManager.setUpTable();
+        mapHandler.drawMap();
+      });
+    });
+
+    tableManager.addListener('removeRiderClicked', function(riderId) {
+      httpManager.removeRider(riderId, routeData, function() {
+        routeDataUpdater.removeRider(riderId, routeData);
+        tableManager.setUpTable();
+        mapHandler.drawMap();
+      });
+    });
   }
 
   function markPaid(id, btn) {

@@ -2,6 +2,8 @@ function table(table, routeData) {
   this.table = table;
   this.routeData = routeData;
 
+  this.callbacks = {};
+
   this.setUpTable();
 }
 
@@ -23,8 +25,8 @@ table.prototype.setUpTable = function() {
     $('#tableMessage').hide();
   }
 
-  var tbody = document.getElementById("riderTable");
-  tbody.innerHTML = "";
+  var tbody = $("#riderTable");
+  tbody.html("");
 
   routeData.confirmedRiders.forEach(function(rider, i) {
     var rider = routeData.confirmedRiders[i];
@@ -43,12 +45,21 @@ table.prototype.setUpTable = function() {
       }
     }
 
-    tbody.innerHTML += '<tr class="riderElement" id="rider' + rider._id + '">' +
-        "<td> " + (i+1) + " </td>" +
-        "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
-        '<td> ' + me.getTdElement(rider, status) + '</td>' +
-        '<td> ' + routeData.riderStatus[rider._id].baggage + '</td>' +
-        "</tr>";
+    var tr = $('<tr class="riderElement" id="rider' + rider._id + '"></tr>');
+
+    var td1 = $("<td> " + (i+1) + " </td>");
+    var td2 = $("<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>");
+    var td3 = me.getTdElement(rider, status);
+    console.log('td3', td3);
+    var td4 = $('<td> ' + routeData.riderStatus[rider._id].baggage + '</td>');
+
+    tr.append(td1);
+    tr.append(td2);
+    tr.append(td3);
+    tr.append(td4);
+
+    tbody.append(tr);
+
   });
 
   routeData.confirmedRiders.forEach(function(rider) {
@@ -62,8 +73,8 @@ table.prototype.setUpTable = function() {
 
   var waitlisted = routeData.confirmedRiders.length >= routeData.seats;
   if (waitlisted && routeData.riders.length > 0) {
-    tbody = document.getElementById("waitlistRiderTable");
-    tbody.innerHTML = "";
+    tbody = $("#waitlistRiderTable");
+    tbody.html("");
     $('#waitListTable').show();
   }
   else {
@@ -73,12 +84,20 @@ table.prototype.setUpTable = function() {
   routeData.riders.forEach(function(rider, i) {
     var status = "Ride Requested"
 
-    tbody.innerHTML += '<tr class="riderElement" id="rider' + routeData.riders[i]._id + '">' +
-        '<td>' + (i+1) + '</td>' +
-        "<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>" +
-        '<td>' + me.getTdElement(rider, status) + '</td>' +
-        '<td> ' + routeData.riderStatus[rider._id].baggage + '</td>' +
-      '</tr>';
+    var tr = $('<tr class="riderElement" id="rider' + rider._id + '"></tr>');
+
+    var td1 = $("<td> " + (i+1) + " </td>");
+    var td2 = $("<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>");
+    var td3 = me.getTdElement(rider, status);
+    console.log('td3', td3);
+    var td4 = $('<td> ' + routeData.riderStatus[rider._id].baggage + '</td>');
+
+    tr.append(td1);
+    tr.append(td2);
+    tr.append(td3);
+    tr.append(td4);
+
+    tbody.append(tr);
   });
 
   <% if (isDriver && view != "rider") { %>
@@ -94,21 +113,35 @@ table.prototype.getTdElement = function(rider, status) {
 
   var innerButton = "", button2 = "";
   var cancelButton =
-    '<button type="button" class="btn btn-default btn-xs editable-cancel" style="margin-left: 10px" onclick="restoreTdElement(\'' + rider._id + '\')">' +
+    $('<button type="button" class="btn btn-default btn-xs editable-cancel" style="margin-left: 10px")">' +
       'Cancel' +
-    '</button>';
+    '</button>');
+
+  var me = this;
+  cancelButton.click(function() {
+    me.restoreTdElement(rider._id);
+  });
 
   if ((status == "Awaiting payment" && routeData.requireInitialDeposit) || (status == "Confirmed" && !routeData.requireInitialDeposit)) {
     clickable = true;
     innerButton =
-    '<button type="button" class="btn btn-primary btn-xs editable-submit" onclick="removeRider(\'' + rider._id + '\', this)">' +
+    $('<button type="button" class="btn btn-primary btn-xs editable-submit">' +
       'Remove Rider' +
-    '</button>';
+    '</button>');
+
+    innerButton.click(function() {
+      innerButton.button("loading");
+      me.removeRiderClicked(rider._id);
+    })
   }
   if (status == "Ride Requested") {
     clickable = true;
-    innerButton =
-    '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
+    innerButton = $('<button class="btn btn-success btn-xs">Confirm</button>');
+
+    innerButton.click(function() {
+      innerButton.button("loading");
+      me.confirmRiderClicked(rider._id);
+    });
   }
 
   var spanClass = "<%= isDriver  && view != "rider" ? "editableInput" : "" %>";
@@ -119,26 +152,51 @@ table.prototype.getTdElement = function(rider, status) {
     '<button class="btn btn-success btn-xs" style="margin-right: 10px;" onclick="javascript:markPaid(\'' + rider._id + '\', this)">Rider Paid</button>'
   }
 
-  return '<div class="form-inline editableform">' +
-    '<div id="tr' + rider._id + 'TextEditable" style="display:none">' +
-      button2 +
-      innerButton +
-      cancelButton +
-    '</div>' +
+  var div = $('<div class="form-inline editableform"></div>');
+  var div2 = $('<div id="tr' + rider._id + 'TextEditable" style="display:none">');
 
-    '<div id="tr' + rider._id + 'Text" style="">' +
-      '<span class=' + spanClass + ' aria-hidden="true">' + status + '</span>' +
-    '</div>' +
-  '</div>';
+  var button2_ = $(button2);
+  var innerButton_ = innerButton;
+  var cancelButton_ = cancelButton;
+
+  div2.append(button2_);
+  div2.append(innerButton_);
+  div2.append(cancelButton_);
+
+  var div3 = $('<div id="tr' + rider._id + 'Text">');
+
+  div3.append($('<span class=' + spanClass + ' aria-hidden="true">' + status + '</span>'));
+
+  div.append(div2);
+  div.append(div3);
+
+  return div;
+
+  // return '<div class="form-inline editableform">' +
+  //   '<div id="tr' + rider._id + 'TextEditable" style="display:none">' +
+  //     button2 +
+  //     innerButton +
+  //     cancelButton +
+  //   '</div>' +
+  //
+  //   '<div id="tr' + rider._id + 'Text" style="">' +
+  //     '<span class=' + spanClass + ' aria-hidden="true">' + status + '</span>' +
+  //   '</div>' +
+  // '</div>';
+}
+
+table.prototype.restoreTdElement = function(riderId) {
+  var editable = $('#tr' + riderId + "TextEditable");
+  var text = $('#tr' + riderId + "Text");
+
+  text.show();
+  editable.hide();
 }
 
 table.prototype.initializeTdElement = function(rider, status) {
   var divId = 'tr' + rider._id + 'Text';
   var editableId = divId + 'Editable';
-  console.log("initing", document.getElementById(divId));
-  console.log($('#' + divId + '>span'));
   $('#' + divId + '>span').click(function() {
-    console.log('clicked');
     $('#' + divId).hide();
     $('#' + editableId).show();
   });
@@ -160,4 +218,19 @@ table.prototype.unHighlightTable = function() {
   $("#riderTable").find("tr").each(function(i, elem) {
     $(elem).removeClass("highlighted");
   });
+}
+
+// "private" functions that call callbacks after specific events occur
+table.prototype.confirmRiderClicked = function(riderId) {
+  if (this.callbacks.confirmRiderClicked) { this.callbacks.confirmRiderClicked(riderId); }
+  else { console.log("Warning. confirmRiderClicked callback undefined"); }
+}
+
+table.prototype.removeRiderClicked = function(riderId) {
+  if (this.callbacks.removeRiderClicked) { this.callbacks.removeRiderClicked(riderId); }
+  else { console.log("Warning. removeRiderClicked callback undefined"); }
+}
+
+table.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
 }
