@@ -1,7 +1,6 @@
 const GoogleMapsAPI = require('googlemaps');
-const jsonfile = require('jsonfile');
-const jsonUpdate = require('json-update');
-
+const mongoose = require('mongoose');
+const Geo_cache = require('./models/Geolocation_cache');
 
 function geocode(place, gmAPI) {
   return new Promise((resolve, reject) => {
@@ -10,16 +9,13 @@ function geocode(place, gmAPI) {
 }
 
 function geocodeHelper(place, gmAPI, resFunct, rejFunct){
-  var file = './geolocation_cache.json';
-
   new Promise((resolve, reject) =>{
     //Is origin or destination coordinate in the json file?
-    jsonfile.readFile(file, function(err, obj){
-      if(err){
-        reject(err);
+    Geo_cache.findOne({ location_name: place }, (err, location) => {
+      if(err) {
+        throw err;
       }
-      var placeCoor = obj[place];
-      resolve(placeCoor);
+      resolve(location);
     });
   })
   .then((data) => {
@@ -34,9 +30,15 @@ function geocodeHelper(place, gmAPI, resFunct, rejFunct){
           }
             //if (err) TODO return to home page with a message saying incorrect destination. Try client side verification not server
           data = result.results[0].geometry.location;
-          var newEntry = {};
-          newEntry[place] = data;
-          jsonUpdate.update(file, newEntry);
+          let newEntry = new Geo_cache({
+            location_name: place,
+            lat: data.lat,
+            lng: data.lng
+          });
+          newEntry.save((err) => {
+            if (err) { throw err; }
+            console.log("successfully saved in cache");
+          });
           resFunct(data);
         });
       }
