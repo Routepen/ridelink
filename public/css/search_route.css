@@ -6,7 +6,9 @@ tbody{
   height: 200px;
   overflow-x: hidden;
 }
-
+.myCheckbox{
+  padding: 12px 8px;
+}
 .origin-destination-display{
   display: flex;
   flex-direction: row;

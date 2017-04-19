@@ -1,0 +1,89 @@
+function http(routeData) {
+  this.routeId = routeData._id;
+  this.callbacks = {};
+}
+
+http.prototype.confirmRider = function(riderId, routeData, callback) {
+  var post = {
+    userId: riderId,
+    routeId: routeData._id
+  };
+
+  var me = this;
+  $.post("/route/confirmrider", post, function(data, textStatus) {
+    callback();
+  });
+  //   var addedRider;
+  //   for (var i = 0; i < routeData.riders.length; i++) {
+  //     var rider = routeData.riders[i];
+  //     if (rider._id == id) {
+  //       addedRider = rider;
+  //       routeData.riders.splice(i, 1);
+  //       routeData.confirmedRiders.push(rider);
+  //     }
+  //   }
+  //   $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
+  //   me.ridersChanged();
+  //   if (addedRider) {
+  //     if (addedRider.facebook.gender.toLowerCase() == "male") {
+  //       $('#riderPronounHeShe').html('he');
+  //       $('#riderPronounHisHer').html('his');
+  //       $('#riderPronounHimHer').html('him');
+  //     }
+  //     else {
+  //       $('#riderPronounHeShe').html('she');
+  //       $('#riderPronounHisHer').html('her');
+  //       $('#riderPronounHimHer').html('her');
+  //     }
+  //     $('#addedRider').html(addedRider.facebook.name.split(' ')[0]);
+  //     $('#tellDriverToWait').modal('show');
+  //   }
+  // });
+}
+
+http.prototype.addRider = function(userId, address, baggage, callback) {
+  var data = {
+    routeId: this.routeId,
+    address: address,
+    baggage: baggage
+  };
+
+  var me = this;
+  $.post("/route/addrider", data, (data, text) => {
+    callback();
+  });
+}
+
+http.prototype.removeRider = function(riderId, routeData, callback) {
+  var post = {
+    userId: riderId,
+    routeId: routeData._id
+  };
+
+  var me = this;
+  $.post("/route/removerider", post, function(data, textStatus) {
+    callback();
+  });
+}
+
+
+http.prototype.cancelRiderRequest = function(routeData, callback) {
+  var post = {
+    routeId: routeData._id
+  };
+
+  $.post("/route/cancelrequest", post, function(data, textStatus) {
+    callback();
+  });
+}
+
+
+// "private" functions that call callbacks after specific events occur
+http.prototype.ridersChanged = function() {
+  if (this.callbacks.ridersChanged) { this.callbacks.ridersChanged(); }
+  else { console.log("Warning. ridersChanged callback undefined"); }
+}
+
+http.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
+}

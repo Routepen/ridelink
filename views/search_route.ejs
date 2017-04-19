@@ -132,27 +132,25 @@
 
           <div class="row">
               <button type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" onclick="checkall();"> Check all </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
-              <button type="button" class="btn btn-success" style="float: right; margin-right:20px" onclick = "baggageModal()"> Signup </button>
+              <button type="button" class="btn btn-success" style="float: right; margin-right:20px" onclick = "baggageModal();"> Signup </button>
           </div>
           <div>
               <table class="table">
                   <thead>
-                    <tr class="riderElement-inverse">
+                    <tr class="riderElement-inverse" >
                         <th> </th>
                         <th>#</th>
                         <th> Driver </th>
-                        <!--<th> Full? </th> -->
                         <th> Origin </th>
                         <th> Destination </th>
                         <th> Cost </th>
                         <th> Date </th>
                     </tr>
                   </thead>
-              <!--  </table>
-                <table class="table"> -->
-                    <tbody id="tbody">
+                  <tbody id="tbody">
+                    <!--
                         <% for (var i = 0; i < closeRoutes.length; i++) { %>
-                            <tr class="closeRoutesRow riderElement riderElement-inverse clickable">
+                            <tr class="closeRoutesRow riderElement riderElement-inverse clickable" onclick="'+ onclick + '">
                                 <td> <input class="myCheckbox" type="checkbox"> </td>
                                 <td> <%= i+1 %> </td>
                                 <td> <%= closeRoutes[i].driver.facebook.name %> </td>
@@ -161,8 +159,8 @@
                                 <td> <%= closeRoutes[i].inconvenience %> </td>
                                 <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
                             </tr>
-                          <% } %>
-                      </tbody>
+                          <% } %> -->
+                   </tbody>
                 </table>
             </div>
             <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
@@ -172,31 +170,59 @@
 
 <script type="text/javascript">
 
-  // Autoscaling table
-    var $table = $('table'),
-        $bodyCells = $table.find('tbody tr:first').children(),
-        colWidth;
-
-    // Get the tbody columns width array
-    colWidth = $bodyCells.map(function() {
-        return $(this).width();
-    }).get();
-
-    // Set the width of thead columns
-    $table.find('thead tr').children().each(function(i, v) {
-        $(v).width(colWidth[i]);
-    });
-
-
-
-
     var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
-    console.log(closeRoutes);
+    var tbody = document.getElementById('tbody');
 
-    function buttonClicked(routeId) {
-
+    function routeClick(routeId){
+        console.log(closeRoutes.user);
+        window.location.href = "/route?id=" + routeId;
+    }
+    function setUpTable() {
+        //            '<td>' +  closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> + '</td>';
+      tbody.innerHTML = "";
+      if (closeRoutes.length == 0) {
+        tbody.innerHTML = '<tr><td style="color: white; font-size:18px">Sorry we weren\'t able to find any routes. Try another search!';
+      }
+      else {
+        for (var i = 0; i < closeRoutes.length; i++) {
+          //var d = new Date(closeRoutes[i].date);
+          var onclick = "routeClick('" + (closeRoutes[i].shortId || closeRoutes[i]._id) + "')"
+          tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" onclick="' + onclick + '">' +
+            '<td> <input class="myCheckbox" type="checkbox"> </td>' +
+            '<td>' + (i+1) + '</td>' +
+            '<td>' + closeRoutes[i].driver.facebook.name + '</td>' +
+            '<td>' + closeRoutes[i].origin + '</td>' +
+            '<td>' + closeRoutes[i].destination + '</td>' +
+            '<td>$' + closeRoutes[i].inconvenience + '</td>' +
+            '<td>' +  (1 + new Date(closeRoutes[i].date).getMonth()) + '/' + new Date(closeRoutes[i].date).getDate() + '</td>';
+        }
+      }
     }
 
+    setUpTable();
+    $('.myCheckbox').click(function(event){
+          if(event.checked == true){
+            event.checked = false;
+          }
+          else{
+            event.checked = true;
+          }
+          event.stopPropagation();
+    });
+    // Autoscaling table
+      var $table = $('table'),
+          $bodyCells = $table.find('tbody tr:first').children(),
+          colWidth;
+
+      // Get the tbody columns width array
+      colWidth = $bodyCells.map(function() {
+          return $(this).width();
+      }).get();
+
+      // Set the width of thead columns
+      $table.find('thead tr').children().each(function(i, v) {
+          $(v).width(colWidth[i]);
+      });
 
     $(function () {
         $("#date-notification").datepicker();
@@ -207,17 +233,20 @@
     }
 
     function checkall(){
-      $('.myCheckbox').each(function(){ this.checked = true; });
+      $('.myCheckbox').each(function(event){
+        this.checked = true;
+      });
     }
-
 
     //Signup Process for batch sending
     function baggageModal(){
-        $("#confirmAddRider").modal('toggle');
+        $("#baggageModal").modal('toggle');
+        //TODO how to send the database some mark in checkboxed elements to send to database
     }
 
     function addOrUpdateRider(){
-      //TODO add feedback that a new route has been created
+      //TODO add feedback that a new route has been created, do i need to send login data?
+
         var counter = 0;
         data = {
           routeId: closeRoutes._id,

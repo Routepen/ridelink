@@ -1,0 +1,86 @@
+function DropOff(address) {
+  this.callbacks = {};
+
+  this.container = $("#dropOffContainer");
+  this.text = this.container.find("#dropOffText");
+  this.editable = this.container.find("#dropOffTextEditable");
+  this.dropOffInput = $("#pac-input");
+  this.cancelRequestButton = $('#cancelRequestButton');
+  this.addressSpan = $('#riderPickUpLocation');
+  this.confirmButton = $("#requestRideButtonConfirm");
+
+  this.setAddress(address);
+}
+
+DropOff.prototype.show = function() {
+  this.container.show();
+  this.updateDisplay();
+
+  this.dropOffAutocomplete = new google.maps.places.Autocomplete(this.dropOffInput[0],
+     {placeIdOnly: true});
+
+  var me = this;
+  this.dropOffAutocomplete.addListener('place_changed', function() {
+      me.dropOffInputted(me.dropOffAutocomplete);
+  });
+
+  this.confirmButton.click(function() {
+    me.dropOffInputted(me.dropOffAutocomplete);
+  });
+
+  $("#requestRideButtonCancel").click(function() {
+    var input = me.dropOffInput;
+    input.val("");
+    input.focus();
+    input[0].selectionStart = input[0].selectionEnd = input.val().length;
+  });
+
+  this.cancelRequestButton.click(function() {
+    me.cancelRiderRequest();
+    me.cancelRequestButton.button("loading");
+    me.dropOffInput.val("");
+  });
+}
+
+DropOff.prototype.setAddress = function(address) {
+  this.address = address || "";
+  this.addressSpan.html(this.address);
+}
+
+
+
+DropOff.prototype.hide = function() {
+
+}
+
+
+DropOff.prototype.updateDisplay = function() {
+  if (this.address == "") {
+    this.editable.show();
+    this.text.hide();
+  }
+  else {
+    this.text.show();
+    this.editable.hide();
+  }
+  this.cancelRequestButton.button("loading");// needed for some reason
+  this.cancelRequestButton.button("reset");
+
+  this.confirmButton.button("loading");
+  this.confirmButton.button("reset");
+}
+
+// "private" functions that call callbacks after specific events occur
+DropOff.prototype.dropOffInputted = function(autocomplete) {
+  if (this.callbacks.dropOffInputted) { this.callbacks.dropOffInputted(autocomplete); }
+  else { console.log("Warning. dropOffInputted callback undefined"); }
+}
+
+DropOff.prototype.cancelRiderRequest = function() {
+  if (this.callbacks.cancelRiderRequest) { this.callbacks.cancelRiderRequest(); }
+  else { console.log("Warning. cancelRiderRequest callback undefined"); }
+}
+
+DropOff.prototype.addListener = function(event, cb) {
+  this.callbacks[event] = cb;
+}

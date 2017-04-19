@@ -1,0 +1,90 @@
+{
+  "UCLA, Los Angeles, CA, United States": {
+    "lat": 34.068921,
+    "lng": -118.4451811
+  },
+  "Oxnard, CA, United States": {
+    "lat": 34.1975048,
+    "lng": -119.1770516
+  },
+  "UCSD Bookstore, San Diego, CA, United States": {
+    "lat": 32.8794408,
+    "lng": -117.2369353
+  },
+  "UCSB Bus Loop, Isla Vista, CA, United States": {
+    "lat": 34.4152272,
+    "lng": -119.8482359
+  },
+  "Pomona, CA, United States": {
+    "lat": 34.055103,
+    "lng": -117.7499909
+  },
+  "Thousand Oaks, CA, United States": {
+    "lat": 34.1705609,
+    "lng": -118.8375937
+  },
+  "Irvine, CA, United States": {
+    "lat": 33.6839473,
+    "lng": -117.7946942
+  },
+  "San Jose, CA, United States": {
+    "lat": 37.3382082,
+    "lng": -121.8863286
+  },
+  "Berkeley, CA, United States": {
+    "lat": 37.8715926,
+    "lng": -122.272747
+  },
+  "San Luis Obispo, CA, United States": {
+    "lat": 35.2827524,
+    "lng": -120.6596156
+  },
+  "Cal Poly, San Luis Obispo, CA, United States": {
+    "lat": 35.3050053,
+    "lng": -120.6624942
+  },
+  "Ventura, CA, United States": {
+    "lat": 34.274646,
+    "lng": -119.2290316
+  },
+  "Monterey, CA, United States": {
+    "lat": 36.6002378,
+    "lng": -121.8946761
+  },
+  "San Francisco, CA, Unite": {
+    "lat": 37.7501694,
+    "lng": -122.3853697
+  },
+  "San Francisco Premium Outlets, Livermore Outlets Drive, Livermore, CA, United States": {
+    "lat": 37.6986774,
+    "lng": -121.8451423
+  },
+  "Monterey": {
+    "lat": 36.6002378,
+    "lng": -121.8946761
+  },
+  "Salinas, CA, United States": {
+    "lat": 36.6777372,
+    "lng": -121.6555013
+  },
+  "Salinas": {
+    "lat": 36.6777372,
+    "lng": -121.6555013
+  },
+  "Gorda, CA, United States": {
+    "lat": 35.8765304,
+    "lng": -121.4459342
+  },
+  "San Francisco, CA, United States": {
+    "lat": 37.7749295,
+    "lng": -122.4194155
+  },
+  "UCSB, Santa Barbara, CA, United States": {
+    "lat": 34.4139629,
+    "lng": -119.848947
+  },
+  "ucla": {
+    "lat": 34.068921,
+    "lng": -118.4451811
+  }
+}
