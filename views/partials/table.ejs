@@ -88,7 +88,7 @@ table.prototype.setUpTable = function() {
 
     var td1 = $("<td> " + (i+1) + " </td>");
     var td2 = $("<td><a href='#' onclick='javascript:mapHandler.userClicked(\"" + rider._id + "\"); return false;'>" + rider.facebook.name + "</a></td>");
-    var td3 = me.getTdElement(rider, status);
+    var td3 = me.getTdElement(rider, status, waitlisted);
     console.log('td3', td3);
     var td4 = $('<td> ' + routeData.riderStatus[rider._id].baggage + '</td>');
 
@@ -107,7 +107,7 @@ table.prototype.setUpTable = function() {
   <% } %>
 }
 
-table.prototype.getTdElement = function(rider, status) {
+table.prototype.getTdElement = function(rider, status, waitlisted) {
 
   var clickable = false;
 
@@ -122,7 +122,7 @@ table.prototype.getTdElement = function(rider, status) {
     me.restoreTdElement(rider._id);
   });
 
-  if ((status == "Awaiting payment" && routeData.requireInitialDeposit) || (status == "Confirmed" && !routeData.requireInitialDeposit)) {
+  if ((status == "Awaiting payment" && routeData.requireInitialDeposit) || (status == "Confirmed" && !routeData.requireInitialDeposit && !waitlisted)) {
     clickable = true;
     innerButton =
     $('<button type="button" class="btn btn-primary btn-xs editable-submit">' +
@@ -134,7 +134,7 @@ table.prototype.getTdElement = function(rider, status) {
       me.removeRiderClicked(rider._id);
     })
   }
-  if (status == "Ride Requested") {
+  if (status == "Ride Requested" && !waitlisted) {
     clickable = true;
     innerButton = $('<button class="btn btn-success btn-xs">Confirm</button>');
 
