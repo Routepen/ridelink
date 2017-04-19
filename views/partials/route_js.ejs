@@ -123,6 +123,7 @@
         routeDataUpdater.confirmRider(riderId, routeData);
         tableManager.setUpTable();
         mapHandler.drawMap();
+        infoDisplay.ridersChanged();
       });
     });
 
@@ -131,6 +132,7 @@
         routeDataUpdater.removeRider(riderId, routeData);
         tableManager.setUpTable();
         mapHandler.drawMap();
+        infoDisplay.ridersChanged();
       });
     });
   }

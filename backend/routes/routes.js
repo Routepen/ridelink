@@ -1,4 +1,6 @@
-module.exports = function(app, Route, mail) {
+var _ = require("lodash");
+
+module.exports = function(app, Route, User, mail) {
 
   require("./add_rider")(app, Route, mail);
 
@@ -6,7 +8,7 @@ module.exports = function(app, Route, mail) {
 
   require("./cancel_request")(app, Route);
 
-  require("./confirm_rider")(app, Route);
+  require("./confirm_rider")(app, Route, User, mail);
 
 
   app.post('/route/riderpaid', function(req, res) {

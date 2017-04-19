@@ -183,7 +183,7 @@ app.get('/search', (req, res) => {
 
 });
 
-require("./backend/routes/routes")(app, Route, mail);
+require("./backend/routes/routes")(app, Route, User, mail);
 
 app.get('/sendMail', function(req, res) {
   var n = req.query.n;
