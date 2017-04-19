@@ -1,4 +1,4 @@
-module.exports = function(app, Route) {
+module.exports = function(app, Route, User, mail) {
   app.post('/route/confirmrider', function(req, res) {
     if (!req.user) {
       return res.end("please log in ");

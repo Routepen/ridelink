@@ -183,7 +183,7 @@ app.get('/search', (req, res) => {
 
 });
 
-require("./backend/routes/routes")(app, Route, mail);
+require("./backend/routes/routes")(app, Route, User, mail);
 
 app.get('/sendMail', function(req, res) {
   var n = req.query.n;
@@ -300,7 +300,7 @@ app.get('/testing2', function(req, res) {
         "link": "https://www.facebook.com/app_scoped_user_id/1275391965875712/",
         "gender": "male",
         "email": "",
-        "name": "Porter Haet",
+        "name": "Test User1",
         "token": "EAAP9KxoqCucBAMF22hAWQD5cNryPVRSAsAVy0qIGgMMKH8AkIMiucu8HbJJHYTa1ZBjFnfGiVv1wnIqcjZAMHmIUuSEHJtsZAdeCmyDHwvZAxQOrJpMrOFh9fvZAxxqHFcZAzMlWHVWCPh9MBFSYGFNLGMEO5xzzqo0aa3TyRhOwZDZD",
         "id": "1275391965875713",
         "photos": [
@@ -328,7 +328,7 @@ app.get('/test3', function(req, res) {
 });
 
 app.get('/test32', function(req, res) {
-	User.findById('58c0794d632def07581d19da', function(err, user) {
+	User.findById('58f6cbb094d39b315af7bf8e', function(err, user) {
 		req.logIn(user, function(err) {
       if (err) { console.log(err); }
       return res.redirect('/');

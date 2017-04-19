@@ -1,4 +1,4 @@
-function TextDisplay(id, name) {
+function SeatsDisplay(id, name) {
   this.id = id;
   this.name = name;
 
@@ -7,7 +7,7 @@ function TextDisplay(id, name) {
   this.setUpEditablity();
 }
 
-TextDisplay.prototype.setUpEditablity = function() {
+SeatsDisplay.prototype.setUpEditablity = function() {
   var textSelector = '#' + this.id;
   var spanSelector = textSelector + '>span';
   var editableSelector = textSelector + "Editable";
@@ -51,7 +51,7 @@ TextDisplay.prototype.setUpEditablity = function() {
 
 }
 
-TextDisplay.prototype.confirm = function() {
+SeatsDisplay.prototype.confirm = function() {
   var textVal = this.input.val();
 
   this.textChanged(textVal);
@@ -63,14 +63,18 @@ TextDisplay.prototype.confirm = function() {
   this.text.show();
 }
 
+SeatsDisplay.prototype.ridersChanged = function(newSeatCount) {
+  this.span.html(newSeatCount);
+}
+
 
 
 // "private" functions that call callbacks after specific events occur
-TextDisplay.prototype.textChanged = function(text) {
+SeatsDisplay.prototype.textChanged = function(text) {
   if (this.callbacks.valueChanged) { this.callbacks.valueChanged(text); }
   else { console.log("Warning. valueChanged callback undefined"); }
 }
 
-TextDisplay.prototype.addListener = function(event, cb) {
+SeatsDisplay.prototype.addListener = function(event, cb) {
   this.callbacks[event] = cb;
 }

@@ -1,6 +1,6 @@
 <% include ./displays/location_display %>
 <% include ./displays/date_display %>
-<% include ./displays/text_display %>
+<% include ./displays/seats_display %>
 <% include ./displays/time_display %>
 <% include ./displays/stops %>
 
@@ -21,34 +21,34 @@ InfoDisplay.prototype.setUpEditability = function() {
 
     var me = this;
 
-    var originDisplay = new LocationDisplay("originText", "origin", this.mapHandler);
-    originDisplay.addListener('valueChanged', function(newValue) {
+    this.originDisplay = new LocationDisplay("originText", "origin", this.mapHandler);
+    this.originDisplay.addListener('valueChanged', function(newValue) {
         me.routeData.origin = newValue;
         me.valueChanged("origin", newValue);
         me.mapHandler.drawMap();
     });
 
-    var destinationDisplay = new LocationDisplay("destinationText", "destination", this.mapHandler);
-    destinationDisplay.addListener('valueChanged', function(newValue) {
+    this.destinationDisplay = new LocationDisplay("destinationText", "destination", this.mapHandler);
+    this.destinationDisplay.addListener('valueChanged', function(newValue) {
         me.routeData.destination = newValue;
         me.valueChanged("destination", newValue);
         me.mapHandler.drawMap();
     });
 
-    var textDisplay = new TextDisplay("seatsText", "seats");
-    textDisplay.addListener('valueChanged', function(newValue) {
+    this.seatsDisplay = new SeatsDisplay("seatsText", "seats");
+    this.seatsDisplay.addListener('valueChanged', function(newValue) {
         me.routeData.seats = newValue;
         me.valueChanged("seats", newValue);
     });
 
-    var dateDisplay = new DateDisplay("dateText", "date");
-    dateDisplay.addListener('valueChanged', function(newValue) {
+    this.dateDisplay = new DateDisplay("dateText", "date");
+    this.dateDisplay.addListener('valueChanged', function(newValue) {
         me.routeData.date = newValue;
         me.valueChanged("date", newValue);
     });
 
-    var timeDisplay = new TimeDisplay("timeText", "time");
-    timeDisplay.addListener('valueChanged', function(newValue) {
+    this.timeDisplay = new TimeDisplay("timeText", "time");
+    this.timeDisplay.addListener('valueChanged', function(newValue) {
       me.routeData.date = newValue;
       me.valueChanged("time", newValue);
     });
@@ -206,22 +206,15 @@ InfoDisplay.prototype.restoreTdElement = function(riderId, status) {
   $('#' + editableId).hide();
 }
 
-InfoDisplay.prototype.sendStopsToServer = function() {
-  var stopList = [];
-  for (key in stopLocations) {
-    stopList.push(stopLocations[key].find('span').html());
+InfoDisplay.prototype.ridersChanged = function() {
+  var seatsLeft = this.routeData.seats - this.routeData.confirmedRiders.length;
+  this.seatsDisplay.ridersChanged(seatsLeft);
+  if (seatsLeft <= 0) {
+    $("#rideIsFull").show();
   }
-
-  var data = {
-    routeId: routeData._id,
-    stops: stopList,
-    updating: "stops[]",
-    distance: mapHandler.distance
+  else {
+    $("#rideIsFull").hide();
   }
-
-  $.post("/route/update", data, function(data, result) {
-    routeData.stopsCoor = data.stopsCoor;
-  });
 }
 
 
