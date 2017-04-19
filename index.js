@@ -2,9 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
-const fs = require('fs');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const User = require('./models/User');
 const Route = require('./models/Route');
@@ -15,7 +13,6 @@ const app = express();
 const GoogleMapsAPI = require('googlemaps');
 const geocode = require('./geocode');
 const async = require('async');
-//const jsonUpdate = require('json-update');
 
 const auth = require("./auth");
 const mail = require("./mail");
