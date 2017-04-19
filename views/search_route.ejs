@@ -150,7 +150,7 @@
                   <tbody id="tbody">
                     <!--
                         <% for (var i = 0; i < closeRoutes.length; i++) { %>
-                            <tr class="closeRoutesRow riderElement riderElement-inverse clickable" onClick="'+ onclick + '">
+                            <tr class="closeRoutesRow riderElement riderElement-inverse clickable" onclick="'+ onclick + '">
                                 <td> <input class="myCheckbox" type="checkbox"> </td>
                                 <td> <%= i+1 %> </td>
                                 <td> <%= closeRoutes[i].driver.facebook.name %> </td>
@@ -159,9 +159,8 @@
                                 <td> <%= closeRoutes[i].inconvenience %> </td>
                                 <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
                             </tr>
-                          <% } %>
-                        -->
-                      </tbody>
+                          <% } %> -->
+                   </tbody>
                 </table>
             </div>
             <div class="col-md-1 col-sm-0" style="visibility:hidden"></div>
@@ -201,7 +200,15 @@
     }
 
     setUpTable();
-
+    $('.myCheckbox').click(function(event){
+          if(event.checked == true){
+            event.checked = false;
+          }
+          else{
+            event.checked = true;
+          }
+          event.stopPropagation();
+    });
     // Autoscaling table
       var $table = $('table'),
           $bodyCells = $table.find('tbody tr:first').children(),
@@ -226,7 +233,9 @@
     }
 
     function checkall(){
-      $('.myCheckbox').each(function(){ this.checked = true; });
+      $('.myCheckbox').each(function(event){
+        this.checked = true;
+      });
     }
 
     //Signup Process for batch sending
@@ -236,7 +245,8 @@
     }
 
     function addOrUpdateRider(){
-      //TODO add feedback that a new route has been created
+      //TODO add feedback that a new route has been created, do i need to send login data?
+
         var counter = 0;
         data = {
           routeId: closeRoutes._id,

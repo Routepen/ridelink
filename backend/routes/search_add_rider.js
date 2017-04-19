@@ -1,4 +1,5 @@
 module.exports = function(app, Route, User, mail) {
+  /*
   app.post('/route/searchAddRider', function(req, res) {
   	console.log("adding rider");
   	if (!req.user) {
@@ -98,4 +99,5 @@ module.exports = function(app, Route, User, mail) {
 
   	});
   });
+  */
 }
