@@ -30,7 +30,7 @@ module.exports = function(app, Route, mail) {
       var userId = req.user._id;
       if (confirmedRider) {
         console.log("already confirmed");
-        return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=1");
+        return res.redirect("/route?id=" + (route.shortId || route._id) + "&error=1");
       }
 
       if (!riderFound) {
