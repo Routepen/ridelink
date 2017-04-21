@@ -153,7 +153,7 @@ app.get('/search', (req, res) => {
         url: req.url,
         origin: req.query.origin,
         destination: req.query.destination,
-        closeRoutes: closeRoutes
+        closeRoutes: closeRoutes // An array of all relevant routes
       };
       console.log(credentials.closeRoutes);
       res.render("search_route", credentials);

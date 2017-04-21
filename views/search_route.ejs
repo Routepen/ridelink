@@ -171,6 +171,10 @@
 <script type="text/javascript">
 
     var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
+    var origin = <%- JSON.stringify(origin) %>;
+    var destination = <%- JSON.stringify(destination) %>;
+    var me = this;
+
     var tbody = document.getElementById('tbody');
 
     function routeClick(routeId){
@@ -238,23 +242,31 @@
       });
     }
 
-    //Signup Process for batch sending
+
     function baggageModal(){
         $("#baggageModal").modal('toggle');
     }
 
+
+  //Signup Process for batch sending
+    function addOrUpdateRiderHelper(route){
+      return {
+        routeId: route._id,
+        riderOrigin: origin,
+        riderDestination: destination,
+        baggage: $('#sel1').val()
+      };
+    }
     function addOrUpdateRider(){
-      //TODO add feedback that a new route has been created, do i need to send login data?
         var counter = 0;
-        data = {
-          routeId: closeRoutes._id,
-          address: address,
-          baggage: $('#sel1').val()
-        };
-        //TODO how to send the database some mark in checkboxed elements to send to database
-        $('.myCheckbox').each(function(){
+        var userId = <%- JSON.stringify(user._id) %> || '';
+        if(userId = ''){
+          //TODO redirect user to login
+        }
+        var address = me.destination;
+        $('.myCheckbox').each(function(route){
             if(this.checked){
-                counter++;
+                data = addOrUpdateRiderHelper();
                 $.post("/route/searchAddrider", data, function(data, text) {
                   var found = false;
                   for (var i = 0; i < routeData.riders.length; i++) {
@@ -283,10 +295,10 @@
                   $(btn).button('reset');
                   $('#confirmAddRider').modal('hide');
               });
-              //TODO AJAX request to add multiple riders
+              counter++;
             }
         });
-        //TODO popup success dialog saying you've successfully signed up for [counter] number of routes
+        window.alert("Congrats you've successfully signed up for " + counter + " rides"); //TODO change to green bootstrap
     }
 
 
