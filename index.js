@@ -1,4 +1,5 @@
 'use strict'
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
@@ -36,7 +37,7 @@ console.log(mongo_url);
 var db = mongoose.connection;
 
 var publicConfig = {
-	key: 'AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA',
+	key: process.env.GMAPI_KEY,
 	//key: process.env.GOOGLE_MAPS_KEY,
 	stagger_time:       1000, // for elevationPath
 	encode_polylines:   false,
