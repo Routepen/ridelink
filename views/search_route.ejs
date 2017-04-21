@@ -247,7 +247,6 @@
         $("#baggageModal").modal('toggle');
     }
 
-
   //Signup Process for batch sending
     function addOrUpdateRiderHelper(route){
       return {
@@ -259,41 +258,46 @@
     }
     function addOrUpdateRider(){
         var counter = 0;
-        var userId = <%- JSON.stringify(user._id) %> || '';
-        if(userId = ''){
-          //TODO redirect user to login
+
+        var userId = <%- user %> + ' ';
+        if(userId == ' '){
+          window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href);
+          userId = <%- JSON.stringify(user) %>;
         }
+
+        userId = userId._id;
+
         var address = me.destination;
         $('.myCheckbox').each(function(route){
             if(this.checked){
-                data = addOrUpdateRiderHelper();
+                data = addOrUpdateRiderHelper(route);
                 $.post("/route/searchAddrider", data, function(data, text) {
-                  var found = false;
-                  for (var i = 0; i < routeData.riders.length; i++) {
-                    if (routeData.riders[i]._id == userId) {
-                      found = true;
-                      break;
+                    var found = false;
+                    for (var i = 0; i < routeData.riders.length; i++) {
+                      if (routeData.riders[i]._id == userId) {
+                        found = true;
+                        break;
+                      }
                     }
-                  }
-                  if (found) {
-                    routeData.dropOffs[userId] = address;
-                  }
-                  else {
-                    routeData.riders.push(user);
-                    routeData.dropOffs = routeData.dropOffs || {};
-                    routeData.dropOffs[userId] = address;
-                  }
-                  routeData.riderStatus = routeData.riderStatus || {};
-                  routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};
-                  routeData.riderStatus[userId]['baggage'] = $('#sel1').val();
+                    if (found) {
+                      routeData.dropOffs[userId] = address;
+                    }
+                    else {
+                      routeData.riders.push(user);
+                      routeData.dropOffs = routeData.dropOffs || {};
+                      routeData.dropOffs[userId] = address;
+                    }
+                    routeData.riderStatus = routeData.riderStatus || {};
+                    routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};
+                    routeData.riderStatus[userId]['baggage'] = $('#sel1').val();
 
-                  mapHandler.hideTestMarker();
-                  mapHandler.setMarkers();
-                  setUpTable();
-                  $('#numConfirmedRiders').html(routeData.confirmedRiders.length);
+                    mapHandler.hideTestMarker();
+                    mapHandler.setMarkers();
+                    setUpTable();
+                    $('#numConfirmedRiders').html(routeData.confirmedRiders.length);
 
-                  $(btn).button('reset');
-                  $('#confirmAddRider').modal('hide');
+                    $(btn).button('reset');
+                    $('#confirmAddRider').modal('hide');
               });
               counter++;
             }

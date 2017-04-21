@@ -149,7 +149,7 @@ app.get('/search', (req, res) => {
       //render
       // TODO Fill in Maps API call and send JSON to front end to parse
       var credentials = {
-        user: req.user,
+        user: req.user || null,
         url: req.url,
         origin: req.query.origin,
         destination: req.query.destination,

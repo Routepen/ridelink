@@ -27,7 +27,7 @@ var routeSchema = new Schema({
     }],
     stopsCoor: [{"lat":Number, "lng": Number}],
     stops: [String],
-    //TODO include dropOns: Schema.Types,Mixed, 
+    dropOns: Schema.Types.Mixed, 
     dropOffs: Schema.Types.Mixed,
     riderStatus: Schema.Types.Mixed,
     inconvenience: {type:[Number], default: 9999},

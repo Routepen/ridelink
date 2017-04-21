@@ -73,24 +73,7 @@
                 originInput, {placeIdOnly: true});
         var destinationAutocomplete = new google.maps.places.Autocomplete(
                 destinationInput, {placeIdOnly: true});
-        this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
-        this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
     }
-
-    AutocompleteHandler.prototype.setupPlaceChangedListener = function(autocomplete, mode){
-        autocomplete.addListener('place_changed', function() {
-            var place = autocomplete.getPlace();
-            if (!place.place_id) {
-                window.alert("Please select an option from the dropdown list.");
-                return;
-            }
-            if (mode === 'ORIG') {
-                this.originPlaceId = place.place_id;
-            } else if (mode == "DEST"){
-                this.destinationPlaceId = place.place_id;
-            }
-        });
-    };
 
     function validate(){
         if($("#search-origin").val() == '' || $("#search-destination").val() == ''){
