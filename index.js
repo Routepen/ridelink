@@ -162,7 +162,7 @@ app.get('/search', (req, res) => {
   .catch((err)=>{
     console.err("Global error");
     console.err(err);
-    res.status(300).send('Victor is a little bitch');
+    res.status(300).send('Error!');
   });
 
 	/*
