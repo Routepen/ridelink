@@ -173,6 +173,7 @@
     var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
     var origin = <%- JSON.stringify(origin) %>;
     var destination = <%- JSON.stringify(destination) %>;
+    //var user = <%- JSON.stringify(user) %>;
     var me = this;
 
     var tbody = document.getElementById('tbody');
@@ -258,14 +259,12 @@
     }
     function addOrUpdateRider(){
         var counter = 0;
+        //TODO fix
 
-        var userId = <%- user %> + ' ';
-        if(userId == ' '){
+        if(!user){
           window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href);
-          userId = <%- JSON.stringify(user) %>;
+          user = <%- JSON.stringify(user) %>;
         }
-
-        userId = userId._id;
 
         var address = me.destination;
         $('.myCheckbox').each(function(route){
