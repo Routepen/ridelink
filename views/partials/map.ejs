@@ -107,6 +107,10 @@ mapManager.prototype.drawMap = function(callback) {
   });
 }
 
+mapManager.prototype.getDistance = function() {
+  return this.distance;
+}
+
 mapManager.prototype.setMarkers = function(map) {
   var map = this.map;
   var routeData = this.routeData;
