@@ -198,8 +198,8 @@
         for (var i = 0; i < closeRoutes.length; i++) {
           //var d = new Date(closeRoutes[i].date);
           var onclick = "routeClick('" + (closeRoutes[i].shortId || closeRoutes[i]._id) + "')"
-          tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" onclick="' + onclick + '">' +
-            '<td> <input class="myCheckbox" type="checkbox" value="' + closeRoutes[i]._id + '"> </td>' +
+          tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" data-value="' + closeRoutes[i]._id + '" onclick="' + onclick + '">' +
+            '<td> <input class="myCheckbox" type="checkbox"> </td>' +
             '<td>' + (i+1) + '</td>' +
             '<td>' + closeRoutes[i].driver.facebook.name + '</td>' +
             '<td>' + closeRoutes[i].origin + '</td>' +
@@ -258,8 +258,9 @@
     function addOrUpdateRider(){
         var number = 0;
         $('.myCheckbox').each(function(route){
+          console.log(route);
             if(this.checked){
-                http.prototype.searchAddRider(closeRoutes[route.value]._id, user.id, origin, destination, $('#sel1').val());
+                http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
                 number++;
             }
         });
@@ -269,7 +270,7 @@
         }
         else{
           //TODO do some action
-          window.alert("Congrats you've successfully signed up for " + counter + " rides"); //TODO change to green bootstrap
+          window.alert("Congrats you've successfully signed up for " + number + " rides"); //TODO change to green bootstrap
         }
     }
 

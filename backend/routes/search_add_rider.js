@@ -1,60 +1,65 @@
 module.exports = function(app, Route, User, mail) {
 
   app.post('/route/searchAddRider', function(req, res) {
+    console.log("adding rider");
     console.log(req.user._id, req.body.pickUpAddress, req.body.dropOffAddress, req.body.routeId, req.body.baggage);
-    /*
-  	console.log("adding rider");
-  	if (!req.user) {
-  		return res.end("please log in ");
-  	}
 
-  	Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
+    if (!req.user) {
+      return res.end("please log in ");
+    }
+
+    Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
       if (req.user._id.toString() == route.driver._id.toString()) {
         return;
       }
 
-  		var rider, riderFound = false, confirmedRider = false;
-  		for (var i = 0; i < route.riders.length; i++) {
-  			if (route.riders[i].toString() == req.user._id) {
-  				riderFound = true;
+      var rider, riderFound = false, confirmedRider = false;
+      for (var i = 0; i < route.riders.length; i++) {
+        if (route.riders[i].toString() == req.user._id) {
+          riderFound = true;
           rider = route.riders[i];
-  				break;
-  			}
-  		}
-  		for (var i = 0; i < route.confirmedRiders.length; i++) {
-  			if (route.confirmedRiders[i].toString() == req.user._id) {
-  				confirmedRider = true;
-  				riderFound = true;
-  				break;
-  			}
-  		}
+          break;
+        }
+      }
+      for (var i = 0; i < route.confirmedRiders.length; i++) {
+        if (route.confirmedRiders[i].toString() == req.user._id) {
+          confirmedRider = true;
+          riderFound = true;
+          break;
+        }
+      }
 
-  		var userId = req.user._id;
-  		if (confirmedRider) {
-  			console.log("already confirmed");
-  			return res.redirect("/route?id=" + (route.shortId || route._id) + "&error=1");
-  		}
+      var userId = req.user._id;
+      if (confirmedRider) {
+        console.log("already confirmed");
+        return;
+        //return res.redirect("/route?id=" + (route.shortId || route._id) + "&error=1");
+      }
 
-  		if (!riderFound) {
+      if (!riderFound) {
         route.riders.push(userId);
-  		}
-  		var dropOffs = route.dropOffs || {};
-  		dropOffs[req.user._id] = req.body.address;
-  		route.dropOffs = dropOffs;
+      }
+      var dropOffs = route.dropOffs || {};
+      var pickUps = route.pickUps || {};
+      dropOffs[req.user._id] = req.body.dropOffAddress;
+      pickUps[req.user._id] = req.body.pickUpAddress;
+      route.dropOffs = dropOffs;
+      route.pickUps = pickUps;
 
       var onWaitlist = route.confirmedRiders.length == route.seats;
-  		route.riderStatus = route.riderStatus || {};
-  		route.riderStatus[userId] = {
-  			paid: false,
+      route.riderStatus = route.riderStatus || {};
+      route.riderStatus[userId] = {
+        paid: false,
         onWaitlist: onWaitlist,
         baggage: req.body.baggage
-  		};
-  		route.markModified('dropOffs');
-  		route.markModified('riderStatus');
+      };
+      route.markModified('dropOffs');
+      route.markModified('pickUps');
+      route.markModified('riderStatus');
 
       if (!riderFound) { // rider added
         req.user.routes = req.user.routes || [];
-    		req.user.routes.push(route);
+        req.user.routes.push(route);
 
         if (onWaitlist) {
           mail.sendMail({
@@ -91,16 +96,14 @@ module.exports = function(app, Route, User, mail) {
 
       }
 
-  		route.save(function(err) {
-  			if (err) { console.log(err); return res.end(err.toString()); }
-  			req.user.save(function(err) {
-  				if (err) { console.log(err); return res.end(err.toString()); }
-  				res.json({});
-  			});
-  		});
+      route.save(function(err) {
+        if (err) { console.log(err); return res.end(err.toString()); }
+        req.user.save(function(err) {
+          if (err) { console.log(err); return res.end(err.toString()); }
+          res.json({});
+        });
+      });
 
-  	});
-    */
+    });
   });
-
 }

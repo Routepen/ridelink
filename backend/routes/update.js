@@ -1,7 +1,7 @@
 const Promise = require("bluebird");
 const _ = require("lodash");
 
-module.exports = function(app, Route, User, mail) {
+module.exports = function(app, Route, User, mail, gmAPI, geocode) {
   app.post('/route/update', function(req, res) {
     console.log('updating');
     if (!req.user) {
