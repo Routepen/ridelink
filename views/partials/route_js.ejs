@@ -67,6 +67,9 @@
         routeData.stopsCoor = data.stopsCoor;
         routeData.originCoor = data.originCoor;
         routeData.destinationCoor = data.destinationCoor;
+        if(data == "failure"){
+          window.alert('Please input a number');
+        }
       });
 
     });

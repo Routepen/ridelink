@@ -68,6 +68,11 @@ module.exports = function(app, Route, User, mail) {
         }
         route[updating2] = req.body[updating];
 
+        if(updating == "seats" && isNaN(req.body[updating])){
+          console.log("seats provided was not a number.", "Data updated was", req.body[updating]);
+          return res.end("failure")
+        }
+
         if (updating == "origin" || updating == "destination") {
           updateCoords = new Promise((resolve, reject) => {
             geocode(req.body[updating], gmAPI).then(data => {
