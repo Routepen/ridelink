@@ -41,12 +41,15 @@ http.prototype.confirmRider = function(riderId, routeData, callback) {
   // });
 }
 
-http.prototype.addRider = function(userId, address, baggage, callback) {
+http.prototype.addRider = function(userId, pickUpAddress, dropOffAddress, baggage, callback) {
   var data = {
     routeId: this.routeId,
-    address: address,
+    pickUpAddress: pickUpAddress,
+    dropOffAddress: dropOffAddress,
     baggage: baggage
   };
+
+  console.log("sending", data);
 
   var me = this;
   $.post("/route/addrider", data, (data, text) => {

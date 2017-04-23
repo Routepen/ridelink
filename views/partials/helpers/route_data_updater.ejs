@@ -2,7 +2,7 @@ function RouteDataUpdater(routeData) {
   this.routeData = routeData;
 }
 
-RouteDataUpdater.prototype.addRider = function(user, userStatus, address, baggage) {
+RouteDataUpdater.prototype.addRider = function(user, userStatus, pickUpAddress, dropOffAddress, baggage) {
   userStatus.isRider = true;
 
   var userId = user._id;
@@ -14,12 +14,15 @@ RouteDataUpdater.prototype.addRider = function(user, userStatus, address, baggag
     }
   }
   if (found) {
-    routeData.dropOffs[userId] = address;
+    routeData.dropOffs[userId] = dropOffAddress;
+    routeData.pickUps[userId] = pickUpAddress;
   }
   else {
     routeData.riders.push(user);
     routeData.dropOffs = routeData.dropOffs || {};
-    routeData.dropOffs[userId] = address;
+    routeData.pickUps = routeData.pickUps || {};
+    routeData.dropOffs[userId] = dropOffAddress;
+    routeData.pickUps[userId] = pickUpAddress;
   }
   routeData.riderStatus = routeData.riderStatus || {};
   routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};

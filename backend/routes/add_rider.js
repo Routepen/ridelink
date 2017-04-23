@@ -1,4 +1,4 @@
-module.exports = function(app, Route, mail) {
+module.exports = function(app, Route, User, mail) {
 
   app.post('/route/addrider', function(req, res) {
     console.log("adding rider");
@@ -37,8 +37,11 @@ module.exports = function(app, Route, mail) {
         route.riders.push(userId);
       }
       var dropOffs = route.dropOffs || {};
-      dropOffs[req.user._id] = req.body.address;
+      var pickUps = route.pickUps || {};
+      dropOffs[req.user._id] = req.body.dropOffAddress;
+      pickUps[req.user._id] = req.body.pickUpAddress;
       route.dropOffs = dropOffs;
+      route.pickUps = pickUps;
 
       var onWaitlist = route.confirmedRiders.length == route.seats;
       route.riderStatus = route.riderStatus || {};

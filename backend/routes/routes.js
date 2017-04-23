@@ -2,7 +2,7 @@ var _ = require("lodash");
 
 module.exports = function(app, Route, User, mail) {
 
-  require("./add_rider")(app, Route, mail);
+  require("./add_rider")(app, Route, User, mail);
 
   require("./remove_rider")(app, Route, mail);
 
