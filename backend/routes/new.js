@@ -1,6 +1,6 @@
 const Promise = require("bluebird");
 
-module.exports = function(app, Route, User, mail) {
+module.exports = function(app, Route, User, mail, geocode) {
 
   app.post('/route/new', function (req, res) {
     if (!req.user) {

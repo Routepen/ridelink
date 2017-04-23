@@ -8,6 +8,7 @@ const User = require('./models/User');
 const Route = require('./models/Route');
 const _ = require("lodash");
 const mail = require("./mail");
+const geocode = require('./geocode');
 const app = express();
 const GoogleMapsAPI = require('googlemaps');
 const async = require('async');
@@ -62,7 +63,8 @@ app.use(bodyParser.json());
 
 auth.setUpAuth(app);
 
-require("./backend/routes/routes")(app, Route, User, gmAPI);
+// Routes
+require("./backend/routes/routes")(app, Route, User, mail, gmAPI, geocode);
 
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
