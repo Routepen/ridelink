@@ -12,8 +12,6 @@ const GoogleMapsAPI = require('googlemaps');
 const async = require('async');
 
 const auth = require("./auth");
-const mail = require("./mail");
-const payment = require("./payments");
 
 mongoose.Promise = require('bluebird');
 
@@ -62,9 +60,8 @@ app.use(session({
 app.use(bodyParser.json());
 
 auth.setUpAuth(app);
-payment.setUp(app, mail, Route);
 
-require("./backend/routes/routes")(app, Route, User, mail, gmAPI);
+require("./backend/routes/routes")(app, Route, User, gmAPI);
 
 app.listen(app.get('port'), function() {
 	console.log('running on port', app.get('port'))
