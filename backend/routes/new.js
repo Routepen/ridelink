@@ -97,9 +97,8 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
         if(err) throw err;
         console.log("Route created!");
         User.findById(newRoute.driver, function(err, driver) {
-          let recipentEmail = driver.facebook.email;
           newRoute.driver = driver;
-          if(recipentEmail != '' && recipentEmail != undefined){
+          if(driver.confirmedEmail != ''){
             mail.sendMail({
               notifyDriver: {
                 routeCreated: true
@@ -107,6 +106,9 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
               recipient: driver,
               route: newRoute
             });
+            console.log('Sending mail to', driver.confirmedEmail);
+          } else {
+            console.log('Did not send email');
           }
           return res.end("/route?id=" + (newRoute.shortId || newRoute._id));
         });
