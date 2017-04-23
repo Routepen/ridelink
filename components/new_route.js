@@ -42,7 +42,8 @@ class NewRoute extends Component {
         <div className="col-md-4 core-container">
           <DriverInput route={this.state.route}
             mapChanged={this.forceUpdate.bind(this)}
-            stopsUpdated={this.forceUpdate.bind(this)}/>
+            stopsUpdated={this.forceUpdate.bind(this)}
+            eventEmitter={this.eventEmitter}/>
         </div>
         <MapView eventEmitter={this.eventEmitter} route={this.state.route} page="new"/>
       </div>
