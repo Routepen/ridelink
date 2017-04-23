@@ -1,6 +1,23 @@
 const Promise = require("bluebird");
 
-module.exports = function(app, Route, User, mail) {
+module.exports = function(app, Route, User, mail, gmAPI, geocode) {
+
+  function random(len) {
+   	var a = new Array(len);
+   	var ranges = [[48, 10], [65, 26], [97, 26]], total = 62;
+   	for (var i = 0; i < len; i++) {
+   		var random = parseInt(Math.random() * total);
+   		for (var n = 0; n < ranges.length; n++) {
+   			if (random < ranges[n][1]) {
+   				a[i] = String.fromCharCode(ranges[n][0] + random);
+   				break;
+   			}
+   			random -= ranges[n][1];
+   		}
+   	}
+
+   	return a.join('');
+  }
 
   app.post('/route/new', function (req, res) {
     if (!req.user) {
@@ -63,6 +80,7 @@ module.exports = function(app, Route, User, mail) {
         });
       }
       catch(e) {
+        console.log(e);
         res.status(400);
         return res.end();
       }
@@ -79,14 +97,17 @@ module.exports = function(app, Route, User, mail) {
         if(err) throw err;
         console.log("Route created!");
         User.findById(newRoute.driver, function(err, driver) {
+          let recipentEmail = driver.facebook.email;
           newRoute.driver = driver;
-          mail.sendMail({
-            notifyDriver: {
-              routeCreated: true
-            },
-            recipient: req.user,
-            route: newRoute
-          });
+          if(recipentEmail != '' && recipentEmail != undefined){
+            mail.sendMail({
+              notifyDriver: {
+                routeCreated: true
+              },
+              recipient: driver,
+              route: newRoute
+            });
+          }
           return res.end("/route?id=" + (newRoute.shortId || newRoute._id));
         });
       });
