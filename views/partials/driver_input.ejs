@@ -9,7 +9,7 @@
             <form action="javascript:confirmEmail()">
                 <div class="modal-body">
                     Send me notifications at
-                    <input type="email" class="form-control" id="emailInput" value="<%= user.confirmedEmail || user.facebook.email %>"
+                    <input id="email-input" type="email" class="form-control" id="emailInput" value="<%= user.confirmedEmail || user.facebook.email %>"
                            placeholder="Email">
                 </div>
                 <div class="modal-footer">
@@ -28,14 +28,12 @@
             </h3>
         </div>
 
-        <!--             <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>  Share your route:  <a href="/">  https://maps.com/127 </a>-->
-        <form id="driver_input_form" class="row" action="javascript:submitForm();">
+        <div id="driver_input_container" class="row">
             <div id="form-color-box" class="color-box">
                 <div>
                     <i class="material-icons" style="padding-left:10px ">adjust</i>
                     <input id="origin-input" name="origin" class="controls" type="text"
-                           placeholder="Enter an origin location..." onPaste=""
-                           onkeydown="if (event.keyCode == 13) { return false;}"
+                           placeholder="Enter an origin location..."
                            value="UCSB, Santa Barbara, CA, United States">
                 </div>
                 <div id="stops"></div>
@@ -45,8 +43,7 @@
                 <div>
                     <i class="material-icons" style="padding-left:10px">place</i>
                     <input autofocus id="destination-input" name="destination" class="controls" type="text"
-                           placeholder="Enter a destination location..." onPaste=""
-                           onkeydown="if (event.keyCode == 13) { return false;}">
+                           placeholder="Enter a destination location...">
                 </div>
             </div>
             <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
@@ -58,8 +55,7 @@
                 <div class="col-md-12">
                     <input id="num-seats" name="seats" class="controls" type="text"
                            placeholder="Enter number of seats..."><br>
-                    <input id="charge" name="charge" class="controls" type="text" placeholder="$ Cost per seat" onPaste=""
-                           onkeydown="if (event.keyCode == 13) { submitForm(); return false; }"><br>
+                    <input id="charge" name="charge" class="controls" type="text" placeholder="$ Cost per seat" onPaste=""><br>
                     <br>
                     <!--<input id="requireInitialDeposit" name="requireInitialDeposit" type="checkbox" checked> Require
                     Initial Deposit <br>
@@ -69,21 +65,20 @@
                       <a target="_blank" href="/html/faq/initialDeposit.html">What is this?</a>
                     </div>
                     <br>-->
-                    <input id="date" name="date" class="controls" type="text" placeholder="Date..." onPaste=""
-                           onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
+                    <input id="date" name="date" class="controls" type="text" placeholder="Date..." onPaste="">
 
                     <br>
                     <input id="time" name="time" class="controls" type="text" placeholder="Time..." onPaste=""
                            onkeydown="if (event.keyCode == 13) { submitForm(); return false; }">
 
                     <br><br>
-                    <input type="submit" id="create-route" class="btn btn-md btn-success" value="Create Route">
+                    <input type="submit" id="create-route-button" class="btn btn-md btn-success" value="Create Route">
                 </div>
             </div>
 
 
             <input type="hidden" name="confirmedEmail" id="confirmed_email_input">
-        </form>
+        </div>
 
         <br>
 
@@ -208,46 +203,24 @@
         defaultTime: "8:00 AM"
     });
 
-    /*
-     var inputs = document.querySelectorAll('input[name="origin"], input[name="destination"], input[name="seats"], input[name="date"], input[name="num-seats"]');
-     var button = document.querySelector('#create-route');
 
-     [].forEach.call(inputs, function (e) {
-     e.addEventListener('input', function () {
-     var disabled = false;
-     [].forEach.call(inputs, function (inputElem) {
-     if(inputElem.value==''){
-     disabled = true;
-     }
-     });
-     // Change button if called
-     if (disabled) {
-     button.setAttribute('disabled', '');
-
-     } else {
-     button.removeAttribute('disabled');
-     }
-     });
-     });
-     document.getElementById("date")
-     .addEventListener("keyup", function(event) {
-     event.preventDefault();
-     if (event.keyCode == 13) {
-     document.getElementById("create-route").click();
-     }
-     });
-     */
     function confirmEmail() {
         var email = document.getElementById("confirmed_email_input");
-        var emailInput = document.getElementById("emailInput");
+        var emailInput = document.getElementById("email-input");
         email.value = emailInput.value;
         post();
     }
+
+    $('#create-route-button').click(submitForm);
 
     function submitForm() {
         if (validateFields()) return;
 
         $("#emailModal").modal('show');
+        setTimeout(function() {
+          $("#email-input").focus();
+        }, 500);
+
     }
 
     function getErrorMessage() {
@@ -274,6 +247,7 @@
             return true;
         }
 
+        $('#alertbox').hide();
         return false;
     }
 

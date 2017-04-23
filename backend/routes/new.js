@@ -127,6 +127,6 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
       	creatingRoute: true
   	};
 
-  	res.render('new_route', {data:data});
+	res.render('new_route', data);
   });
 }
