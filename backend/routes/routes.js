@@ -1,6 +1,6 @@
 var _ = require("lodash");
 
-module.exports = function(app, Route, User, mail) {
+module.exports = function(app, Route, User, mail, geocode, gmAPI, util) {
 
   require("./add_rider")(app, Route, User, mail);
 
@@ -21,6 +21,10 @@ module.exports = function(app, Route, User, mail) {
   require("./get_route")(app, Route);
 
   require("./search_add_rider")(app, Route, User, mail);
+
+  require("./mail")(app, mail);
+
+  require("./search")(app, Route, User, geocode, gmAPI, util);
 
   app.get('/route/all', function (req, res) {
   	Route.find({}, function(err, routes) {
