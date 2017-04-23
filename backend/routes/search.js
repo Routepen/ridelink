@@ -35,6 +35,7 @@ module.exports = function(app, Route, User, gmAPI, geocode) {
 
                 // Temporarily has 1 == 1 because distance not stored in DB
                 //TODO should be dbentry.distance .some threshold to distance variable +=9% of original distance
+                console.log(route);
                 var routeDist = parseInt(route.distance);
                 console.log('route distance is ', routeDist, ' and distance is ', distance);
                 console.log(routeDist / distance);
