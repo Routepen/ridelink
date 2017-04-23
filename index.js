@@ -83,6 +83,7 @@ app.get('/testing2', function(req, res) {
     },
     "confirmedEmail": "pmh192@gmail.com"
 });
+});
 
 app.get('/test3', function(req, res) {
 	User.findById('58f5931ef5a31b2723a7696f', function(err, user) {
