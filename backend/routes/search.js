@@ -1,5 +1,6 @@
 module.exports = function(app, Route, User, gmAPI) {
   const util = require('util');
+  const request = require('request');
   const geocode = require('../../geocode');
 
   app.get('/search', (req, res) => {
