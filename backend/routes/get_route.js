@@ -54,7 +54,7 @@ module.exports = function(app, Route) {
         paymentConfirmed: req.query.status == "paymentConfirmed"
   		};
 
-  		res.render('route_old', data);
+  		res.render('route', data);
   	}
 
   	var id = req.query.id;

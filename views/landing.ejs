@@ -7,27 +7,29 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+    <!-- <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'> -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700,900" rel="stylesheet">
 
-    <link rel="icon" href="../../favicon.ico">
-    <title>EasyDrive</title>
+
+    <!--<link rel="icon" href="../../favicon.ico"> -->
+    <title>Routepen</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
     <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/landing.css" rel="stylesheet">
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/new_landing.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
 
     <!-- Custom styles for this template -->
-    <link href="css/main.css" rel="stylesheet">
+    <link href="/css/main.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-   <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
+    <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -37,47 +39,47 @@
 </head>
 <body>
 
-<% include ./partials/navbar %>
+<% include ./partials/displays/navbar %>
+
 
 <div class="first-landing">
-    <div class="container">
-        <div class="row">
-            <div class="info-block center-block col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <h1>
-                    Carpool made simple.
-                </h1>
-                <p class="about">EasyDrive makes carpooling easy for drivers. No more last minute bailing and ride with students that best fit your route. </p>
+    <div class="container" >
+        <div class="row" style="margin-top: 0px">
+            <h3 class="col-xs-12" style="margin-top:0">
+                <h1 > Rideshare Made Searchable<!--Driver's Paradise for Carpool. --></h1>
+                <h4 class="about"> Routepen is on a mission to make the Rideshare Facebook page more searchable. Drivers, just create a route in seconds and share it as a link with your Rideshare post! Give riders a chance to <b> find </b> you and join your waitlist if your ride’s full! </h4>
+                <!--Don't fret about last minute bailing and take studens most convenient for your route-->
+                <iframe width="1000" height="450" style="margin-top: 30px; margin-bottom:150px"
+                        src="https://www.youtube.com/embed/U1ysIfps7cQ?loop=1">
+                </iframe>
+
                 <!-- <a href="/" class="action-btn btn">Join the Waitlist</a> -->
 
-<!--                <div id="custom-search-input">
-                    <div class="input-group col-md-12">
-                        <input type="text" class="form-control input-lg" placeholder="Browse drivers..." />
-                    <span class="input-group-btn">
-                        <button class="btn btn-info btn-lg" type="button">
-                            <i class="glyphicon glyphicon-search"></i>
-                        </button>
-                    </span>
-                    </div>
-                    -->
-                </div>
-            </div>
+                <!-- <div class="process row">
+                     <div class="col-xs-4"><span>1</span> Share your route with your Facebook post. Think sharing a Google doc link. </div>
+                     <div class="col-xs-4"><span>2</span>Riders add their dropoff<br> location <!--+ pay initial deposit </div> -->
+                <!--  <div class="col-xs-4"><span>3</span>Drive students based on<br> route convenience.</div>
+              </div> -->
+                <!--                <div id="custom-search-input">
+                                    <div class="input-group col-md-12">
+                                        <input type="text" class="form-control input-lg" placeholder="Browse drivers..." />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info btn-lg" type="button">
+                                            <i class="glyphicon glyphicon-search"></i>
+                                        </button>
+                                    </span>
+                                    </div>
+-->
+            </h3>
+            `
         </div>
     </div>
 </div>
 
-<div class=" second-landing container-fluid">
-    <ul class="progressbar">
-        <li>Create editable route</li>
-        <li>Share route with Facebook post</li>
-        <li>Riders add dropoff location</li>
-        <li>Drive students most convenient for you </li>
-    </ul>
-</div>
 <!--
 <div class="navbar wizard">
     <div class="col-md-4"></div>
     <div class="navbar-inner">
-
         <ul class="nav nav-pills wizard">
             <li class="active"><a href="#step1" data-toggle="tab" data-step="1">1</a></li>
             <li><a href="#step2" data-toggle="tab" data-step="2">2</a></li>
@@ -85,44 +87,57 @@
         </ul>
     </div>
 </div>
-
 -->
 <section class="features">
+    <h1>Features</h1>
     <div class="container">
+        <!--<h2> Routepen drivers make on average $40 more on their trip back home!</h2> -->
+        <br>
         <div class="row">
-            <div class="feature col-xs-12 col-sm-6 col-md-4">
-                <img src="images/landing-feature-payment.jpg" alt="">
-                <h3>Preventing No-shows</h3>
-                <p>Preventing no-shows by having riders put up an initial deposit.</p>
+            <div class="feature col-xs-12 col-sm-3 col-md-3">
+                <img src="/images/landing-feature-payment.jpg" alt="">
+                <h3>Coming soon: Preventing Bails</h3>
+                <p>Preventing bailing by having riders put up an initial deposit.</p>
             </div>
-            <div class="feature feature-waitlist col-xs-12 col-sm-6 col-md-4 col-sm-offset-3 col-md-offset-0">
-                <img class="resize" src="images/Landing-map.png" alt="">
-                <h3> More exposure and more convenient riders </h3>
-                <p>Riders can place their dropoff location anywhere on the your editable route and we auto-rank the most convenient riders for you!
+            <div class="feature feature-waitlist col-xs-12 col-sm-3 col-md-3">
+                <img src="images/landing-feature-map.jpg" alt="">
+                <h3> DRIVER - Transparency </h3>
+                <p>Join the cause! Help riders search for you much easier by creating a Route in seconds and sharing it with your Facebook post!
+                </p>
+            </div>
+            <div class="feature feature-waitlist col-xs-12 col-sm-3 col-md-3">
+                <img src="images/feature-waitlist.jpg" alt="">
+                <h3> DRIVER - Personal Waitlist </h3>
+                <p>Allow riders to join your waitlist when your ride is full!
+                </p>
+            </div>
+            <div class="feature feature-waitlist col-xs-12 col-sm-3 col-md-3">
+                <img src="images/feature-alert.jpg" alt="">
+                <h3> RIDER - Email Notifications </h3>
+                <p>We'll let you know when a new driver posts a relevant ride!
                 </p>
             </div>
         </div>
     </div>
 </section>
 
+<!--
+
 <section id="subscribe" class="subscribe">
     <div class="container">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-6 col-md-offset-3">
                 <h2 class="title">For Riders</h2>
-                <p> Limited 100 spot waitlist for riders. Are you a rider interested in our new notifications feature? Receive instant notifications when a new shared ride is relevant to you.
-                Our smart algorithm finds rides on the way or to your location. Just turn it on when you're looking for rides.</p>
+                <p> Are you a rider interested in our new notifications feature? Receive instant notifications when a new shared ride is relevant to you.
+                    Our smart algorithm finds rides on the way or to your location. Just turn it on when you're looking for rides. We're limiting this to 300 special riders, so sign up quick!</p>
                 <form id="emailsubscribe" action="/emailsubscribe" method="post" >
-                    <div class="col-md-8">
-                        <input id="email" class="email" type="text" name= "email" placeholder="email">
-                        <input onClick="document.getElementById('emailsubscribe').submit();" id="submit" class="btn" type="submit" name= "SubmitButton" value="Subscribe">
-                    </div>
+                    <input id="email" class="email" type="text" name= "email" placeholder="email">
+                    <input onClick="document.getElementById('emailsubscribe').submit();" id="submit" class="btn" type="submit" name= "SubmitButton" value="Subscribe">
                 </form>
             </div>
         </div>
     </div>
 </section>
-<!--
 <div id="postModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -146,7 +161,6 @@
         </div>
     </div>
 </div>
-
 -->
 <!--
 <div class="container-fluid">
@@ -155,42 +169,45 @@
 -->
 <footer>
     <div id="policy">
-        <div class="block"><a href="#">About</a><a href="#">Policy</a><a href="#">FAQ</a></div>
-        <div class="block"><p>&#169; EasyDrive, LLC All rights reserved.</p></div>
+        <!--<div class="block"><a href="#">About</a><a href="#">Policy</a><a href="#">FAQ</a></div> -->
+
+        <div class="block" style="padding-top:10px"><p>&#169; Routepen, LLC All rights reserved.</p></div>
     </div>
     <div id="social">
-        <a href="#"><img src="images/facebook.png">
-                <a href="#"><img  src="images/youtube.png">
-                    <a href="#"><img src="images/twitter.png">
+        <a href="#"><img src="/images/facebook.png">
+            <p style="display:inline"> Email: admin@routepen.com</p>
+            <!-- <a href="#"><img  src="/images/youtube.png"> -->
+            <!--  <a href="#"><img src="/images/twitter.png"> -->
     </div>
 </footer>
+
 <script>
     $('.next').click(function(){
-
         var nextId = $(this).parents('.tab-pane').next().attr("id");
         $('[href=#'+nextId+']').tab('show');
         return false;
-
-    })
+    });
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-
         //update progress
         var step = $(e.target).data('step');
         var percent = (parseInt(step) / 3) * 100;
-
         $('.progress-bar').css({width: percent + '%'});
         $('.progress-bar').text("Step " + step + " of 3");
-
         //e.relatedTarget // previous tab
-
-    })
+    });
 
     $('.first').click(function(){
-
         $('#myWizard a:first').tab('show')
+    });
 
-    })
+    function onMapsReady() {
+      NavBarAutocompleteHandler();
+    }
 </script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=onMapsReady">
+</script>
+
 </body>
 </html>

@@ -36,7 +36,7 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
   		url: req.url
   	};
 
-  	res.render('new_landing', data);
+  	res.render('landing', data);
   });
 
   app.get('/route/all', function (req, res) {

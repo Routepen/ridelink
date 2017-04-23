@@ -1,12 +1,13 @@
-<% include ./displays/location_display %>
-<% include ./displays/date_display %>
-<% include ./displays/seats_display %>
-<% include ./displays/time_display %>
-<% include ./displays/stops %>
+<% include ./location_display %>
+<% include ./date_display %>
+<% include ./seats_display %>
+<% include ./time_display %>
+<% include ./stops %>
 
 
-function InfoDisplay(routeData, mapHandler) {
+function InfoDisplay(routeData, userStatus, mapHandler) {
   this.routeData = routeData;
+  this.userStatus = userStatus;
   this.mapHandler = mapHandler;
 
   this.stopLocations = {};
@@ -17,7 +18,7 @@ function InfoDisplay(routeData, mapHandler) {
 
 
 InfoDisplay.prototype.setUpEditability = function() {
-  <% if (isDriver  && view != "rider") { %>
+  if (this.userStatus.isDriver && this.userStatus.view != "rider") {
 
     var me = this;
 
@@ -58,7 +59,7 @@ InfoDisplay.prototype.setUpEditability = function() {
       me.valueChanged("stops[]", newValue, true);
     });
 
-  <% } %>
+  }
 }
 
 InfoDisplay.prototype.errorMessageFromEditable = function(id, newValue){
@@ -67,14 +68,6 @@ InfoDisplay.prototype.errorMessageFromEditable = function(id, newValue){
   if (id == "time" && newValue == "") { return "Please enter the time you are leaving"; }
 
   return "";
-}
-
-
-InfoDisplay.prototype.restoreTdElement = function(riderId, status) {
-  var divId = 'tr' + riderId + 'Text';
-  var editableId = divId + 'Editable';
-  $('#' + divId).show();
-  $('#' + editableId).hide();
 }
 
 InfoDisplay.prototype.ridersChanged = function() {
