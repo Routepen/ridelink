@@ -186,7 +186,8 @@
         var nextId = $(this).parents('.tab-pane').next().attr("id");
         $('[href=#'+nextId+']').tab('show');
         return false;
-    })
+    });
+
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         //update progress
         var step = $(e.target).data('step');
@@ -194,13 +195,18 @@
         $('.progress-bar').css({width: percent + '%'});
         $('.progress-bar').text("Step " + step + " of 3");
         //e.relatedTarget // previous tab
-    })
+    });
+
     $('.first').click(function(){
         $('#myWizard a:first').tab('show')
-    })
+    });
+
+    function onMapsReady() {
+      NavBarAutocompleteHandler();
+    }
 </script>
 <script async defer
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=AutocompleteHandler">
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=onMapsReady">
 </script>
 
 </body>

@@ -14,7 +14,7 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
 
   require("./new")(app, Route, User, mail, gmAPI, geocode);
 
-  require("./update")(app, Route, User, mail);
+  require("./update")(app, Route, User, mail, gmAPI, geocode);
 
   require("./mark_paid")(app, Route);
 

@@ -27,6 +27,8 @@
 
 
   function initMap() {
+    NavBarAutocompleteHandler();
+
     var map = new google.maps.Map(document.getElementById('map'), {
       mapTypeControl: false,
       center: {lat: 34.4140, lng: -119.8489},
@@ -52,20 +54,30 @@
     });
 
     infoDisplay.setUpEditability();
-    infoDisplay.addListener('valueChanged', function(name, value) {
+    infoDisplay.addListener('valueChanged', function(name, value, mapChanged) {
       console.log(name, value);
-      var data = {
-        routeId: routeData._id,
-        updating: name,
-        distance: mapHandler.distance
-      }
-      data[name] = value;
 
-      $.post("/route/update", data, function(data, result) {
-        routeData.stopsCoor = data.stopsCoor;
-        routeData.originCoor = data.originCoor;
-        routeData.destinationCoor = data.destinationCoor;
-      });
+      var sendData = function() {
+        var data = {
+          routeId: routeData._id,
+          updating: name,
+          distance: mapHandler.getDistance()
+        }
+        data[name] = value;
+
+        $.post("/route/update", data, function(data, result) {
+          routeData.stopsCoor = data.stopsCoor;
+          routeData.originCoor = data.originCoor;
+          routeData.destinationCoor = data.destinationCoor;
+        });
+      }
+
+      if (mapChanged) {
+        mapHandler.drawMap(sendData);
+      }
+      else {
+        sendData();
+      }
 
     });
 

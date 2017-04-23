@@ -24,41 +24,38 @@ InfoDisplay.prototype.setUpEditability = function() {
     this.originDisplay = new LocationDisplay("originText", "origin", this.mapHandler);
     this.originDisplay.addListener('valueChanged', function(newValue) {
         me.routeData.origin = newValue;
-        me.valueChanged("origin", newValue);
-        me.mapHandler.drawMap();
+        me.valueChanged("origin", newValue, true);
     });
 
     this.destinationDisplay = new LocationDisplay("destinationText", "destination", this.mapHandler);
     this.destinationDisplay.addListener('valueChanged', function(newValue) {
         me.routeData.destination = newValue;
-        me.valueChanged("destination", newValue);
-        me.mapHandler.drawMap();
+        me.valueChanged("destination", newValue, true);
     });
 
     this.seatsDisplay = new SeatsDisplay("seatsText", "seats");
     this.seatsDisplay.addListener('valueChanged', function(newValue) {
         me.routeData.seats = newValue;
-        me.valueChanged("seats", newValue);
+        me.valueChanged("seats", newValue, false);
     });
 
     this.dateDisplay = new DateDisplay("dateText", "date");
     this.dateDisplay.addListener('valueChanged', function(newValue) {
         me.routeData.date = newValue;
-        me.valueChanged("date", newValue);
+        me.valueChanged("date", newValue, false);
     });
 
     this.timeDisplay = new TimeDisplay("timeText", "time");
     this.timeDisplay.addListener('valueChanged', function(newValue) {
       me.routeData.date = newValue;
-      me.valueChanged("time", newValue);
+      me.valueChanged("time", newValue, false);
     });
 
     var stops = new Stops(this.routeData.stops, this.mapHandler);
     stops.setUpStops();
     stops.addListener('valueChanged', function(newValue) {
       me.routeData.stops = newValue;
-      me.mapHandler.drawMap();
-      me.valueChanged("stops[]", newValue);
+      me.valueChanged("stops[]", newValue, true);
     });
 
   <% } %>
@@ -72,132 +69,6 @@ InfoDisplay.prototype.errorMessageFromEditable = function(id, newValue){
   return "";
 }
 
-InfoDisplay.prototype.restoreMapText = function(id) {
-  selector = "#" + id;
-  var textDiv = $(selector + 'Text');
-  var editableDiv = $(selector + 'TextEditable');
-  var span = textDiv.find('span');
-  var input = editableDiv.find('input');
-  var newValue = input.val().trim();
-  span.html(newValue);
-  textDiv.show();
-  editableDiv.hide();
-
-  var data = {
-    routeId: routeData._id,
-    updating: id,
-    distance: mapHandler.distance
-  };
-  data[id] = newValue;
-
-  $.post("/route/update", data, function(data) {
-    routeData.originCoor = data.originCoor;
-    routeData.destinationCoor = data.destinationCoor;
-  });
-}
-
-InfoDisplay.prototype.mapEditableDone = function(submit, id) {
-  if (submit) {
-    mapHandler.changeRoute(id);
-  }
-  else {
-    var selector = "#" + id;
-    var textDiv = $(selector + 'Text');
-    var editableDiv = $(selector + 'TextEditable');
-    var span = textDiv.find('span');
-    var input = editableDiv.find('input');
-
-    if (id == "dropOff") {
-      <% if (isRider) { %>
-        input.val(span.html().trim());
-        textDiv.show();
-        editableDiv.hide();
-      <% } else { %>
-        input.val("");
-      <% } %>
-    }
-    else {
-      input.val(span.html().trim());
-      textDiv.show();
-      editableDiv.hide();
-    }
-  }
-}
-
-InfoDisplay.prototype.editableDone = function(submit, id) {
-  selector = "#" + id;
-  var textDiv = $(selector + 'Text');
-  var editableDiv = $(selector + 'TextEditable');
-  var span = textDiv.find('span');
-  var input = editableDiv.find('input');
-  var newValue = input.val().trim();
-
-  var error = errorMessageFromEditable(id, newValue);
-
-  if (error == "" || !submit) {
-    if (submit) {
-      var toSet = newValue;
-      if (id == "seats") {
-        toSet -= routeData.confirmedRiders.length;
-        if (toSet < 0) {
-          $("#lessThanZeroSeats").modal('show');
-          input.val(routeData.confirmedRiders.length);
-          toSet = 0;
-          newValue = routeData.confirmedRiders.length;
-        }
-        if (toSet == 0) {
-          $('#rideIsFull').show();
-        }
-        else {
-          $('#rideIsFull').hide();
-        }
-      }
-      if (id == "time") {
-        // var parts = toSet.split(":");
-        // var s = parseInt(parts[0]);
-        // if (!isNaN(s)) {
-        //   if (s == 0) {
-        //     t =  "12:" + parts[1] + " AM";
-        //   }
-        //   else if (s < 12) { toSet += " AM"; }
-        //   else if (s == 12) { toSet += " PM"; }
-        //   else {
-        //     if (parts.length > 1) {
-        //         toSet = (s-12) + ":" + parts[1] + " PM";
-        //     }
-        //   }
-        // }
-      }
-
-      span.html(toSet);
-      textDiv.show();
-      editableDiv.hide();
-
-      var data = {
-        routeId: routeData._id,
-        updating: id
-      };
-      data[id] = newValue;
-
-      $.post("/route/update", data, function() {
-        routeData[id] = newValue;
-        setUpTable();
-        mapHandler.setMarkers();
-      });
-    }
-    else {
-      var html = span.html().trim();
-      input.val(html);
-      textDiv.show();
-      editableDiv.hide();
-    }
-    $('#alertbox').hide();
-  }
-  else {
-    $('#errorMessage').html(error);
-    $('#alertbox').show();
-  }
-}
 
 InfoDisplay.prototype.restoreTdElement = function(riderId, status) {
   var divId = 'tr' + riderId + 'Text';
@@ -219,8 +90,8 @@ InfoDisplay.prototype.ridersChanged = function() {
 
 
 // "private" functions that call callbacks after specific events occur
-InfoDisplay.prototype.valueChanged = function(name, value) {
-  if (this.callbacks.valueChanged) { this.callbacks.valueChanged(name, value); }
+InfoDisplay.prototype.valueChanged = function(name, value, mapChanged) {
+  if (this.callbacks.valueChanged) { this.callbacks.valueChanged(name, value, mapChanged); }
   else { console.log("Warning. valueChanged callback undefined"); }
 }
 
