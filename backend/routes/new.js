@@ -54,7 +54,6 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
       let originCoor = data[0];
       let destinationCoor = data[1];
       let stopsCoor = data.splice(2);
-
       var newRoute;
       try {
         newRoute = Route({
