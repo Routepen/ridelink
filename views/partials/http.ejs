@@ -57,6 +57,22 @@ http.prototype.addRider = function(userId, pickUpAddress, dropOffAddress, baggag
   });
 }
 
+http.prototype.searchAddRider = function(routeId, userId, pickUpAddress, dropOffAddress, baggage, callback) {
+  var data = {
+    routeId: routeId,
+    pickUpAddress: pickUpAddress,
+    dropOffAddress: dropOffAddress,
+    baggage: baggage
+  };
+
+  console.log("sending", data);
+
+  var me = this;
+  $.post("/route/searchAddRider", data, (data, text) => {
+    callback();
+  });
+}
+
 http.prototype.removeRider = function(riderId, routeData, callback) {
   var post = {
     userId: riderId,
