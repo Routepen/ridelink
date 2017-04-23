@@ -16,6 +16,8 @@
     <link href="/css/bootstrap.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
     <!--<link href="/css/new_landing.css" rel="stylesheet"> -->
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -151,7 +153,15 @@
     console.log(s.value);
     setUpTable(s.value);
   }
+
+  function onMapsReady() {
+    NavBarAutocompleteHandler();
+  }
+
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=onMapsReady"
+        async defer></script>
 
 </body>
 </html>
