@@ -1,6 +1,5 @@
-module.exports = function(app) {
+module.exports = function(app, mail) {
   const EmailSubscribe = require('../../models/EmailSubscribe');
-  const mail = require("../../mail");
 
   app.post('/emailsubscribe', function(req,res){
   	var subscriber = EmailSubscribe({

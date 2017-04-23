@@ -7,6 +7,7 @@ const session = require('express-session');
 const User = require('./models/User');
 const Route = require('./models/Route');
 const _ = require("lodash");
+const mail = require("./mail");
 const app = express();
 const GoogleMapsAPI = require('googlemaps');
 const async = require('async');
