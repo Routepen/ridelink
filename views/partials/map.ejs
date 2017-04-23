@@ -88,6 +88,8 @@ mapManager.prototype.drawMap = function(callback) {
       return poly;
   }
 
+  if (!routeData.origin || !routeData.destination) { return; }
+
   this.directionsService.route({
     origin: routeData.origin,
     destination:  routeData.destination,
