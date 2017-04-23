@@ -1,6 +1,6 @@
 var _ = require("lodash");
 
-module.exports = function(app, Route, User, mail, gmAPI) {
+module.exports = function(app, Route, User, gmAPI) {
 
   require("./add_rider")(app, Route, User, mail);
 
@@ -22,7 +22,7 @@ module.exports = function(app, Route, User, mail, gmAPI) {
 
   require("./search_add_rider")(app, Route, User, mail);
 
-  require("./mail")(app, mail);
+  require("./mail")(app);
 
   require("./search")(app, Route, User, gmAPI);
 
