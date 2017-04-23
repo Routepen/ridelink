@@ -58,6 +58,9 @@ module.exports = function(app, Route) {
   	}
 
   	var id = req.query.id;
+    if(!id){
+      return res.redirect('/');
+    }
   	if (id.length != 24) {
   		Route.findOne({'shortId': id}).populate('driver').populate('riders').populate('confirmedRiders').exec(handleRequest);
   	}
