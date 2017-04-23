@@ -7,11 +7,9 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const User = require('./models/User');
 const Route = require('./models/Route');
-const util = require('util');
 const _ = require("lodash");
 const app = express();
 const GoogleMapsAPI = require('googlemaps');
-const geocode = require('./geocode');
 const async = require('async');
 
 const auth = require("./auth");
@@ -78,7 +76,7 @@ app.get('/', function (req, res) {
 });
 
 
-require("./backend/routes/routes")(app, Route, User, mail, geocode, gmAPI);
+require("./backend/routes/routes")(app, Route, User, mail, gmAPI);
 
 
 app.get('/profile', function(req, res){
