@@ -30,6 +30,11 @@ mapManager.prototype.drawMap = function(callback) {
       location: routeData.dropOffs[routeData.confirmedRiders[i]._id],
       stopover: true,
     });
+
+    waypoints.push({
+      location: routeData.pickUps[routeData.confirmedRiders[i]._id],
+      stopover: true,
+    });
   }
 
   routeData.stops.forEach(function(stop) {
@@ -122,18 +127,26 @@ mapManager.prototype.setMarkers = function(map) {
 
   var me = this;
   allRiders.forEach(function(rider) {
-    me.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(results, status) {
-      contentString = '<div>Facebook: <a href="' + rider.facebook.link + '">' + rider.facebook.name + '</a></div>';
+    var addMarker = function(results, status) {
+      var content = $('<div></div>');
+      content.append($('<div>Facebook: <a href="' + rider.facebook.link + '">' + rider.facebook.name + '</a></div>'));
 
       <% if (isDriver && view != "rider") { %>
         if (!rider.confirmed && routeData.confirmedRiders.length < routeData.seats) {
-          contentString += '<button class="btn btn-success btn-xs" onclick="javascript:confirmRider(\'' + rider._id + '\', this)">Confirm</button>'
+          var button = $('<button class="btn btn-success btn-xs">Confirm</button>')
+
+          var me = this;
+          button.click(function() {
+            me.confirmRiderClicked(rider._id);
+          });
+          content.append(button);
         }
       <% } %>
 
 
+      console.log("content", content[0]);
       var infowindow = new google.maps.InfoWindow({
-        content: contentString
+        content: content[0]
       });
 
       var riderId = rider._id;
@@ -170,7 +183,14 @@ mapManager.prototype.setMarkers = function(map) {
         }
       <% } %>
 
+    };
+    me.geocoder.geocode( { 'address': routeData.dropOffs[rider._id] }, function(result, status) {
+      addMarker.call(me, result, status);
     });
+
+    // me.geocoder.geocode( { 'address': routeData.pickUps[rider._id] }, function(result, status) {
+    //   addMarker.call(me, result, status);
+    // });
   });
 }
 
@@ -257,6 +277,12 @@ mapManager.prototype.changeRoute = function(location) {
   });
 }
 
+mapManager.prototype.closeDisplay = function(riderId) {
+  if (this.infoWindows[riderId]) {
+    this.infoWindows[riderId].close();
+  }
+}
+
 mapManager.prototype.setupPlaceChangedListener = function(autocomplete, onChanged) {
 
   autocomplete.bindTo('bounds', this.map);
@@ -282,9 +308,9 @@ mapManager.prototype.userClicked = function(riderId) {
 }
 
 
-mapManager.prototype.rideRequestClicked = function(address) {
-  if (this.callbacks.onRideRequestClicked) { this.callbacks.onRideRequestClicked(address); }
-  else { console.log("Warning. onRideRequestClicked callback undefined"); }
+mapManager.prototype.confirmRiderClicked = function(riderId) {
+  if (this.callbacks.confirmRiderClicked) { this.callbacks.confirmRiderClicked(riderId); }
+  else { console.log("Warning. confirmRiderClicked callback undefined"); }
 }
 
 mapManager.prototype.infoWindowClosed = function() {

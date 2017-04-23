@@ -13,12 +13,16 @@ function heading(user, userStatus, routeData) {
 heading.prototype.setUpHeading = function() {
   if (!this.userStatus.isDriver || this.userStatus.view == "rider") {
 
-    this.dropOff = new DropOff(this.routeData.dropOffs[this.user._id]);
+    this.dropOff = new DropOff(this.routeData.dropOffs[this.user._id], this.userStatus);
     this.dropOff.show();
 
     var me = this;
     this.dropOff.addListener('dropOffInputted', function(autocomplete) {
       me.dropOffInputted(autocomplete);
+    });
+
+    this.dropOff.addListener('requestRideButtonClicked', function(pickUpAutocomplete, dropOffAutocomplete) {
+      me.requestRideButtonClicked(pickUpAutocomplete, dropOffAutocomplete);
     });
 
     this.dropOff.addListener('cancelRiderRequest', function() {
@@ -60,6 +64,13 @@ heading.prototype.riderLocationChanged = function() {
 heading.prototype.dropOffInputted = function(autocomplete) {
   if (this.callbacks.dropOffInputted) { this.callbacks.dropOffInputted(autocomplete); }
   else { console.log("Warning. dropOffInputted callback undefined"); }
+}
+
+heading.prototype.requestRideButtonClicked = function(pickUpAutocomplete, dropOffAutocomplete) {
+  if (this.callbacks.requestRideButtonClicked) {
+    this.callbacks.requestRideButtonClicked(pickUpAutocomplete, dropOffAutocomplete);
+  }
+  else { console.log("Warning. requestRideButtonClicked callback undefined"); }
 }
 
 heading.prototype.cancelRiderRequest = function() {

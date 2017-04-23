@@ -204,15 +204,30 @@ Use javascript to input into textarea
             <div id="dropOffContainer" style="display:none">
               <div id="dropOffTextEditable" style="display:none">
                 <form action="javascript:return false">
-                  <span> <i class="material-icons">place</i> </span> <input id="pac-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter dropoff address..." value="<%=location %>" autofocus>
-                  <input type="hidden" name="routeId" value="<%= routeId %>">
+                  <span> <i class="material-icons">adjust</i> </span> <input id="pac-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter pickup address..." value="<%=location %>" autofocus>
                   <button id="requestRideButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
                     <i class="glyphicon glyphicon-ok"></i>
                   </button>
                   <button id="requestRideButtonCancel" type="button" class="btn btn-default btn-sm editable-cancel">
                     <i class="glyphicon glyphicon-remove"></i>
                   </button>
+
+                  <br/>
+
+                  <span> <i class="material-icons">place</i> </span> <input id="dropoff-input" style="width:60%;" name="address" class="controls" type="text" placeholder="Enter dropoff address..." value="<%=location %>">
+                  <button id="requestRideButtonConfirmDropoff" type="button" class="btn btn-primary btn-sm editable-submit">
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </button>
+                  <button id="requestRideButtonCancelDropoff" type="button" class="btn btn-default btn-sm editable-cancel">
+                    <i class="glyphicon glyphicon-remove"></i>
+                  </button>
+
+                  <input type="hidden" name="routeId" value="<%= routeId %>">
                   <br><br>
+
+                  <button id="requestRideButton" class="btn btn-success">Request Ride</button>
+
+
                 </form>
               </div>
               <div id="dropOffText" style="display:none">

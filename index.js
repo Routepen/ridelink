@@ -21,10 +21,8 @@ const payment = require("./payments");
 
 
 mongoose.Promise = require('bluebird');
-var mongo_url = 'mongodb://127.0.0.1:27017/ridelink';
-if(process.env.NODE_ENV == "production") {
-  mongo_url = process.env.MONGODB_URI;
-}
+
+var mongo_url = 'mongodb://127.0.0.1:27017/ridelink' || process.env.MONGODB_URI;
 console.log(mongo_url);
   mongoose.connect(mongo_url,  {
   server: {

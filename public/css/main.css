@@ -202,7 +202,7 @@ nav.navbar-no-landing a.btn.newroute:active {
     border-color: #4d90fe;
 }
 
-#pac-input {
+#pac-input, #dropoff-input {
     background-color: #fff;
     font-family: Roboto;
     font-size: 15px;
