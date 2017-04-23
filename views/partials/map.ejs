@@ -131,11 +131,11 @@ mapManager.prototype.setMarkers = function(map) {
       var content = $('<div></div>');
       content.append($('<div>Facebook: <a href="' + rider.facebook.link + '">' + rider.facebook.name + '</a></div>'));
 
+      var me = this;
       <% if (isDriver && view != "rider") { %>
         if (!rider.confirmed && routeData.confirmedRiders.length < routeData.seats) {
           var button = $('<button class="btn btn-success btn-xs">Confirm</button>')
 
-          var me = this;
           button.click(function() {
             me.confirmRiderClicked(rider._id);
           });

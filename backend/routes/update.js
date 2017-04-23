@@ -1,4 +1,5 @@
 const Promise = require("bluebird");
+const _ = require("lodash");
 
 module.exports = function(app, Route, User, mail) {
   app.post('/route/update', function(req, res) {
