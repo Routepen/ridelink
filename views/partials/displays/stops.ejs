@@ -124,6 +124,16 @@ Stops.prototype.stopChanged = function(i) {
 }
 
 
+Stops.prototype.getStops = function() {
+  var strings = this.stopLocations.map(function(stop) {
+    return stop.find('span').html();
+  }).filter(function(stop) {
+    return stop;
+  });
+
+  return strings;
+}
+
 // "private" functions that call callbacks after specific events occur
 Stops.prototype.stopsChanged = function(stops) {
   var strings = stops.map(function(stop) {

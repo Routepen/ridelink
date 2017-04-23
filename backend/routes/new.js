@@ -125,7 +125,10 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
   		routeId: false,
   		routeData: false,
   		url: req.url,
-      	creatingRoute: true
+      creatingRoute: true,
+      isDriver: false,
+      view: "",
+      action: ""
   	};
 
 	res.render('new_route', data);

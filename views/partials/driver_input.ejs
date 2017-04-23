@@ -37,7 +37,7 @@
                            value="UCSB, Santa Barbara, CA, United States">
                 </div>
                 <div id="stops"></div>
-                <button class="btn" style="width:200px; margin-left: 46px; background-color: white; color: #0c84e4" onclick="addStop(); return false;">
+                <button id="addStopButton" class="btn" style="width:200px; margin-left: 46px; background-color: white; color: #0c84e4">
                   Add Stop
                 </button>
                 <div>
@@ -91,8 +91,20 @@
 <script type="text/javascript">
 
     var mapInputsCorrect = false;
+    var originInput = document.getElementById('origin-input');
+    var destinationInput = document.getElementById('destination-input');
 
-    var mapHandler;
+    var routeData = {
+      confirmedRiders: [],
+      stops: [],
+      riders: [],
+      origin: originInput.value
+    };
+
+    <% include ./map %>
+    <% include ./displays/stops %>
+
+    var mapHandler, stopsManager;
     function initMap() {
       NavBarAutocompleteHandler();
 
@@ -102,98 +114,32 @@
             zoom: 13
         });
 
-        mapHandler = new AutocompleteDirectionsHandler(map);
-    }
+        mapHandler = new mapManager(map, routeData);
+        stopsManager = new Stops(routeData.stops, mapHandler);
+        stopsManager.setUpStops();
 
-    function AutocompleteDirectionsHandler(map) {
-        this.map = map;
-        this.originPlaceId = null;
-        this.destinationPlaceId = null;
-        this.travelMode = 'DRIVING';
-        var originInput = document.getElementById('origin-input');
-        var destinationInput = document.getElementById('destination-input');
-        this.directionsService = new google.maps.DirectionsService;
-        this.directionsDisplay = new google.maps.DirectionsRenderer;
-        this.directionsDisplay.setMap(map);
-
-        var originAutocomplete = new google.maps.places.Autocomplete(
-                originInput, {placeIdOnly: true});
-        var destinationAutocomplete = new google.maps.places.Autocomplete(
-                destinationInput, {placeIdOnly: true});
-
-
-        this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
-        this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
-
-        /*this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
-    */
-    }
-
-
-    AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function(autocomplete, mode) {
-        var me = this;
-        autocomplete.bindTo('bounds', this.map);
-        autocomplete.addListener('place_changed', function() {
-            var place = autocomplete.getPlace();
-            if (!place.place_id) {
-                window.alert("Please select an option from the dropdown list.");
-                return;
-            }
-            if (mode === 'ORIG') {
-                me.originPlaceId = place.place_id;
-            } else if (mode == "DEST"){
-                me.destinationPlaceId = place.place_id;
-            }
-            me.route();
+        stopsManager.addListener('valueChanged', function(newStops) {
+          routeData.stops = newStops;
+          mapHandler.drawMap();
         });
 
-    };
+        var originAutocomplete = new google.maps.places.Autocomplete(originInput, {placeIdOnly: true});
+        var destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput, {placeIdOnly: true});
 
-    AutocompleteDirectionsHandler.prototype.route = function() {
-        if (!this.destinationPlaceId) {
-            return;
-        }
-
-        var me = this;
-        var origin;
-        if (!this.originPlaceId) {
-          origin = $('#origin-input').val();
-        }
-        else {
-          origin = {'placeId': this.originPlaceId};
-        }
-
-        var waypoints = [];
-        for (key in stopAutoCompletes) {
-          var place = stopAutoCompletes[key].getPlace();
-          if (!place) {
-            alert("Couldn't find " + $('#stop' + key + ">input").val());
-            return;
-          }
-          waypoints.push({
-            location: stopAutoCompletes[key].getPlace().name,
-            stopover: true,
-          });
-        }
-
-        this.directionsService.route({
-            origin: origin,
-            destination: {'placeId': this.destinationPlaceId},
-            travelMode: this.travelMode,
-            waypoints: waypoints,
-            optimizeWaypoints: true
-        }, function(response, status) {
-            if (status === 'OK') {
-                mapInputsCorrect = true;
-                me.directionsDisplay.setDirections(response);
-            } else {
-                window.alert('Directions request failed due to ' + status);
-            }
+        originAutocomplete.addListener("place_changed", function() {
+          routeData.origin = originAutocomplete.getPlace().name;
+          mapHandler.drawMap(function () { mapInputsCorrect = true; });
         });
-    };
 
+        destinationAutocomplete.addListener("place_changed", function() {
+          routeData.destination = destinationAutocomplete.getPlace().name;
+          mapHandler.drawMap(function () { mapInputsCorrect = true; });
+        });
+
+        mapHandler.bindAutocompleteToMap(originAutocomplete);
+        mapHandler.bindAutocompleteToMap(destinationAutocomplete);
+
+    }
 
     $(function () {
         $("#date").datepicker();
@@ -270,13 +216,8 @@
       var email = document.getElementById("confirmed_email_input");
       var origin = document.getElementById("origin-input");
       var destination = document.getElementById("destination-input");
-      var stops = $("#stops");
-
-      var children = stops.children();
-      var waypoints = [];
-      for (var i = 0; i < children.length; i++) {
-          waypoints.push($(children[i]).find('input').val());
-      }
+      var stops = stopsManager.getStops();
+      var distance = mapHandler.getDistance();
 
         /*
         var test1 = $("#origin-input").geocomplete();
@@ -293,7 +234,8 @@
           time: time.value,
           origin: origin.value,
           destination: destination.value,
-          stops: waypoints,
+          stops: stops,
+          distance: distance
       };
 
       var confirmedEmail = email.value;
@@ -314,40 +256,5 @@
       .error(function() { alert("Request failed. Try again later"); });
     }
 
-    var stopAutoCompletes = {};
-    function removeStop(num) {
-      $('#stop' + num).remove();
-      delete stopAutoCompletes[num];
-
-      mapHandler.route();
-    }
-
-    var count = 0;
-    function addStop() {
-      var stops = $('#stops');
-      var id = "stop" + count;
-      var onclick = "removeStop(" + count + ")";
-
-      var div = $('<div></div>');
-      var cancel = '<i class="material-icons clickable" style="padding-left:10px" onclick="' + onclick + '">remove_circle</i>';
-      var stop = $('<input id="origin-input" name="origin" class="stop-input controls"' +
-             'type="text" placeholder="Enter a stop..." onPaste=""' +
-             'onkeydown="if (event.keyCode == 13) { return false;}"' +
-             ' style="margin-left: 12px; padding-left: 12px">');
-
-      div.attr('id', id);
-
-      div.append(cancel);
-      div.append(stop);
-
-      stops.append(div);
-
-      stopAutoCompletes[count] = new google.maps.places.Autocomplete(stop[0], {placeIdOnly: true});
-      mapHandler.setupPlaceChangedListener(stopAutoCompletes[count]);
-
-      stop.focus();
-      count++;
-
-    }
 
 </script>
