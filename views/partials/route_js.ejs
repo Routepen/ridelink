@@ -82,7 +82,7 @@
     var pickUpAddress, dropOffAddress;
     headingManager.addListener('requestRideButtonClicked', function(pickUpAutocomplete, dropOffAutocomplete) {
       pickUpAddress = pickUpAutocomplete.getPlace().name;
-      dropOffAddress = pickUpAutocomplete.getPlace().name;
+      dropOffAddress = dropOffAutocomplete.getPlace().name;
       console.log("clicked", pickUpAddress, dropOffAddress)
       joinRideModal.show();
     });
@@ -121,6 +121,17 @@
         routeDataUpdater.confirmRider(riderId, routeData);
         tableManager.setUpTable();
         mapHandler.drawMap();
+        mapHandler.closeDisplay(riderId);
+        infoDisplay.ridersChanged();
+      });
+    });
+
+    mapHandler.addListener('confirmRiderClicked', function(riderId) {
+      httpManager.confirmRider(riderId, routeData, function() {
+        routeDataUpdater.confirmRider(riderId, routeData);
+        tableManager.setUpTable();
+        mapHandler.drawMap();
+        mapHandler.closeDisplay(riderId);
         infoDisplay.ridersChanged();
       });
     });

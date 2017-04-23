@@ -51,6 +51,7 @@ module.exports = function(app, Route, User, mail) {
         baggage: req.body.baggage
       };
       route.markModified('dropOffs');
+      route.markModified('pickUps');
       route.markModified('riderStatus');
 
       if (!riderFound) { // rider added
