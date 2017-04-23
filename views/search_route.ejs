@@ -263,7 +263,7 @@
 
         if(!user){
           window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href);
-          user = <%- JSON.stringify(user) %>;
+          //user = <%- JSON.stringify(user) %>;
         }
 
         var address = me.destination;

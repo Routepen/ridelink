@@ -39,7 +39,8 @@ class DriverInput extends Component {
                       stopsUpdated={this.props.stopsUpdated.bind(this)}
                       creatingRoute={true}
                       isDriver={true}
-                      page="new"/>
+                      page="new"
+                      eventEmitter={this.props.eventEmitter}/>
                     <div>
                         <i className="material-icons" style={{paddingLeft: "10px"}}>place</i>
                         <input autoFocus id="destination-input" name="destination" className="controls" type="text"
