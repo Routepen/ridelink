@@ -106,9 +106,4 @@ module.exports = function(app, Route, User, mail) {
 
     });
   });
-
-  	});
-
-  });
-
 }
