@@ -66,11 +66,12 @@
         data[name] = value;
 
         $.post("/route/update", data, function(data, result) {
-          routeData.stopsCoor = data.stopsCoor;
-          routeData.originCoor = data.originCoor;
-          routeData.destinationCoor = data.destinationCoor;
+          if(data.status == "failure"){
+            window.alert(data.message);
+          }
         });
       }
+
 
       if (mapChanged) {
         mapHandler.drawMap(sendData);

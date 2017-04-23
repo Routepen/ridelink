@@ -13,7 +13,10 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
     Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
       if (route.driver._id.toString() != req.user._id.toString()) {
         console.log('hacker', route.driver._id, req.user._id);
-        return res.end("nice try hacker");
+        return res.json({
+          status: "failure",
+          message: "Nice try hacker"
+        });
       }
 
       var updating = req.body.updating;
@@ -21,7 +24,10 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
 
       if (!_.includes(allowedKeys, updating)) {
         console.log("key not allowed");
-        return res.end("failure");
+        return res.json({
+          status: "failure",
+          message: "You specified an unsupported field"
+        });
       }
 
       var allRiders = [];
@@ -68,6 +74,14 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
         }
         route[updating2] = req.body[updating];
 
+        if(updating == "seats" && isNaN(req.body[updating])){
+          console.log("seats provided was not a number.", "Data updated was", req.body[updating]);
+          return res.json({
+            status: "failure",
+            message: "Please input a number"
+          });
+        }
+
         if (updating == "origin" || updating == "destination") {
           updateCoords = new Promise((resolve, reject) => {
             geocode(req.body[updating], gmAPI).then(data => {
@@ -83,14 +97,20 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
         console.log("got distance", req.body.distance);
         route.distance = parseFloat(req.body.distance);
 
-      }
+
 
       updateCoords.then( () => {
         console.log("1", route.stopsCoor);
         route.save(err => {
           console.log("2", route.stopsCoor);
           console.log(err);
-          if (err) { console.log(err); return res.end("failure"); }
+          if (err) { console.log(err);
+            return res.json(
+              {
+                status: "failure",
+                message: "Failed to update"
+              });
+          }
           res.json(
             {
               originCoor: route.originCoor,
@@ -103,6 +123,13 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
       .catch(e => {
         console.log(e);
       });
+    }
+    else {
+      return res.json({
+        status: "failure",
+        message: "You can't enter an empty field"
+      });
+    }
 
     });
   });
