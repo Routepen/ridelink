@@ -1,6 +1,8 @@
 module.exports = function(app, Route, User, mail) {
-/*
+
   app.post('/route/searchAddRider', function(req, res) {
+    console.log(req.user._id, req.body.pickUpAddress, req.body.dropOffAddress, req.body.routeId, req.body.baggage);
+    /*
   	console.log("adding rider");
   	if (!req.user) {
   		return res.end("please log in ");
@@ -98,6 +100,7 @@ module.exports = function(app, Route, User, mail) {
   		});
 
   	});
+    */
   });
-  */
+
 }

@@ -38,6 +38,7 @@
     <link href="/css/search_route.css" rel="stylesheet">
 
 
+    <script type="text/javascript">  <% include ./partials/http %> </script>
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
@@ -55,6 +56,7 @@
 <body style="background-color:#0c84e4; overflow:hidden;">
 
 <% include ./partials/navbar %>
+
 
 <div class="modal fade" id="baggageModal" tabindex="-1" role="dialog" aria-labelledby="baggageModal">
   <div class="modal-dialog" role="document">
@@ -173,7 +175,11 @@
     var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
     var origin = <%- JSON.stringify(origin) %>;
     var destination = <%- JSON.stringify(destination) %>;
-    //var user = <%- JSON.stringify(user) %>;
+    var user = <%- JSON.stringify(user || null) %>;
+    if(user == null){
+      window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href);
+    }
+
     var me = this;
 
     var tbody = document.getElementById('tbody');
@@ -193,7 +199,7 @@
           //var d = new Date(closeRoutes[i].date);
           var onclick = "routeClick('" + (closeRoutes[i].shortId || closeRoutes[i]._id) + "')"
           tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" onclick="' + onclick + '">' +
-            '<td> <input class="myCheckbox" type="checkbox"> </td>' +
+            '<td> <input class="myCheckbox" type="checkbox" value="' + closeRoutes[i]._id + '"> </td>' +
             '<td>' + (i+1) + '</td>' +
             '<td>' + closeRoutes[i].driver.facebook.name + '</td>' +
             '<td>' + closeRoutes[i].origin + '</td>' +
@@ -249,59 +255,22 @@
     }
 
   //Signup Process for batch sending
-    function addOrUpdateRiderHelper(route){
-      return {
-        routeId: route._id,
-        riderOrigin: origin,
-        riderDestination: destination,
-        baggage: $('#sel1').val()
-      };
-    }
     function addOrUpdateRider(){
-        var counter = 0;
-        //TODO fix
-
-        if(!user){
-          window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href);
-          //user = <%- JSON.stringify(user) %>;
-        }
-
-        var address = me.destination;
+        var number = 0;
         $('.myCheckbox').each(function(route){
             if(this.checked){
-                data = addOrUpdateRiderHelper(route);
-                $.post("/route/searchAddrider", data, function(data, text) {
-                    var found = false;
-                    for (var i = 0; i < routeData.riders.length; i++) {
-                      if (routeData.riders[i]._id == userId) {
-                        found = true;
-                        break;
-                      }
-                    }
-                    if (found) {
-                      routeData.dropOffs[userId] = address;
-                    }
-                    else {
-                      routeData.riders.push(user);
-                      routeData.dropOffs = routeData.dropOffs || {};
-                      routeData.dropOffs[userId] = address;
-                    }
-                    routeData.riderStatus = routeData.riderStatus || {};
-                    routeData.riderStatus[userId] = routeData.riderStatus[userId] || {};
-                    routeData.riderStatus[userId]['baggage'] = $('#sel1').val();
-
-                    mapHandler.hideTestMarker();
-                    mapHandler.setMarkers();
-                    setUpTable();
-                    $('#numConfirmedRiders').html(routeData.confirmedRiders.length);
-
-                    $(btn).button('reset');
-                    $('#confirmAddRider').modal('hide');
-              });
-              counter++;
+                http.prototype.searchAddRider(closeRoutes[route.value]._id, user.id, origin, destination, $('#sel1').val());
+                number++;
             }
         });
-        window.alert("Congrats you've successfully signed up for " + counter + " rides"); //TODO change to green bootstrap
+        if(number == 0){
+          //TODO do some action
+          window.alert("please signup for a route");
+        }
+        else{
+          //TODO do some action
+          window.alert("Congrats you've successfully signed up for " + counter + " rides"); //TODO change to green bootstrap
+        }
     }
 
 
