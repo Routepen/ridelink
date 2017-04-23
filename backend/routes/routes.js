@@ -12,7 +12,7 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
 
   require("./rider_paid")(app, Route, mail);
 
-  require("./new")(app, Route, User, mail, geocode);
+  require("./new")(app, Route, User, mail, gmAPI, geocode);
 
   require("./update")(app, Route, User, mail);
 
