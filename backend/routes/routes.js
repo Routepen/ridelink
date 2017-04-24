@@ -26,7 +26,7 @@ module.exports = function(app, Route, User, NotificationRequests, mail, gmAPI, g
 
   require("./search")(app, Route, User, gmAPI, geocode);
 
-  require("./notifications")(app, NotificationRequests, gmAPI, geocode);
+  require("./notifications")(app, NotificationRequests, User, gmAPI, geocode);
 
   app.get('/profile', function(req, res){
   	res.render('profile');

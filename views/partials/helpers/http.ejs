@@ -83,11 +83,12 @@ http.prototype.updateRoute = function(name, value, mapChanged, distance, callbac
   });
 }
 
-http.prototype.requestNotifications = function(origin, destination, until, cb) {
+http.prototype.requestNotifications = function(origin, destination, until, confirmedEmail, cb) {
   var data = {
     until: until,
     origin: origin,
-    destination: destination
+    destination: destination,
+    confirmedEmail: confirmedEmail
   };
 
   console.log("sending", data);
