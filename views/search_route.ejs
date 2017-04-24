@@ -97,7 +97,7 @@
                 <input id="email-notification" class="controls" type="text" placeholder="Email...">
                 <b> until </b>
                 <input id="date-notification" class="controls" type="text" placeholder="Date...">
-                <input type="submit" class="btn btn-success" data-dismiss="modal" value="Submit">
+                <input id="requestNotificationsButton" type="submit" class="btn btn-success" data-dismiss="modal" value="Submit">
             </div>
               <hr>
             <div class="modal-footer">
@@ -250,9 +250,22 @@
     }
 
 
+
+
     function baggageModal(){
         $("#baggageModal").modal('toggle');
     }
+
+    // Sign up process for notifications
+    $('#requestNotificationsButton').click(function() {
+      var origin = "<%= origin %>";
+      var destination = "<%= destination %>";
+      var until = $('#date-notification').val();
+
+      http.prototype.requestNotifications(origin, destination, until, function(result, data) {
+
+      });
+    });
 
   //Signup Process for batch sending
     function addOrUpdateRider(){
@@ -275,9 +288,9 @@
     }
 
 
-    var mapHandler;
+    var mapHandler, navbarManager;
     function initMap() {
-        NavBarAutocompleteHandler();
+        navbarManager = new NavBarAutocompleteHandler(); // Inside of navbar
 
         var map = new google.maps.Map(document.getElementById('map'), {
             mapTypeControl: false,
@@ -286,7 +299,6 @@
         });
 
         mapHandler = new showRoute(map);
-        new AutocompleteHandler(); //Inside of navbar
     }
     var markers = {}, infoWindows = {};
 

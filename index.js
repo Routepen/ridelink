@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const User = require('./models/User');
 const Route = require('./models/Route');
+const NotificationRequests = require('./models/notificationRequests');
 const _ = require("lodash");
 const mail = require("./mail");
 const geocode = require('./geocode');
@@ -64,7 +65,7 @@ app.use(bodyParser.json());
 auth.setUpAuth(app);
 
 // Routes
-require("./backend/routes/routes")(app, Route, User, mail, gmAPI, geocode);
+require("./backend/routes/routes")(app, Route, User, NotificationRequests, mail, gmAPI, geocode);
 
 app.get('/testing2', function(req, res) {
  	var newUser = new User({

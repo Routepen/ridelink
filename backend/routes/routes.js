@@ -1,6 +1,6 @@
 var _ = require("lodash");
 
-module.exports = function(app, Route, User, mail, gmAPI, geocode) {
+module.exports = function(app, Route, User, NotificationRequests, mail, gmAPI, geocode) {
 
   require("./add_rider")(app, Route, User, mail);
 
@@ -25,6 +25,8 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
   require("./mail")(app, mail);
 
   require("./search")(app, Route, User, gmAPI, geocode);
+
+  require("./notifications")(app, NotificationRequests);
 
   app.get('/profile', function(req, res){
   	res.render('profile');

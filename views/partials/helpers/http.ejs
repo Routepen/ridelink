@@ -11,34 +11,8 @@ http.prototype.confirmRider = function(riderId, routeData, callback) {
 
   var me = this;
   $.post("/route/confirmrider", post, function(data, textStatus) {
-    callback();
+    callback(data, textStatus);
   });
-  //   var addedRider;
-  //   for (var i = 0; i < routeData.riders.length; i++) {
-  //     var rider = routeData.riders[i];
-  //     if (rider._id == id) {
-  //       addedRider = rider;
-  //       routeData.riders.splice(i, 1);
-  //       routeData.confirmedRiders.push(rider);
-  //     }
-  //   }
-  //   $("#seatsText>span").html(routeData.seats - routeData.confirmedRiders.length);
-  //   me.ridersChanged();
-  //   if (addedRider) {
-  //     if (addedRider.facebook.gender.toLowerCase() == "male") {
-  //       $('#riderPronounHeShe').html('he');
-  //       $('#riderPronounHisHer').html('his');
-  //       $('#riderPronounHimHer').html('him');
-  //     }
-  //     else {
-  //       $('#riderPronounHeShe').html('she');
-  //       $('#riderPronounHisHer').html('her');
-  //       $('#riderPronounHimHer').html('her');
-  //     }
-  //     $('#addedRider').html(addedRider.facebook.name.split(' ')[0]);
-  //     $('#tellDriverToWait').modal('show');
-  //   }
-  // });
 }
 
 http.prototype.addRider = function(userId, pickUpAddress, dropOffAddress, baggage, callback) {
@@ -107,6 +81,21 @@ http.prototype.updateRoute = function(name, value, mapChanged, distance, callbac
   $.post("/route/update", data, function(data, result) {
     if (callback) { callback(data, result); }
   });
+}
+
+http.prototype.requestNotifications = function(origin, destination, until, cb) {
+  var data = {
+    until: until,
+    origin: origin,
+    destination: destination
+  };
+
+  console.log("sending", data);
+  $.post("/route/requestnotifications", data, function(data, textStatus) {
+    console.log("got", data, textStatus);
+    cb(data, textStatus);
+  });
+
 }
 
 

@@ -104,6 +104,19 @@ function sendMail(options) {
       "<span>Best,</span><br/>"+
       "<span>Routepen Team</span>";
     }
+    if (options.notifyRider.releventRouteAdded) {
+      // TODO add oneclick payment button
+      subject = "A route has been added";
+      text = "Hi " + recipientName + ",\n\n"+
+        "You've now been added to " + driversName + "'s waitlist. We'll send you an email if you get off the waitlist, so sit tight!\n\n"+
+        "Best,\n"+
+        "Routepen Team";
+
+      html = "<span>Hi " + recipientName + ",</span><br/><br/>"+
+        "<span>You've now been added to " + driversName + "'s waitlist. We'll send you an email if you get off the waitlist, so sit tight!</span><br/><br/>"+
+        "<span>Best,</span><br/><br/>"+
+        "<span>Routepen Team</span>";
+    }
     if (options.notifyRider.onWaitlist) {
       // TODO add oneclick payment button
       subject = "You've made it off the waitlist";
