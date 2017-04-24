@@ -1,4 +1,5 @@
 const Promise = require("bluebird");
+const NotificationManager = require("../notifications/notification_manager");
 
 module.exports = function(app, Route, User, mail, gmAPI, geocode) {
 
@@ -95,8 +96,12 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
       newRoute.save(function(err){
         if(err) throw err;
         console.log("Route created!");
+
         User.findById(newRoute.driver, function(err, driver) {
           newRoute.driver = driver;
+
+          NotificationManager.onRouteCreated(newRoute);
+
           if(driver.confirmedEmail != ''){
             mail.sendMail({
               notifyDriver: {

@@ -69,11 +69,12 @@
     var destinationInput = document.getElementById("search-destination");
 
     function NavBarAutocompleteHandler(){
-        var originAutocomplete = new google.maps.places.Autocomplete(
+        this.originAutocomplete = new google.maps.places.Autocomplete(
                 originInput, {placeIdOnly: true});
-        var destinationAutocomplete = new google.maps.places.Autocomplete(
+        this.destinationAutocomplete = new google.maps.places.Autocomplete(
                 destinationInput, {placeIdOnly: true});
     }
+
 
     function validate(){
         if($("#search-origin").val() == '' || $("#search-destination").val() == ''){
