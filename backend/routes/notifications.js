@@ -1,27 +1,23 @@
-
-module.exports = function(app, NotificationRequests, gmAPI, geocode) {
+module.exports = function(app, User, NotificationRequests, gmAPI, geocode) {
   app.post("/route/requestnotifications", function(req, res) {
     if (!req.user) {
       return res.status(300).end("not logged in");
     }
 
-    NotificationRequests.findOne({user: req.user._id}, function(err, request) {
+    User.findOne({_id: req.user._id}).populate("requests").exec(function(err, user) {
       if (err) { console.log(err); return res.status(500).end(""); }
 
-      if (!request) {
-        request = new NotificationRequests({
-          user: req.user,
-          requests: []
-        });
+      if (!user.requests) {
+        user.requests = [];
       }
 
-      if (request.requests.length >= 5) {
+      if (user.requests.length >= 5) {
         return res.end("too many requests");
       }
 
-      for (var i = 0; i < request.requests.length; i++) {
-        if (req.body.origin == request.requests[i].origin &&
-            req.body.destination == request.requests[i].destination) {
+      for (var i = 0; i < user.requests.length; i++) {
+        if (req.body.origin == user.requests[i].origin &&
+            req.body.destination == user.requests[i].destination) {
               return res.end("notifications request already exists");
             }
       }
@@ -44,21 +40,25 @@ module.exports = function(app, NotificationRequests, gmAPI, geocode) {
           new Date(req.body["dateRange[]"][1])
         ];
 
-        var notificationRequest = {
+        var notificationRequest = new NotificationRequests({
           origin: req.body.origin,
           destination: req.body.destination,
           originCoor: data[0],
           destinationCoor: data[1],
           dateRangeStart: dateRange[0],
-          dateRangeEnd: dateRange[1]
-        };
+          dateRangeEnd: dateRange[1],
+          user: req.user
+        });
 
-        request.requests.push(notificationRequest);
-
-        request.save(function(err) {
+        notificationRequest.save(function(err) {
           if (err) { console.log(err); return res.status(500).end(""); }
 
-          res.end("success");
+          user.requests.push(notificationRequest);
+          user.save(function(err) {
+            if (err) { console.log(err); return res.status(500).end(""); }
+
+            res.end("success");
+          });
         });
       })
       .catch(function(err) {
