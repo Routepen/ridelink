@@ -403,7 +403,7 @@ footer a {
 }
 
 .riderElement-inverse>td, .riderElement-inverse>th {
-    color: white;
+    color: black;
 }
 
 .riderElement-inverse:hover {
