@@ -1,6 +1,3 @@
-/**
- * Created by Victor on 1/23/2017.
- */
 var request = require('request');
 
 // DISTANCE IN METERS WITHOUT WAYPOINTS
