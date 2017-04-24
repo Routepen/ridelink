@@ -1,36 +1,36 @@
-/**
- * Created by Victor on 2/27/2017.
- */
-var configAuth = require('./auth');
 var User = require('../models/User');
 
 passport.use(new FacebookStrategy({
-        clientID: configAuth.facebookAuth.clientID,
-        clientSecret: configAuth.facebookAuth.clientSecret,
-        callbackURL: configAuth.facebookAuth.callbackURL,
-        profileFields: configAuth.facebookAuth.profileFields
+        clientID: process.env.FB_AUTH_CLIENT_ID,
+        clientSecret: process.env.FB_AUTH_CLIENT_SECRET,
+        callbackURL: process.env.FB_AUTH_CALLBACK_URL,
+        profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link', 'token_for_business']
     },
     function(accessToken, refreshToken, profile, cb) {
         process.nextTick(function(){
             User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-                if (err)
-                    return done(err);
+                if (err) { return cb(err); }
                 if (user) {
-                    return done(null, user);
+                    return cb(null, user);
                 } else {
-                    var newUser = new User();
-                    newUser.facebook.id = profile.id;
-                    newUser.facebook.token = accessToken;
-                    newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-                    newUser.facebook.email = (profile.emails[0].value || '').toLowerCase();
-                    newUser.facebook.photos = profile.picture;
-                    newUser.facebook.gender = profile.gender;
-                    newUser.facebook.link = profile.link;
+                    var newUser = new User({
+                      facebook: {
+                        id: profile.id,
+                        token: accessToken,
+                        name: profile.name.givenName + ' ' + profile.name.familyName,
+                        photos: (profile.emails[0].value || '').toLowerCase(),
+                        picture: profile.picture,
+                        gender: profile.gender,
+                        link: profile.link
+                      }
+                    });
 
                     newUser.save(function(err) {
-                        if (err)
-                            throw err;
-                        return done(null, newUser);
+                        if (err){
+                          console.log(err);
+                          // TODO Better error handling
+                        }
+                        return cb(null, newUser);
                     });
                 }
                 return cb(err, user);
