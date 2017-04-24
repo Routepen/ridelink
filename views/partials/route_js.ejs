@@ -1,11 +1,11 @@
 <script type="text/javascript">
 
-  <% include ./table %>
-  <% include ./map %>
-  <% include ./info_display %>
-  <% include ./clock %>
-  <% include ./http %>
-  <% include ./heading %>
+  <% include ./displays/table %>
+  <% include ./displays/map %>
+  <% include ./displays/info_display %>
+  <% include ./displays/clock %>
+  <% include ./helpers/http %>
+  <% include ./displays/heading %>
   <% include ./modals/join_ride %>
   <% include ./modals/facebook %>
   <% include ./helpers/route_data_updater %>
@@ -43,7 +43,7 @@
     var joinRideModal = new JoinRide();
     var facebookModal = new Facebook();
 
-    var infoDisplay = new InfoDisplay(routeData, mapHandler);
+    var infoDisplay = new InfoDisplay(routeData, userStatus, mapHandler);
 
     mapHandler.addListener('onInfoWindowClosed', function()  {
       tableManager.unHighlightTable();
@@ -58,20 +58,18 @@
       console.log(name, value);
 
       var sendData = function() {
-        var data = {
-          routeId: routeData._id,
-          updating: name,
-          distance: mapHandler.getDistance()
-        }
-        data[name] = value;
-
-        $.post("/route/update", data, function(data, result) {
+        httpManager.updateRoute(name, value, mapChanged, mapHandler.getDistance(), function(data, result) {
           if(data.status == "failure"){
             window.alert(data.message);
           }
+          else {
+            routeData.stopsCoor = data.stopsCoor;
+            routeData.originCoor = data.originCoor;
+            routeData.destinationCoor = data.destinationCoor;
+            checkSeatsLeft();
+          }
         });
       }
-
 
       if (mapChanged) {
         mapHandler.drawMap(sendData);

@@ -1,5 +1,5 @@
 /**
- * Created by Victor on 3/2/2017.
+ *  on 3/2/2017.
  */
 function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {

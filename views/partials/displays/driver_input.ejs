@@ -102,7 +102,7 @@
     };
 
     <% include ./map %>
-    <% include ./displays/stops %>
+    <% include ./stops %>
 
     var mapHandler, stopsManager;
     function initMap() {
@@ -218,13 +218,6 @@
       var destination = document.getElementById("destination-input");
       var stops = stopsManager.getStops();
       var distance = mapHandler.getDistance();
-
-        /*
-        var test1 = $("#origin-input").geocomplete();
-        var test2 = $("#destination-input").geocomplete();
-        console.log(test1, test2);
-
-        */
 
       var data = {
           seats: seats.value,

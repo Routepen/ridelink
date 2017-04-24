@@ -96,6 +96,19 @@ http.prototype.cancelRiderRequest = function(routeData, callback) {
   });
 }
 
+http.prototype.updateRoute = function(name, value, mapChanged, distance, callback) {
+  var data = {
+    routeId: this.routeId,
+    updating: name,
+    distance: distance
+  }
+  data[name] = value;
+
+  $.post("/route/update", data, function(data, result) {
+    if (callback) { callback(data, result); }
+  });
+}
+
 
 // "private" functions that call callbacks after specific events occur
 http.prototype.ridersChanged = function() {

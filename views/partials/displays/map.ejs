@@ -12,6 +12,8 @@ function mapManager(map, routeData) {
   this.infoWindows = {};
   this.routeData = routeData;
 
+  this.distance = routeData.distance;
+
   this.callbacks = {};
 
   var me = this;
@@ -210,56 +212,10 @@ mapManager.prototype.removeMarker = function(id) {
   }
 }
 
-mapManager.prototype.rideRequested = function(autocomplete) {
-  <% if (user) { %>
-    console.log("a", autocomplete);
-    var place = autocomplete.getPlace();
-
-    var address;
-    if (place && place.place_id) {
-      address = place.name;
-    }
-    else {
-      address = $('#pac-input').val();
-    }
-
-    if (address == "") {
-        window.alert("Please select an option from the dropdown list.");
-        return;
-    }
-
-    if (this.testMarker) {
-      this.testMarker.setMap(null);
-      this.testInfoWindow.close();
-    }
-
-    var me = this;
-    this.geocoder.geocode( { 'address': address }, function(results, status) {
-      if (results.length == 0) {
-        window.alert("Please use autocomplete when choosing a location.");
-        return;
-      }
-
-      var content = $('<button class="btn btn-success btn-xs">Requst Ride</button>');
-
-      content.click(function() {
-        me.rideRequestClicked(address);
-      })
-
-      me.testInfoWindow = new google.maps.InfoWindow({
-        content: content[0]
-      });
-
-      me.testMarker = new google.maps.Marker({
-        map: me.map,
-        position: results[0].geometry.location
-      });
-      me.testInfoWindow.open(me.map, me.testMarker);
-    });
-
-  <% } else { %>
-    window.location.replace("/auth/facebook?redirect=" + encodeURIComponent(window.location.href));
-  <% } %>
+mapManager.prototype.closeDisplay = function(riderId) {
+  if (this.infoWindows[riderId]) {
+    this.infoWindows[riderId].close();
+  }
 }
 
 mapManager.prototype.changeRoute = function(location) {
@@ -282,19 +238,6 @@ mapManager.prototype.changeRoute = function(location) {
     restoreMapText(location);
   });
 }
-
-mapManager.prototype.closeDisplay = function(riderId) {
-  if (this.infoWindows[riderId]) {
-    this.infoWindows[riderId].close();
-  }
-}
-
-mapManager.prototype.setupPlaceChangedListener = function(autocomplete, onChanged) {
-
-  autocomplete.bindTo('bounds', this.map);
-  autocomplete.addListener('place_changed', onChanged);
-
-};
 
 mapManager.prototype.bindAutocompleteToMap = function(autocomplete) {
   autocomplete.bindTo('bounds', this.map);

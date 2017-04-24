@@ -1,6 +1,3 @@
-/**
- * Created by Victor on 1/23/2017.
- */
 var GoogleMapsAPI = require('googlemaps');
 var polyline = require('@mapbox/polyline');
 var jsonfile = require('jsonfile');

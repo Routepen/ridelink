@@ -3,7 +3,6 @@ const _ = require("lodash");
 
 module.exports = function(app, Route, User, mail, gmAPI, geocode) {
   app.post('/route/update', function(req, res) {
-    console.log('updating');
     if (!req.user) {
       // TODO Allow user to be informed their session has timed out
       return res.redirect("/youveBeenLoggedOut");
@@ -59,12 +58,10 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
             let stops = req.body["stops[]"];
             if (typeof(stops) == "string") { stops = [stops]; }
 
-            console.log("stops", stops);
             for (var i = 0; i < stops.length; i++) {
               promises.push(geocode(stops[i], gmAPI));
             }
             Promise.all(promises).then(data => {
-              console.log(data);
               route.stopsCoor = data;
               resolve();
             });
@@ -100,10 +97,7 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
 
 
       updateCoords.then( () => {
-        console.log("1", route.stopsCoor);
         route.save(err => {
-          console.log("2", route.stopsCoor);
-          console.log(err);
           if (err) { console.log(err);
             return res.json(
               {
