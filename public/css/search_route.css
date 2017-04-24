@@ -3,7 +3,7 @@ thead, tbody {
 }
 tbody{
   overflow-y: scroll;
-  height: 200px; 
+  height: 200px;
   overflow-x: hidden;
 }
 /*
@@ -21,6 +21,10 @@ tbody{
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+#email-notification{
+  width: 80%;
 }
 
 /*
