@@ -53,7 +53,7 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body style="background-color:#0c84e4; overflow:hidden;">
+<body style="overflow:hidden;">
 
 <% include ./partials/displays/navbar %>
 
@@ -112,15 +112,15 @@
     <div class="col-md-7">
         <div class="row" style="padding-top: 10px">
             <div class="row origin-destination-display">
-                 <span style="font-size:20px; color: white">From: <%= origin %></span>
+                 <span style="font-size:20px; color: black">From: <%= origin %></span>
              </div>
              <div class="row origin-destination-display">
-                  <span style="font-size:20px; color: white">To:  <%= destination %></span>
+                  <span style="font-size:20px; color: black">To:  <%= destination %></span>
              </div>
          </div>
           <div class"row">
             <div class="panels">
-                <div class="panel-heading">Receive instant email notifications when a new shared ride is relevant to you! Click Below</div>
+                <div class="panel-heading">Don't see a ride you like? Receive instant email notifications for future ride posts! Click Below</div>
                 <div class="panel-body">
                     <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
                 </div>
@@ -133,11 +133,11 @@
                </div>
            </div>-->
 
-          <div class="row">
-              <button type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" onclick="checkall();"> Check all </button> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
+          <div class="row groupButtons">
+              <input type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" value="CHECK ALL" onclick="checkall();"> </input> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
               <button type="button" class="btn btn-success" style="float: right; margin-right:20px" onclick = "baggageModal();"> Signup </button>
           </div>
-          <div>
+          <div class="responsiveTable">
               <table class="table">
                   <thead>
                     <tr class="riderElement-inverse" >
@@ -200,7 +200,7 @@
           //var d = new Date(closeRoutes[i].date);
           var onclick = "routeClick('" + (closeRoutes[i].shortId || closeRoutes[i]._id) + "')"
           tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" data-value="' + closeRoutes[i]._id + '" onclick="' + onclick + '">' +
-            '<td> <input class="myCheckbox" type="checkbox"> </td>' +
+            '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
             '<td>' + (i+1) + '</td>' +
             '<td>' + closeRoutes[i].driver.facebook.name + '</td>' +
             '<td>' + closeRoutes[i].origin + '</td>' +
@@ -245,17 +245,42 @@
         $("#notificationsModal").modal('toggle');
     }
 
+    var checkAll = false;
+    var elem = document.getElementById("checkAll");
+
     function checkall(){
-      $('.myCheckbox').each(function(event){
-        this.checked = true;
-      });
+      if(!checkAll){
+        $('.myCheckbox').each(function(event){
+          this.checked = true;
+        });
+        checkAll = true;
+        elem.value = "UNCHECK ALL";
+      }
+      else{
+        $('.myCheckbox').each(function(event){
+          this.checked = false;
+        });
+        checkAll = false;
+        elem.value = "CHECK ALL";
+      }
     }
 
 
 
 
     function baggageModal(){
-        $("#baggageModal").modal('toggle');
+        var number = 0;
+        $('.myCheckbox').each(function(route){
+            if(this.checked){
+                number++;
+            }
+        });
+        if(number > 0){
+          $("#baggageModal").modal('toggle');
+        }
+        else{
+          window.alert("Check the rides you're interested in signing up");
+        }
     }
 
     // Sign up process for notifications
@@ -271,6 +296,8 @@
 
   //Signup Process for batch sending
     function addOrUpdateRider(){
+      //TODO don't allow users to signup for the routes again.
+      //TODO don't allow users to signup for their own routes
         var number = 0;
         $('.myCheckbox').each(function(route){
           console.log(route);
@@ -279,13 +306,23 @@
                 number++;
             }
         });
+        $("#baggageModal").modal('toggle');
         if(number == 0){
-          //TODO do some action
-          window.alert("please signup for a route");
+          /*document.getElementById('content').innerHTML = "<div class="'alert alert-danger fade in'">" +
+          "<a href="'#'" class="'close'" data-dismiss="'alert'">&times;</a>" +
+          "<strong>Error!</strong> A problem has been occurred while submitting your data." +
+          "</div>"; */
+          window.alert("Please signup for a ride!");
         }
         else{
-          //TODO do some action
-          window.alert("Congrats you've successfully signed up for " + number + " rides"); //TODO change to green bootstrap
+          /*
+          document.getElementById('content').innerHTML = "<div class="'alert alert-success fade in'">" +
+          "<a href="'#'" class="'close'" data-dismiss="'alert'">&times;</a>" +
+          "<strong>Congrats!</strong> You've successfully signed up for " + number + " rides" +
+          "</div>";
+          */
+          $("#notificationsModal").modal('toggle');
+          window.alert("Congrats you've successfully signed up for " + number + " rides. " + "We don't want you to miss out on future rides, so be sure to signup for notifications!");
         }
     }
 

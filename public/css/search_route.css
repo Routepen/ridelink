@@ -3,12 +3,19 @@ thead, tbody {
 }
 tbody{
   overflow-y: scroll;
-  height: 200px;
+  height: 200px; 
   overflow-x: hidden;
 }
-.myCheckbox{
-  padding: 12px 8px;
+/*
+.groupButtons{
+  position: relative;
 }
+.responsiveTable{
+  position: absolute;
+  height: 1em;
+}
+*/
+
 .origin-destination-display{
   display: flex;
   flex-direction: row;
