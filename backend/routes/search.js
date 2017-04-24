@@ -22,7 +22,6 @@ module.exports = function(app, Route, User, gmAPI, geocode) {
             var requestURL = `http://45.79.65.63:5000/route/v1/driving/${route['originCoor'].lng},${route['originCoor'].lat};` +
             `${data[0].lng},${data[0].lat};${data[1].lng},${data[1].lat};` +
             `${route['destinationCoor'].lng},${route['destinationCoor'].lat}?steps=false`;
-            console.log(requestURL);
             request(requestURL, function (err, res, body) {
                 // Short error handling for testing
                 if(err){
@@ -35,10 +34,9 @@ module.exports = function(app, Route, User, gmAPI, geocode) {
 
                 // Temporarily has 1 == 1 because distance not stored in DB
                 //TODO should be dbentry.distance .some threshold to distance variable +=9% of original distance
-                console.log(route);
                 var routeDist = parseInt(route.distance);
                 console.log('route distance is ', routeDist, ' and distance is ', distance);
-                console.log(routeDist / distance);
+                console.log('Inconvenience factor:', routeDist / distance);
                 if( routeDist/distance >= 0.9   &&  routeDist/distance < 1.2 ){
                   closeRoutes.push(route);
                 }
@@ -61,7 +59,6 @@ module.exports = function(app, Route, User, gmAPI, geocode) {
           destination: req.query.destination,
           closeRoutes: closeRoutes // An array of all relevant routes
         };
-        console.log(credentials.closeRoutes);
         res.render("search_route", credentials);
       });
     })

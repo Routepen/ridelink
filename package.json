@@ -1,7 +1,7 @@
 {
-  "name": "secretbots",
+  "name": "Routepen",
   "version": "1.0.0",
-  "description": "",
+  "description": "Ridesharing made easy",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,7 +16,6 @@
     "bluebird": "^3.4.7",
     "body-parser": "^1.16.1",
     "braintree": "^2.0.2",
-    "dot-env": "0.0.1",
     "dotenv": "^4.0.0",
     "ejs": "^2.5.6",
     "express": "^4.13.4",
@@ -42,7 +41,6 @@
     "babel-preset-react": "^6.23.0",
     "babel-preset-react-hmre": "^1.1.1",
     "less": "^2.7.2",
-    "passport-facebook": "^2.1.1",
     "route": "^0.2.5",
     "webpack": "^2.3.2",
     "webpack-dev-middleware": "^1.10.1",

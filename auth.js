@@ -19,9 +19,9 @@ module.exports = {
     });
 
 
-    passport.use(new FacebookStrategy({
-        clientID: "1122786494515943",
-        clientSecret: "f6cd89a5fe00867021469477156f95a6",
+    passport.use('facebook', new FacebookStrategy({
+        clientID: process.env.FB_AUTH_CLIENT_ID,
+        clientSecret: process.env.FB_AUTH_CLIENT_SECRET,
         callbackURL: process.env.WEB_URL + "/auth/facebook/callback",
         profileFields: ['id', 'first_name', 'last_name', 'photos', 'email', 'gender', 'link']
       },
@@ -33,20 +33,22 @@ module.exports = {
             else if (user) {
               return done(null, user);
             } else {
-              var newUser = new User();
-              newUser.facebook.id = profile.id;
-              newUser.facebook.token = accessToken;
-              newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
-              newUser.facebook.email = (_.get(profile, 'emails[0].value', '')).toLowerCase();
-              newUser.facebook.photos = profile.photos;
-              newUser.facebook.gender = profile.gender;
-              newUser.facebook.link = profile.profileUrl;
-
-              newUser.routes = [];
+              console.log(profile);
+              var newUser = new User({
+                facebook: {
+                  id: profile.id,
+                  token: accessToken,
+                  name: profile.name.givenName + ' ' + profile.name.familyName,
+                  email: (_.get(profile, 'emails[0].value', '')).toLowerCase(),
+                  photos: profile.photos,
+                  gender: profile.gender,
+                  link: profile.profileUrl,
+                  routes: []
+                }
+              });
 
               newUser.save(function(err) {
-                if (err)
-                  throw err;
+                if (err) { throw err; } // TODO Better error handling
                 return done(null, newUser);
               });
             }
@@ -80,9 +82,6 @@ module.exports = {
           failureRedirect: '/failed'
         }
       )(req,res,next);
-    });
-    app.get('/logout', function(req,res){
-
     });
   }
 }
