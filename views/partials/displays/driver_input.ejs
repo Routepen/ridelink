@@ -106,7 +106,7 @@
 
     var mapHandler, stopsManager;
     function initMap() {
-      NavBarAutocompleteHandler();
+      new NavBarAutocompleteHandler();
 
         var map = new google.maps.Map(document.getElementById('map'), {
             mapTypeControl: false,
@@ -164,11 +164,13 @@
     function submitForm() {
         if (validateFields()) return;
 
-        $("#emailModal").modal('show');
-        setTimeout(function() {
-          $("#email-input").focus();
-          $("#email-input").select();
-        }, 500);
+        if ("<% user.confirmEmail %>" == "") {
+          $("#emailModal").modal('show');
+          setTimeout(function() {
+            $("#email-input").focus();
+            $("#email-input").select();
+          }, 500);
+        }
 
     }
 

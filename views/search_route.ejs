@@ -94,9 +94,10 @@
                   <hr>
             </div>
             <div class="modal-body">
-                <input id="email-notification" class="controls" type="text" placeholder="Email...">
-                <b> until </b>
-                <input id="date-notification" class="controls" type="text" placeholder="Date...">
+                <b>For rides leaving between</b>
+                <input id="date-start-notification" class="controls" type="text" placeholder="Date...">
+                <b> and </b>
+                <input id="date-end-notification" class="controls" type="text" placeholder="Date...">
                 <input id="requestNotificationsButton" type="submit" class="btn btn-success" data-dismiss="modal" value="Submit">
             </div>
               <hr>
@@ -236,7 +237,8 @@
       });
 
     $(function () {
-        $("#date-notification").datepicker();
+        $("#date-start-notification").datepicker();
+        $("#date-end-notification").datepicker();
     });
 
     function toggleNotifications(){
@@ -260,9 +262,9 @@
     $('#requestNotificationsButton').click(function() {
       var origin = "<%= origin %>";
       var destination = "<%= destination %>";
-      var until = $('#date-notification').val();
+      var dateRange = [$('#date-start-notification').val(), $('#date-end-notification').val()];
 
-      http.prototype.requestNotifications(origin, destination, until, function(result, data) {
+      http.prototype.requestNotifications(origin, destination, dateRange, function(result, data) {
 
       });
     });

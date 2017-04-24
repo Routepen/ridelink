@@ -26,18 +26,31 @@ module.exports = function(app, NotificationRequests, gmAPI, geocode) {
             }
       }
 
+      var body = req.body;
+      console.log(JSON.stringify(body));
+      if (!body.origin || !body.destination || !body['dateRange[]']
+          || body['dateRange[]'].length != 2) {
+            return res.end("failure");
+          }
+
       var getOrigin = geocode(req.body.origin, gmAPI);
       var getDestination = geocode(req.body.destination, gmAPI);
       var promises = [getOrigin, getDestination];
 
       Promise.all(promises).then(function(data) {
 
+        var dateRange = [
+          new Date(req.body["dateRange[]"][0]),
+          new Date(req.body["dateRange[]"][1])
+        ];
+
         var notificationRequest = {
           origin: req.body.origin,
           destination: req.body.destination,
           originCoor: data[0],
           destinationCoor: data[1],
-          until: new Date(req.body.until)
+          dateRangeStart: dateRange[0],
+          dateRangeEnd: dateRange[1]
         };
 
         request.requests.push(notificationRequest);

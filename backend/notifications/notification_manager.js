@@ -5,7 +5,14 @@ const utils = require("../helpers/util");
 
 module.exports = {
   onRouteCreated: function(route) {
-    notificationRequests.find({}, function(err, requests) {
+    var leavingOn = route.date;
+    notificationRequests.find({
+      "$and": [
+        {dateRangeStart: {"$lt": leavingOn}},
+        {dateRangeEnd: {"$gt": leavingOn}}
+      ]
+    }, function(err, requests) {
+      console.log("got", err, requests);
       if (err) { console.log(err); return; }
       if (!requests) { return; }
 
