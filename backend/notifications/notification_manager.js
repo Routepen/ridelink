@@ -6,18 +6,13 @@ const utils = require("../helpers/util");
 module.exports = {
   onRouteCreated: function(route) {
     var leavingOn = route.date;
-    notificationRequests.find({
-      "$and": [
-        {dateRangeStart: {"$lt": leavingOn}},
-        {dateRangeEnd: {"$gt": leavingOn}}
-      ]
-    }, function(err, requests) {
-      console.log("got", err, requests);
+    notificationRequests.find({}, function(err, requests) {
       if (err) { console.log(err); return; }
       if (!requests) { return; }
 
       requests.forEach(function(request) {
         request.requests.forEach(function(rd) {
+          if (rd.dateRangeStart > leavingOn || rd.dateRangeEnd < leavingOn) { return; }
 
           utils.routes.areClose(route.originCoor, route.destinationCoor, rd.originCoor, rd.destinationCoor, route.distance).then(function(areClose) {
             if (areClose) {
