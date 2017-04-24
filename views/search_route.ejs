@@ -94,9 +94,18 @@
                   <hr>
             </div>
             <div class="modal-body">
+<<<<<<< HEAD
                 <input id="email-notification" class="controls" type="text" placeholder="Email..." value="">
                 <b> until </b>
                 <input id="date-notification" class="controls" type="text" placeholder="Date...">
+=======
+              <input id="email-notification" class="controls" type="text" placeholder="Email..." value=<%- user ? user.facebook.confirmedEmail : "" %>>
+              <br/>
+                <b>For rides leaving between</b>
+                <input id="date-start-notification" class="controls" type="text" placeholder="Date...">
+                <b> and </b>
+                <input id="date-end-notification" class="controls" type="text" placeholder="Date...">
+>>>>>>> 63986d2a7bc78dc62186045c848347f65d0544be
                 <input id="requestNotificationsButton" type="submit" class="btn btn-success" data-dismiss="modal" value="Submit">
             </div>
               <hr>
@@ -211,7 +220,7 @@
     }
 
     if(user != null){
-      setUpTable();      
+      setUpTable();
     }
     $('.myCheckbox').click(function(event){
           if(event.checked == true){
@@ -238,7 +247,8 @@
       });
 
     $(function () {
-        $("#date-notification").datepicker();
+        $("#date-start-notification").datepicker();
+        $("#date-end-notification").datepicker();
     });
 
     function toggleNotifications(){
@@ -288,10 +298,11 @@
     $('#requestNotificationsButton').click(function() {
       var origin = "<%= origin %>";
       var destination = "<%= destination %>";
-      var until = $('#date-notification').val();
       var confirmedEmail = $('#email-notification').val();
 
-      http.prototype.requestNotifications(origin, destination, until, confirmedEmail, function(result, data) {
+      var dateRange = [$('#date-start-notification').val(), $('#date-end-notification').val()];
+
+      http.prototype.requestNotifications(origin, destination, dateRange, confirmedEmail, function(result, data) {
 
       });
     });

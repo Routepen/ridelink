@@ -10,13 +10,12 @@ var notificationRequestSchema = new Schema({
       type:Schema.ObjectId,
       ref:'users'
   },
-  requests: [{
-    origin: String,
-    destination: String,
-    originCoor: {"lat": Number, "lng": Number},
-    destinationCoor: {"lat": Number, "lng" : Number},
-    until: Date
-  }]
+  origin: String,
+  destination: String,
+  originCoor: {"lat": Number, "lng": Number},
+  destinationCoor: {"lat": Number, "lng" : Number},
+  dateRangeStart: Date,
+  dateRangeEnd: Date,
 });
 
 notificationRequestSchema.pre('save', function(next) {

@@ -23,6 +23,10 @@ var usersSchema = new Schema({
     routes:[{
         type:Schema.ObjectId,
         ref:'routes'
+    }],
+    notificationRequests: [{
+      type:Schema.ObjectId,
+      ref:'notificationRequest'
     }]
 });
 
