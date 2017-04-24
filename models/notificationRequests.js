@@ -13,6 +13,8 @@ var notificationRequestSchema = new Schema({
   requests: [{
     origin: String,
     destination: String,
+    originCoor: {"lat": Number, "lng": Number},
+    destinationCoor: {"lat": Number, "lng" : Number},
     until: Date
   }]
 });

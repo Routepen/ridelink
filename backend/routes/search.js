@@ -1,6 +1,8 @@
+const util = require('util');
+const utils = require('../helpers/util');
+const request = require('request');
+
 module.exports = function(app, Route, User, gmAPI, geocode) {
-  const util = require('util');
-  const request = require('request');
 
   app.get('/search', (req, res) => {
 
@@ -16,36 +18,31 @@ module.exports = function(app, Route, User, gmAPI, geocode) {
         Route.find({"date" : {"$gte" : new Date(Date.now())}}).sort({date:'ascending'}).populate('driver').exec(function (err, routes) {
           let counter = 0;
           if(routes.length == 0){
-            resolve([]);
+            return resolve([]);
           }
           routes.forEach(function (route) {
-            var requestURL = `http://45.79.65.63:5000/route/v1/driving/${route['originCoor'].lng},${route['originCoor'].lat};` +
-            `${data[0].lng},${data[0].lat};${data[1].lng},${data[1].lat};` +
-            `${route['destinationCoor'].lng},${route['destinationCoor'].lat}?steps=false`;
-            request(requestURL, function (err, res, body) {
-                // Short error handling for testing
-                if(err){
-                  console.log(err);
-                  res.status(300).end('error with requesting to API');
-                }
+            // var requestURL = `http://45.79.65.63:5000/route/v1/driving/${route['originCoor'].lng},${route['originCoor'].lat};` +
+            // `${data[0].lng},${data[0].lat};${data[1].lng},${data[1].lat};` +
+            // `${route['destinationCoor'].lng},${route['destinationCoor'].lat}?steps=false`;
+            // request(requestURL, function (err, res, body) {
+            utils.routes.areClose(route['originCoor'], route['destinationCoor'], data[0], data[1], route.distance)
+            .then(function(areClose) {
 
-                counter++; // using counter to keep track of how many completed requests *less clunky option to Promise*
-                var distance = util.inspect(JSON.parse(body).routes[0].distance);
+              counter++; // using counter to keep track of how many completed requests *less clunky option to Promise*
+              if(areClose){
+                closeRoutes.push(route);
+              }
 
-                // Temporarily has 1 == 1 because distance not stored in DB
-                //TODO should be dbentry.distance .some threshold to distance variable +=9% of original distance
-                var routeDist = parseInt(route.distance);
-                console.log('route distance is ', routeDist, ' and distance is ', distance);
-                console.log('Inconvenience factor:', routeDist / distance);
-                if( routeDist/distance >= 0.9   &&  routeDist/distance < 1.2 ){
-                  closeRoutes.push(route);
-                }
-
-                // If all requests have been returned then resolve with the array of close routes
-                if(counter == routes.length){
-                  resolve(closeRoutes);
-                }
+              // If all requests have been returned then resolve with the array of close routes
+              if(counter == routes.length){
+                resolve(closeRoutes);
+              }
+            })
+            .catch(function(err) {
+              console.log(err);
+              res.status(300).end('error with requesting to API');
             });
+
           });
         });
       })

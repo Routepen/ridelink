@@ -1,5 +1,5 @@
 
-module.exports = function(app, NotificationRequests) {
+module.exports = function(app, NotificationRequests, gmAPI, geocode) {
   app.post("/route/requestnotifications", function(req, res) {
     if (!req.user) {
       return res.status(300).end("not logged in");
@@ -26,18 +26,31 @@ module.exports = function(app, NotificationRequests) {
             }
       }
 
-      var notificationRequest = {
-        origin: req.body.origin,
-        destination: req.body.destination,
-        until: new Date(req.body.until)
-      };
+      var getOrigin = geocode(req.body.origin, gmAPI);
+      var getDestination = geocode(req.body.destination, gmAPI);
+      var promises = [getOrigin, getDestination];
 
-      request.requests.push(notificationRequest);
+      Promise.all(promises).then(function(data) {
 
-      request.save(function(err) {
-        if (err) { console.log(err); return res.status(500).end(""); }
+        var notificationRequest = {
+          origin: req.body.origin,
+          destination: req.body.destination,
+          originCoor: data[0],
+          destinationCoor: data[1],
+          until: new Date(req.body.until)
+        };
 
-        res.end("success");
+        request.requests.push(notificationRequest);
+
+        request.save(function(err) {
+          if (err) { console.log(err); return res.status(500).end(""); }
+
+          res.end("success");
+        });
+      })
+      .catch(function(err) {
+        console.log(err);
+        res.end("failure");
       });
 
 
