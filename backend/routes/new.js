@@ -51,6 +51,19 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
       console.log(stops[i]);
       promises.push(geocode(stops[i], gmAPI));
     }
+
+    var driver, driverInfo; // should only store one
+    if (req.body.driverInfo) {
+      driverInfo = req.body.driverInfo;
+      driver = undefined;
+    }
+    else {
+      driver = req.user._id;
+      driverInfo = undefined;
+    }
+    console.log(req.body);
+    console.log("d di", driver, driverInfo);
+
     Promise.all(promises).then(data => {
       let originCoor = data[0];
       let destinationCoor = data[1];
@@ -66,7 +79,8 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
           seats: req.body.seats,
           date: date,
           time: req.body.time,
-          driver: req.user._id,
+          driver: driver,
+          driverInfo: driverInfo,
           riders:[],
           riderStatus: {},
           confirmedRiders: [],
@@ -97,6 +111,11 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
         if(err) throw err;
         console.log("Route created!");
 
+        var redirectTo = "/route?id=" + (newRoute.shortId || newRoute._id);
+        if (!driver) {
+          return res.end(redirectTo);
+        }
+
         User.findById(newRoute.driver, function(err, driver) {
           newRoute.driver = driver;
 
@@ -114,7 +133,7 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
           } else {
             console.log('Did not send email');
           }
-          return res.end("/route?id=" + (newRoute.shortId || newRoute._id));
+          return res.end(redirectTo);
         });
       });
     });
@@ -136,6 +155,11 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
       action: ""
   	};
 
-	res.render('new_route', data);
+	   res.render('new_route', data);
   });
+
+  app.get('/route/newDriverLess', function (req, res) {
+	   res.render('new_route_driverless');
+  });
+
 }

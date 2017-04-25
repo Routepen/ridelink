@@ -17,6 +17,10 @@ var routeSchema = new Schema({
         type:Schema.ObjectId,
         ref:'users'
     },
+    driverInfo: {
+      "name": String,
+      "profilePictureURL": String,
+    },
     riders:[{
         type:Schema.ObjectId,
         ref:'users'
