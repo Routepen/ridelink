@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  </head>
+  <body>
+    <form action="javascript:submit()">
+      <input type="text" placeholder="Origin" id="origin"/><br/>
+      <input type="text" placeholder="Destination" id="destination"/><br/>
+      <input type="text" placeholder="Stops" id="stops" value="[]"/><br/>
+      <input type="text" placeholder="Date" id="date"/><br/>
+      <input type="text" placeholder="Driver Name" id="driverName"/><br/>
+      <input type="text" placeholder="Profile picture url" id="profilePictureURL"/><br/>
+      <button id="Submit">Submit</button><br/>
+    </form>
+  </body>
+
+  <script type="text/javascript">
+    function submit() {
+      var origin = $('#origin').val();
+      var destination = $('#destination').val();
+      var stops = JSON.parse($('#stops').val());
+      var date = $('#date').val();
+      var driverName = $('#driverName').val();
+      var profilePictureURL = $('#profilePictureURL').val();
+
+      var data = {
+        origin: origin,
+        destination: destination,
+        stops: stops,
+        date: date,
+        driverInfo: {
+          profilePictureURL: profilePictureURL,
+          name: driverName
+        }
+      };
+
+      console.log("sending", data);
+      $.post("/route/new", data, function(result, status) {
+        console.log(result, status);
+      });
+    }
+  </script>
+</html>
