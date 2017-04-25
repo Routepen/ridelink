@@ -180,11 +180,14 @@
     var origin = <%- JSON.stringify(origin) %>;
     var destination = <%- JSON.stringify(destination) %>;
     var user = <%- JSON.stringify(user || null) %>;
-    if(user == null){
-      window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href);
-    }
+    //var notifications = <%- JSON.stringify(notifications) %>;
+    //var signup = <%- JSON.stringify(signup) %>;
 
     var me = this;
+
+    if(user == null){
+      window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href) + '&notifications=true';
+    }
 
     var tbody = document.getElementById('tbody');
 
@@ -214,9 +217,8 @@
       }
     }
 
-    if(user != null){
-      setUpTable();
-    }
+    setUpTable();
+
     $('.myCheckbox').click(function(event){
           if(event.checked == true){
             event.checked = false;
@@ -246,9 +248,24 @@
         $("#date-end-notification").datepicker();
     });
 
+
+/*
+    console.log(notifications);
+    if (notifications != null){
+      $("#notificationsModal").modal('toggle');
+      $("#email-notification").val(user.confirmedEmail || '');
+    }*/
     function toggleNotifications(){
-        $("#email-notification").val(user.confirmedEmail || '');
-        $("#notificationsModal").modal('toggle');
+      /*
+        if(user == null){
+          window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href) + '&notifications=true';
+        }
+
+        else{
+*/
+          $("#notificationsModal").modal('toggle');
+          $("#email-notification").val(user.confirmedEmail || '');
+      //  }
     }
 
     var checkAll = false;
@@ -285,7 +302,7 @@
           $("#baggageModal").modal('toggle');
         }
         else{
-          window.alert("Check the rides you're interested in signing up");
+          window.alert("Please check the rides you want to sign up for");
         }
     }
 
