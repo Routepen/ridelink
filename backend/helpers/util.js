@@ -27,5 +27,32 @@ module.exports = {
       });
     }
 
+  },
+
+  profilePicture: {
+    haveSameUser: function(url1, url2) {
+      //https://scontent-lax3-2.xx.fbcdn.net/v/t1.0-1/p64x64/12729183_959477910800454_5056109822890601521_n.jpg?oh=17639704849009b909e58b33d2de59f2&oe=5985683B
+      //https://scontent.xx.fbcdn.net/v/t1.0-1/p50x50/12729183_959477910800454_5056109822890601521_n.jpg?oh=562adc41c2be61572a0dc246e3d2c670&oe=598DA8B4
+
+      var t1 = url1, t2 = url2;
+
+      // we care about the xxxxxx.jpg
+      t1 = t1.substr(0, t1.indexOf('.jpg'));
+      t2 = t2.substr(0, t2.indexOf('.jpg'));
+
+      t1 = t1.substr(t1.lastIndexOf('/'));
+      t2 = t2.substr(t2.lastIndexOf('/'));
+
+      if (t1 == "") { // we messed up
+        console.log("Problem parsing url", url1);
+        return false;
+      }
+      if (t2 == "") { // we messed up
+        console.log("Problem parsing url", url2);
+        return false;
+      }
+
+      return t1 == t2;
+    }
   }
 }
