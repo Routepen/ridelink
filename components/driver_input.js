@@ -70,7 +70,7 @@ class DriverInput extends Component {
                 </div>
 
 
-                <input type="hidden" name="confirmedEmail" id="confirmed_email_input"/>
+                <input type="hidden" name="confirmedEmail" id="confirmed_email_input" value="<%= user ? user.confirmedEmail : ''"/>
             </div>
 
             <br/>

@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const User = require('./models/User');
 const Route = require('./models/Route');
+const DriverlessRoute = require('./models/DriverlessRoute');
 const NotificationRequests = require('./models/notificationRequests');
 const _ = require("lodash");
 const mail = require("./mail");
@@ -18,7 +19,7 @@ const auth = require("./auth");
 
 mongoose.Promise = require('bluebird');
 
-var mongo_url = 'mongodb://127.0.0.1:27017/ridelink' || process.env.MONGODB_URI;
+var mongo_url = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ridelink';
 console.log(mongo_url);
   mongoose.connect(mongo_url,  {
   server: {
@@ -50,7 +51,7 @@ app.set('view engine', 'ejs');
 
 app.use(express.static(__dirname + '/public'));
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 
 // parse cookie sessions
 app.use(session({
@@ -65,7 +66,7 @@ app.use(bodyParser.json());
 auth.setUpAuth(app);
 
 // Routes
-require("./backend/routes/routes")(app, Route, User, NotificationRequests, mail, gmAPI, geocode);
+require("./backend/routes/routes")(app, Route, DriverlessRoute, User, NotificationRequests, mail, gmAPI, geocode);
 
 app.get('/testing2', function(req, res) {
  	var newUser = new User({

@@ -3,7 +3,7 @@ thead, tbody {
 }
 tbody{
   overflow-y: scroll;
-  height: 200px; 
+  height: 200px;
   overflow-x: hidden;
 }
 /*
@@ -23,8 +23,13 @@ tbody{
   justify-content: center;
 }
 
+#email-notification{
+  width: 80%;
+}
+
 /*
 td > input[type="checkbox"]:checked {
     color: #4caf50 ;
 }
+.
 */

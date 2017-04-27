@@ -1,7 +1,18 @@
-module.exports = function(app, User, NotificationRequests, gmAPI, geocode) {
+module.exports = function(app, NotificationRequests, User, gmAPI, geocode) {
   app.post("/route/requestnotifications", function(req, res) {
+    console.log("Notification requested");
     if (!req.user) {
       return res.status(300).end("not logged in");
+    }
+    //Change the confirmed email to this new email
+    var queryEmail = {
+      '_id': req.user._id
+    }
+    if(req.body.confirmedEmail != req.user.confirmedEmail){
+      User.findOne(queryEmail, function(err, doc){
+          doc.confirmedEmail = req.body.confirmedEmail;
+          doc.save();
+      });
     }
 
     User.findOne({_id: req.user._id}).populate("requests").exec(function(err, user) {
