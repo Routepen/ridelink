@@ -321,20 +321,29 @@
       });
     });
 
+
+    function helperAddOrUpdateRider(signup){
+        //TODO go through all the routeSignups
+        for(int i = 0; i < ){
+
+        }
+          http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
+    }
   //Signup Process for batch sending
     if (signup != null){
       $("#baggageModal").modal('toggle');
       //TODO send from front end all the routes they checkmarked to search.js backend. checkmark all of them,
       //TODO click on baggageModal and confirm will sign up for all the rides
+
     }
     function addOrUpdateRider(){
       //TODO don't allow users to signup for the routes again.
       //TODO don't allow users to signup for their own routes
-        //var routeSignups = [];
+        var routeSignups = [];
         var number = 0;
         $('.myCheckbox').each(function(route){
-/*
             if(this.checked){
+              /*
                 var data = {
                   routeId: closeRoutes[route]._id,
                   userId: user.id,
@@ -344,12 +353,16 @@
                 };
                 routeSignups.push(data);
                 */
-                http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
+                //http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
                 number++;
-            }
+              }
+            //}
         });
         if(user == null){
           window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href + '&signup=true');
+        }
+        else{
+          helperAddOrUpdateRider(routeSignups);
         }
         $("#baggageModal").modal('toggle');
         /*
