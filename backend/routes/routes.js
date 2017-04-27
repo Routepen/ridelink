@@ -1,6 +1,6 @@
 var _ = require("lodash");
 
-module.exports = function(app, Route, User, NotificationRequests, mail, gmAPI, geocode) {
+module.exports = function(app, Route, DriverlessRoute, User, NotificationRequests, mail, gmAPI, geocode) {
 
   require("./add_rider")(app, Route, User, mail);
 
@@ -12,7 +12,7 @@ module.exports = function(app, Route, User, NotificationRequests, mail, gmAPI, g
 
   require("./rider_paid")(app, Route, mail);
 
-  require("./new")(app, Route, User, mail, gmAPI, geocode);
+  require("./new")(app, Route, DriverlessRoute, User, mail, gmAPI, geocode);
 
   require("./update")(app, Route, User, mail, gmAPI, geocode);
 

@@ -1,5 +1,6 @@
 const util = require('util');
 const request = require('request');
+const DriverlessRoute = require('../../models/DriverlessRoute');
 
 module.exports = {
   routes: {
@@ -53,6 +54,18 @@ module.exports = {
       }
 
       return t1 == t2;
+    }
+  },
+
+  newUser: {
+    couldHaveDriverlessRoutes: function(user) {
+      return new Promise(function(resolve, reject) {
+        DriverlessRoute.findOne({"driverInfo.name" : user.facebook.name}, function(err, route) {
+          if (err) { console.log(err); return reject(err); }
+
+          resolve(route != undefined);
+        });
+      });
     }
   }
 }

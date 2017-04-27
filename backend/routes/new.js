@@ -1,7 +1,7 @@
 const Promise = require("bluebird");
 const NotificationManager = require("../notifications/notification_manager");
 
-module.exports = function(app, Route, User, mail, gmAPI, geocode) {
+module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocode) {
 
   function random(len) {
    	var a = new Array(len);
@@ -61,37 +61,43 @@ module.exports = function(app, Route, User, mail, gmAPI, geocode) {
       driver = req.user._id;
       driverInfo = undefined;
     }
-    console.log(req.body);
-    console.log("d di", driver, driverInfo);
 
     Promise.all(promises).then(data => {
       let originCoor = data[0];
       let destinationCoor = data[1];
       let stopsCoor = data.splice(2);
       var newRoute;
+      var routeData = {
+        shortId: random(5),
+        origin: req.body.origin,
+        destination: req.body.destination,
+        originCoor: originCoor,
+        destinationCoor: destinationCoor,
+        seats: req.body.seats,
+        date: date,
+        time: req.body.time,
+        driver: driver,
+        driverInfo: driverInfo,
+        riders:[],
+        riderStatus: {},
+        confirmedRiders: [],
+        dropOffs: {},
+        inconvenience: req.body.charge,
+        requireInitialDeposit: false,//req.body.requireInitialDeposit,
+        isWaitlisted: false,
+        stops: req.body["stops[]"],
+        stopsCoor: stopsCoor,
+        distance: req.body.distance
+      };
+
+
       try {
-        newRoute = Route({
-          shortId: random(5),
-          origin: req.body.origin,
-          destination: req.body.destination,
-          originCoor: originCoor,
-          destinationCoor: destinationCoor,
-          seats: req.body.seats,
-          date: date,
-          time: req.body.time,
-          driver: driver,
-          driverInfo: driverInfo,
-          riders:[],
-          riderStatus: {},
-          confirmedRiders: [],
-          dropOffs: {},
-          inconvenience: req.body.charge,
-          requireInitialDeposit: false,//req.body.requireInitialDeposit,
-          isWaitlisted: false,
-          stops: req.body["stops[]"],
-          stopsCoor: stopsCoor,
-          distance: req.body.distance
-        });
+        if (routeData.driverInfo) {
+          newRoute = DriverlessRoute(routeData);
+        }
+        else {
+          newRoute = Route(routeData);
+        }
       }
       catch(e) {
         console.log(e);

@@ -1,6 +1,7 @@
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('./models/User');
+const util = require("./backend/helpers/util")
 const _ = require("lodash");
 
 module.exports = {
@@ -47,10 +48,15 @@ module.exports = {
                 }
               });
 
-              newUser.save(function(err) {
-                if (err) { throw err; } // TODO Better error handling
-                return done(null, newUser);
+              util.newUser.couldHaveDriverlessRoutes(newUser).then(function(has) {
+                newUser.save(function(err) {
+                  if (err) { return done(err); } // TODO Better error handling
+                  done(null, newUser, {couldHaveDriverlessRoutes:has});
+                });
+              }).catch(function(err) {
+                done(err);
               });
+
             }
             return;
           });
@@ -64,7 +70,6 @@ module.exports = {
     });
 
     app.get('/auth/facebook', function(req,res,next){
-      console.log('/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect));
       passport.authenticate(
         'facebook',
         {callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect) },
@@ -73,13 +78,27 @@ module.exports = {
     });
 
     app.get('/auth/facebook/callback/', function(req,res,next) {
-      console.log('/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect));
+      console.log(req.url, req.user);
       passport.authenticate(
         'facebook',
         {
           callbackURL: '/auth/facebook/callback?redirect=' + encodeURIComponent(req.query.redirect),
-          successRedirect: req.query.redirect,
-          failureRedirect: '/failed'
+        },
+        function(err, user, message) {
+          if (user) {
+            req.login(user, function() {
+              if (message.couldHaveDriverlessRoutes) { // there might be some driverless rotues to for this user to claim
+                return res.redirect("/routes/claim&redirect=" + encodeURIComponent(req.query.redirect));
+              }
+
+              res.redirect(req.query.redirect);
+            });
+          }
+
+          else {
+            res.redirect("/failed");
+          }
+
         }
       )(req,res,next);
     });
