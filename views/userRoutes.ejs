@@ -62,15 +62,18 @@
     </div>
   </div>
   <div class="col-md-8 col-sm-12" style="overflow: scroll">
-    <!--<input type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" value="CHECK ALL" onclick="checkall();"> </input> -->
+    <input type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" value="CHECK ALL" onclick="checkall();"> </input>
+    <button type="button" class="btn btn-success" id="signupDisabled" style="float: right; margin-right:20px" onclick = "unsignup();" disabled> Unsignup Rides </button>
     <table class="table">
       <thead>
       <tr class="riderElement-inverse">
+          <th> </th>
           <th>#</th>
           <th> Role </th>
           <th> Origin </th>
           <th> Destination </th>
           <th> Cost </th>
+          <th> Date </th>
       </tr>
       </thead>
       <tbody id="tbody">
@@ -94,6 +97,50 @@
   var tbody = document.getElementById('tbody');
   var s = document.getElementsByTagName('select')[0]
   s.value = "Date";
+
+
+
+  $('.myCheckbox').click(function(event){
+    document.getElementById("signupDisabled").disabled = false;
+        if(event.checked == true){
+          event.checked = false;
+        }
+        else{
+          event.checked = true;
+        }
+  });
+
+
+  var checkAll = false;
+  var elem = document.getElementById("checkAll");
+
+  function checkall(){
+    if(!checkAll){
+      document.getElementById("signupDisabled").disabled = false;
+      $('.myCheckbox').each(function(event){
+        this.checked = true;
+      });
+      checkAll = true;
+      elem.value = "UNCHECK ALL";
+    }
+    else{
+      document.getElementById("signupDisabled").disabled = true;
+      $('.myCheckbox').each(function(event){
+        this.checked = false;
+      });
+      checkAll = false;
+      elem.value = "CHECK ALL";
+    }
+  }
+
+  function unsignup(){
+    $('.myCheckbox').each(function(route){
+        if(this.checked){
+          //UNSIGNUP
+        }
+      });
+  }
+
 
   function sort(data, sortBy) {
     var func;
@@ -133,13 +180,16 @@
     }
     else {
       for (var i = 0; i < data.length; i++) {
-        var onclick = "clicked('" + (data[i].shortId || data[i]._id) + "')"
-        tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" onclick="' + onclick + '">' +
-          '<td>' + (i+1) + '</td>' +
-          '<td>' + ("<%= user._id%>" == data[i].driver ? "Driver" : "Rider") + '</td>' +
-          '<td>' + data[i].origin + '</td>' +
-          '<td>' + data[i].destination + '</td>' +
-          '<td>$' + data[i].inconvenience + '</td>';
+        var onclick = "clicked('" + (data[i].shortId || data[i]._id) + "')";
+        tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable"">' +
+          '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
+          '<td onclick="' + onclick + '">' + (i+1) + '</td>' +
+          '<td onclick="' + onclick + '">' + ("<%= user._id%>" == data[i].driver ? "Driver" : "Rider") + '</td>' +
+          '<td onclick="' + onclick + '">' + data[i].origin + '</td>' +
+          '<td onclick="' + onclick + '">' + data[i].destination + '</td>' +
+          '<td onclick="' + onclick + '">$' + data[i].inconvenience + '</td>' +
+          '<td onclick="' + onclick + '">' +  (1 + new Date(data[i].date).getMonth()) + '/' + new Date(data[i].date).getDate() + '</td>' +
+          '</tr>';
       }
     }
   }
