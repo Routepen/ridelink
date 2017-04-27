@@ -18,7 +18,7 @@ const auth = require("./auth");
 
 mongoose.Promise = require('bluebird');
 
-var mongo_url = 'mongodb://127.0.0.1:27017/ridelink' || process.env.MONGODB_URI;
+var mongo_url = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ridelink';
 console.log(mongo_url);
   mongoose.connect(mongo_url,  {
   server: {

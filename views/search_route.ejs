@@ -135,10 +135,11 @@
                    <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
                </div>
            </div>-->
+           <h5 style="text-align: center"> <b> Routepen has ALL of Facebook and Zimride's drives so no worrying! :)  </b> </h5>
 
           <div class="row groupButtons">
               <input type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" value="CHECK ALL" onclick="checkall();"> </input> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
-              <button type="button" class="btn btn-success" style="float: right; margin-right:20px" onclick = "baggageModal();"> Signup </button>
+              <button type="button" class="btn btn-success" id="signupDisabled" style="float: right; margin-right:20px" onclick = "baggageModal();" disabled> Request Drivers </button>
           </div>
           <div class="responsiveTable">
               <table class="table">
@@ -146,6 +147,7 @@
                     <tr class="riderElement-inverse" >
                         <th> </th>
                         <th>#</th>
+                        <th> </th>
                         <th> Driver </th>
                         <th> Origin </th>
                         <th> Destination </th>
@@ -208,6 +210,7 @@
           tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" data-value="' + closeRoutes[i]._id + '" onclick="' + onclick + '">' +
             '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
             '<td>' + (i+1) + '</td>' +
+            '<td>' + "<img src='" + closeRoutes[i].driver.facebook.photos[0].value + "'></img> </td>" +
             '<td>' + closeRoutes[i].driver.facebook.name + '</td>' +
             '<td>' + closeRoutes[i].origin + '</td>' +
             '<td>' + closeRoutes[i].destination + '</td>' +
@@ -225,9 +228,12 @@
           }
           else{
             event.checked = true;
+            document.getElementById("signupDisabled").disabled = false;
           }
           event.stopPropagation();
     });
+
+
     // Autoscaling table
       var $table = $('table'),
           $bodyCells = $table.find('tbody tr:first').children(),
@@ -256,16 +262,11 @@
       $("#email-notification").val(user.confirmedEmail || '');
     }*/
     function toggleNotifications(){
-      /*
         if(user == null){
           window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href) + '&notifications=true';
         }
-
-        else{
-*/
-          $("#notificationsModal").modal('toggle');
-          $("#email-notification").val(user.confirmedEmail || '');
-      //  }
+        $("#notificationsModal").modal('toggle');
+        $("#email-notification").val(user.confirmedEmail || '');
     }
 
     var checkAll = false;
@@ -273,6 +274,7 @@
 
     function checkall(){
       if(!checkAll){
+        document.getElementById("signupDisabled").disabled = false;
         $('.myCheckbox').each(function(event){
           this.checked = true;
         });
