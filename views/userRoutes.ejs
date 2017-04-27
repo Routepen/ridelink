@@ -99,16 +99,22 @@
   s.value = "Date";
 
 
-
-  $('.myCheckbox').click(function(event){
-    document.getElementById("signupDisabled").disabled = false;
-        if(event.checked == true){
-          event.checked = false;
-        }
-        else{
-          event.checked = true;
-        }
+  $(function(){
+    var counter = 0;
+    $('.myCheckbox').click(function(event){
+      if(event.target.checked == true){
+        counter++;
+        document.getElementById("signupDisabled").disabled = false;
+      }
+      else{
+        counter--;
+      }
+      if(counter == 0 ){
+        document.getElementById("signupDisabled").disabled = true;
+      }
+    });
   });
+
 
 
   var checkAll = false;
