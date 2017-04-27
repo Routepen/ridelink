@@ -182,14 +182,15 @@
     var origin = <%- JSON.stringify(origin) %>;
     var destination = <%- JSON.stringify(destination) %>;
     var user = <%- JSON.stringify(user || null) %>;
-    //var notifications = <%- JSON.stringify(notifications) %>;
-    //var signup = <%- JSON.stringify(signup) %>;
+    var notifications = <%- JSON.stringify(notifications) %>;
+    var signup = <%- JSON.stringify(signup) %>;
 
     var me = this;
-
+/*
     if(user == null){
       window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href) + '&notifications=true';
     }
+    */
 
     var tbody = document.getElementById('tbody');
 
@@ -255,15 +256,14 @@
     });
 
 
-/*
-    console.log(notifications);
+
     if (notifications != null){
       $("#notificationsModal").modal('toggle');
       $("#email-notification").val(user.confirmedEmail || '');
-    }*/
+    }
     function toggleNotifications(){
         if(user == null){
-          window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href) + '&notifications=true';
+          window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href  + '&notifications=true');
         }
         $("#notificationsModal").modal('toggle');
         $("#email-notification").val(user.confirmedEmail || '');
@@ -322,26 +322,45 @@
     });
 
   //Signup Process for batch sending
+    if (signup != null){
+      $("#baggageModal").modal('toggle');
+      //TODO send from front end all the routes they checkmarked to search.js backend. checkmark all of them,
+      //TODO click on baggageModal and confirm will sign up for all the rides
+    }
     function addOrUpdateRider(){
       //TODO don't allow users to signup for the routes again.
       //TODO don't allow users to signup for their own routes
+        //var routeSignups = [];
         var number = 0;
         $('.myCheckbox').each(function(route){
-          console.log(route);
+/*
             if(this.checked){
+                var data = {
+                  routeId: closeRoutes[route]._id,
+                  userId: user.id,
+                  origin: origin,
+                  destination: destination,
+                  baggage: $('#sel1').val()
+                };
+                routeSignups.push(data);
+                */
                 http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
                 number++;
             }
         });
+        if(user == null){
+          window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href + '&signup=true');
+        }
         $("#baggageModal").modal('toggle');
+        /*
         if(number == 0){
-          /*document.getElementById('content').innerHTML = "<div class="'alert alert-danger fade in'">" +
+          document.getElementById('content').innerHTML = "<div class="'alert alert-danger fade in'">" +
           "<a href="'#'" class="'close'" data-dismiss="'alert'">&times;</a>" +
           "<strong>Error!</strong> A problem has been occurred while submitting your data." +
-          "</div>"; */
+          "</div>";
           window.alert("Please signup for a ride!");
         }
-        else{
+        */
           /*
           document.getElementById('content').innerHTML = "<div class="'alert alert-success fade in'">" +
           "<a href="'#'" class="'close'" data-dismiss="'alert'">&times;</a>" +
@@ -350,8 +369,8 @@
           */
           $("#notificationsModal").modal('toggle');
           window.alert("Congrats you've successfully signed up for " + number + " rides. " + "We don't want you to miss out on future rides, so be sure to signup for notifications!");
-        }
-    }
+      }
+
 
 
     var mapHandler, navbarManager;
