@@ -26,6 +26,9 @@
     <!-- Custom styles for this template -->
     <link href="/css/main.css" rel="stylesheet">
 
+    <script type="text/javascript">  <% include ./partials/helpers/http %> </script>
+
+
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
@@ -92,6 +95,7 @@
 
 <script type="text/javascript">
   var data = <%- JSON.stringify(routes) %>;
+  var user = <%- JSON.stringify(user || null) %>;
   data = data.map(function(d) { d.date = new Date(d.date); return d; });
 
   var tbody = document.getElementById('tbody');
@@ -101,12 +105,12 @@
 
 
   $('.myCheckbox').click(function(event){
-    document.getElementById("signupDisabled").disabled = false;
         if(event.checked == true){
           event.checked = false;
         }
         else{
           event.checked = true;
+          document.getElementById("signupDisabled").disabled = false;
         }
   });
 
@@ -133,10 +137,19 @@
     }
   }
 
+
+  console.log(data[0].driver);
+  console.log(user._id);
+
   function unsignup(){
     $('.myCheckbox').each(function(route){
         if(this.checked){
-          //UNSIGNUP
+            if(data[route].driver == user._id){
+                //TODO delete route
+            }
+            else{
+              http.prototype.removeRider(user._id, data[route]._id);
+            }
         }
       });
   }

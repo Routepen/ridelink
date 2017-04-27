@@ -208,15 +208,15 @@
         for (var i = 0; i < closeRoutes.length; i++) {
           //var d = new Date(closeRoutes[i].date);
           var onclick = "routeClick('" + (closeRoutes[i].shortId || closeRoutes[i]._id) + "')"
-          tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" data-value="' + closeRoutes[i]._id + '" onclick="' + onclick + '">' +
+          tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" data-value="' + closeRoutes[i]._id + '">' +
             '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
-            '<td>' + (i+1) + '</td>' +
-            '<td>' + "<img src='" + closeRoutes[i].driver.facebook.photos[0].value + "'></img> </td>" +
-            '<td>' + closeRoutes[i].driver.facebook.name + '</td>' +
-            '<td>' + closeRoutes[i].origin + '</td>' +
-            '<td>' + closeRoutes[i].destination + '</td>' +
-            '<td>$' + closeRoutes[i].inconvenience + '</td>' +
-            '<td>' +  (1 + new Date(closeRoutes[i].date).getMonth()) + '/' + new Date(closeRoutes[i].date).getDate() + '</td>';
+            '<td onclick="' + onclick + '">' + (i+1) + '</td>' +
+            '<td onclick="' + onclick + '">' + "<img src='" + closeRoutes[i].driver.facebook.photos[0].value + "'></img> </td>" +
+            '<td onclick="' + onclick + '">' + closeRoutes[i].driver.facebook.name + '</td>' +
+            '<td onclick="' + onclick + '">' + closeRoutes[i].origin + '</td>' +
+            '<td onclick="' + onclick + '">' + closeRoutes[i].destination + '</td>' +
+            '<td onclick="' + onclick + '">$' + closeRoutes[i].inconvenience + '</td>' +
+            '<td onclick="' + onclick + '">' +  (1 + new Date(closeRoutes[i].date).getMonth()) + '/' + new Date(closeRoutes[i].date).getDate() + '</td>';
         }
       }
     }
@@ -324,7 +324,7 @@
 
     function helperAddOrUpdateRider(signup){
         //TODO go through all the routeSignups, loop through all signups
-          http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
+          http.prototype.searchAddRider(closeRoutes[route]._id, user._id, origin, destination, $('#sel1').val());
     }
   //Signup Process for batch sending
     if (signup != null){
