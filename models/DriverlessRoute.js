@@ -4,7 +4,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var routeSchema = require("./routeSchema");
+var driverlessRouteSchema = require("./routeSchema");
 /*
 routeSchema.pre('save', function(next) {
     // if created_at doesn't exist, add to that field
@@ -15,8 +15,8 @@ routeSchema.pre('save', function(next) {
     next();
 });
 */
-var Route = mongoose.model('routes', routeSchema);
-module.exports = Route;
+var DriverlessRoutes = mongoose.model('driverlessRoutes', driverlessRouteSchema);
+module.exports = DriverlessRoutes;
 
 /*
 
