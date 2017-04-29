@@ -103,16 +103,22 @@
   s.value = "Date";
 
 
-
-  $('.myCheckbox').click(function(event){
-        if(event.checked == true){
-          event.checked = false;
-        }
-        else{
-          event.checked = true;
-          document.getElementById("signupDisabled").disabled = false;
-        }
+  $(function(){
+    var counter = 0;
+    $('.myCheckbox').click(function(event){
+      if(event.target.checked == true){
+        counter++;
+        document.getElementById("signupDisabled").disabled = false;
+      }
+      else{
+        counter--;
+      }
+      if(counter == 0 ){
+        document.getElementById("signupDisabled").disabled = true;
+      }
+    });
   });
+
 
 
   var checkAll = false;
@@ -142,16 +148,19 @@
   console.log(user._id);
 
   function unsignup(){
+    var counter = 0;
     $('.myCheckbox').each(function(route){
         if(this.checked){
+            counter++;
             if(data[route].driver == user._id){
-                //TODO delete route
+                //TODO delete route - make date 1/1/1900
             }
             else{
               http.prototype.removeRider(user._id, data[route]._id);
             }
         }
       });
+      //TODO delete the tds and dynamically load success alert or negative alert
   }
 
 

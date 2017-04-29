@@ -57,6 +57,8 @@
 
 <% include ./partials/displays/navbar %>
 
+<div id = "alert_placeholder"></div>
+
 
 <div class="modal fade" id="baggageModal" tabindex="-1" role="dialog" aria-labelledby="baggageModal">
   <div class="modal-dialog" role="document">
@@ -209,7 +211,7 @@
           //var d = new Date(closeRoutes[i].date);
           var onclick = "routeClick('" + (closeRoutes[i].shortId || closeRoutes[i]._id) + "')"
           tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" data-value="' + closeRoutes[i]._id + '">' +
-            '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
+            '<td> <input name="myCheckbox" class="myCheckbox" type="checkbox"/> </td>' +
             '<td onclick="' + onclick + '">' + (i+1) + '</td>' +
             '<td onclick="' + onclick + '">' + "<img src='" + closeRoutes[i].driver.facebook.photos[0].value + "'></img> </td>" +
             '<td onclick="' + onclick + '">' + closeRoutes[i].driver.facebook.name + '</td>' +
@@ -223,15 +225,20 @@
 
     setUpTable();
 
-    $('.myCheckbox').click(function(event){
-          if(event.checked == true){
-            event.checked = false;
-          }
-          else{
-            event.checked = true;
-            document.getElementById("signupDisabled").disabled = false;
-          }
-          event.stopPropagation();
+    $(function(){
+      var counter = 0;
+      $('.myCheckbox').click(function(event){
+        if(event.target.checked == true){
+          counter++;
+          document.getElementById("signupDisabled").disabled = false;
+        }
+        else{
+          counter--;
+        }
+        if(counter == 0 ){
+          document.getElementById("signupDisabled").disabled = true;
+        }
+      });
     });
 
 
@@ -282,6 +289,7 @@
         elem.value = "UNCHECK ALL";
       }
       else{
+        document.getElementById("signupDisabled").disabled = true;
         $('.myCheckbox').each(function(event){
           this.checked = false;
         });
@@ -321,47 +329,42 @@
       });
     });
 
-
-    function helperAddOrUpdateRider(signup){
-        //TODO go through all the routeSignups, loop through all signups
-          http.prototype.searchAddRider(closeRoutes[route]._id, user._id, origin, destination, $('#sel1').val());
+    //Signup Process for batch sending
+    function helperAddOrUpdateRider(signup, userId){
+        for(i = 0; i < signup.length; i++){
+          http.prototype.searchAddRider(signup[i].routeId, userId, signup[i].origin, signup[i].destination, signup[i].baggage);
+        }
+        window.alert("Congrats you've successfully signed up for " + signup.length + " rides. " + "We don't want you to miss out on future rides, so be sure to signup for notifications!");
     }
-  //Signup Process for batch sending
     if (signup != null){
-      $("#baggageModal").modal('toggle');
-      //TODO send from front end all the routes they checkmarked to search.js backend. checkmark all of them,
-      //TODO click on baggageModal and confirm will sign up for all the rides
-
+      //TODO THIS DOES NOT ACTUALLY WORK. WHEN YOU'RE NOT SIGNED IN IT DOESNT WORK
+      helperAddOrUpdateRider(signup, user._id); //TODO signup is not actually signup
+      $("#notificationsModal").modal('toggle');
     }
     function addOrUpdateRider(){
-      //TODO don't allow users to signup for the routes again.
-      //TODO don't allow users to signup for their own routes
+      //TODO don't allow users to signup for the routes again and for their own routes
         var routeSignups = [];
         var number = 0;
         $('.myCheckbox').each(function(route){
             if(this.checked){
-              /*
                 var data = {
                   routeId: closeRoutes[route]._id,
-                  userId: user.id,
                   origin: origin,
                   destination: destination,
                   baggage: $('#sel1').val()
                 };
                 routeSignups.push(data);
-                */
                 //http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
-                number++;
-              }
-            //}
+            }
         });
         if(user == null){
           window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href + '&signup=true');
         }
         else{
-          helperAddOrUpdateRider(routeSignups);
+            helperAddOrUpdateRider(routeSignups, user._id);
+            $("#baggageModal").modal('toggle');
+            $("#notificationsModal").modal('toggle');
         }
-        $("#baggageModal").modal('toggle');
         /*
         if(number == 0){
           document.getElementById('content').innerHTML = "<div class="'alert alert-danger fade in'">" +
@@ -377,8 +380,7 @@
           "<strong>Congrats!</strong> You've successfully signed up for " + number + " rides" +
           "</div>";
           */
-          $("#notificationsModal").modal('toggle');
-          window.alert("Congrats you've successfully signed up for " + number + " rides. " + "We don't want you to miss out on future rides, so be sure to signup for notifications!");
+          // id = alert-placeholder
       }
 
 

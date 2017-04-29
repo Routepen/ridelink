@@ -9,6 +9,7 @@ module.exports = function(app, Route, User, mail) {
     }
 
     Route.findById(req.body.routeId).populate('driver').exec(function(err, route) {
+      console.log(route);
       if (req.user._id.toString() == route.driver._id.toString()) {
         return;
       }

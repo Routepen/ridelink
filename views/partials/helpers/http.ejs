@@ -34,6 +34,7 @@ http.prototype.addRider = function(userId, pickUpAddress, dropOffAddress, baggag
 http.prototype.searchAddRider = function(routeId, userId, pickUpAddress, dropOffAddress, baggage, callback) {
   var data = {
     routeId: routeId,
+    userId: userId,
     pickUpAddress: pickUpAddress,
     dropOffAddress: dropOffAddress,
     baggage: baggage
