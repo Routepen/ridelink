@@ -28,6 +28,8 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 
   require("./notifications")(app, NotificationRequests, User, gmAPI, geocode);
 
+  require("./claim")(app, Route, DriverlessRoute);
+
   app.get('/profile', function(req, res){
   	res.render('profile');
   });

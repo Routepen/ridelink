@@ -9,6 +9,7 @@
       <input type="text" placeholder="Stops" id="stops" value="[]"/><br/>
       <input type="text" placeholder="Date" id="date"/><br/>
       <input type="text" placeholder="Driver Name" id="driverName"/><br/>
+      <input type="number" placeholder="Cost" id="charge"/><br/>
       <input type="text" placeholder="Profile picture url" id="profilePictureURL"/><br/>
       <button id="Submit">Submit</button><br/>
     </form>
@@ -22,12 +23,14 @@
       var date = $('#date').val();
       var driverName = $('#driverName').val();
       var profilePictureURL = $('#profilePictureURL').val();
+      var charge = $('#charge').val();
 
       var data = {
         origin: origin,
         destination: destination,
         stops: stops,
         date: date,
+        charge: charge,
         driverInfo: {
           profilePictureURL: profilePictureURL,
           name: driverName
