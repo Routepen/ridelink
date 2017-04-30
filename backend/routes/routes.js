@@ -6,7 +6,7 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 
   require("./remove_rider")(app, Route, mail);
 
-  require("./cancel_request")(app, Route);
+  require("./cancel_request")(app, Route, User);
 
   require("./confirm_rider")(app, Route, User, mail);
 

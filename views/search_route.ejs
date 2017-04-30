@@ -56,10 +56,27 @@
 <body style="overflow:hidden;">
 
 <% include ./partials/displays/navbar %>
+<!--
+<div id="message">
+      <div id="inner-message" class="alert alert-success alert-fixed">
+        <strong>Success!</strong> This alert box could indicate a successful or positive action.
+      </div>
+</div> -->
 
-<div id = "alert_placeholder"></div>
-
-
+<div class="modal fade" id="pleaseLogin" tabIndex="-1" role="dialog" >
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" style="margin: auto"> Please login before you signup for rides! </h4>
+            </div>
+            <div class="modal-footer">
+                <a href="/auth/facebook?redirect=<%= encodeURIComponent(url) %>" data-size="xlarge" class="btn btn-primary" style="float: left"><span class="fa fa-facebook"></span> Login Facebook</a>
+                <!--<input type="submit" id="fb-login" class="btn btn-primary" data-dismiss="modal" value="Login to Facebook"> -->
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="baggageModal" tabindex="-1" role="dialog" aria-labelledby="baggageModal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -137,7 +154,7 @@
                    <button type="button" onclick = "toggleNotifications();" href="javascript:void(0);" class="btn btn-info"> Get notifications </button>
                </div>
            </div>-->
-           <h5 style="text-align: center"> <b> Routepen has ALL of Facebook and Zimride's drives so no worrying! :)  </b> </h5>
+           <h5 style="text-align: center"> <b> ALL of Facebook and Zimride's driver posts </b> </h5>
 
           <div class="row groupButtons">
               <input type="button" class="btn btn-warning" id="checkAll" style="margin-left: 20px;" value="CHECK ALL" onclick="checkall();"> </input> <!-- TODO Redirect them to /routes/mine. Tell them to still message driver on fb to reach him/her -->
@@ -228,6 +245,9 @@
     $(function(){
       var counter = 0;
       $('.myCheckbox').click(function(event){
+        if(user == null){
+          $("#pleaseLogin").modal('toggle');
+        }
         if(event.target.checked == true){
           counter++;
           document.getElementById("signupDisabled").disabled = false;
@@ -280,6 +300,9 @@
     var elem = document.getElementById("checkAll");
 
     function checkall(){
+      if(user == null){
+        $("#pleaseLogin").modal('toggle');
+      }
       if(!checkAll){
         document.getElementById("signupDisabled").disabled = false;
         $('.myCheckbox').each(function(event){
@@ -302,17 +325,23 @@
 
 
     function baggageModal(){
-        var number = 0;
-        $('.myCheckbox').each(function(route){
-            if(this.checked){
-                number++;
-            }
-        });
-        if(number > 0){
-          $("#baggageModal").modal('toggle');
+        if(user == null){
+            //TODO send Routes signing up, closeRoutes, origin, destination, baggage,
+            window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href);
         }
         else{
-          window.alert("Please check the rides you want to sign up for");
+            var number = 0;
+            $('.myCheckbox').each(function(route){
+                if(this.checked){
+                    number++;
+                }
+            });
+            if(number > 0){
+              $("#baggageModal").modal('toggle');
+            }
+            else{
+              window.alert("Please check the rides you want to sign up for");
+            }
         }
     }
 
@@ -330,41 +359,18 @@
     });
 
     //Signup Process for batch sending
-    function helperAddOrUpdateRider(signup, userId){
-        for(i = 0; i < signup.length; i++){
-          http.prototype.searchAddRider(signup[i].routeId, userId, signup[i].origin, signup[i].destination, signup[i].baggage);
-        }
-        window.alert("Congrats you've successfully signed up for " + signup.length + " rides. " + "We don't want you to miss out on future rides, so be sure to signup for notifications!");
-    }
-    if (signup != null){
-      //TODO THIS DOES NOT ACTUALLY WORK. WHEN YOU'RE NOT SIGNED IN IT DOESNT WORK
-      helperAddOrUpdateRider(signup, user._id); //TODO signup is not actually signup
-      $("#notificationsModal").modal('toggle');
-    }
     function addOrUpdateRider(){
       //TODO don't allow users to signup for the routes again and for their own routes
-        var routeSignups = [];
         var number = 0;
         $('.myCheckbox').each(function(route){
             if(this.checked){
-                var data = {
-                  routeId: closeRoutes[route]._id,
-                  origin: origin,
-                  destination: destination,
-                  baggage: $('#sel1').val()
-                };
-                routeSignups.push(data);
-                //http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
+                http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
+                number++
             }
         });
-        if(user == null){
-          window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href + '&signup=true');
-        }
-        else{
-            helperAddOrUpdateRider(routeSignups, user._id);
-            $("#baggageModal").modal('toggle');
-            $("#notificationsModal").modal('toggle');
-        }
+
+        $("#baggageModal").modal('toggle');
+        window.alert("Congrats you've successfully signed up for " + number + " rides. " + "We don't want you to miss out on future rides, so be sure to signup for notifications!");
         /*
         if(number == 0){
           document.getElementById('content').innerHTML = "<div class="'alert alert-danger fade in'">" +

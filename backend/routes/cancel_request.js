@@ -1,4 +1,4 @@
-module.exports = function(app, Route) {
+module.exports = function(app, Route, User) {
   app.post('/route/cancelrequest', function(req, res) {
     if (!req.user) {
       return res.end("please log in ");
@@ -19,7 +19,7 @@ module.exports = function(app, Route) {
       }
 
       if (!removed) {
-        return res.redirect("/route?id=" + (route.shortId || rotue._id) + "&error=2");
+        return res.redirect("/route?id=" + (route.shortId || route._id) + "&error=2");
       }
       var dropOffs = route.dropOffs || {};
       delete dropOffs[req.user._id]
@@ -37,6 +37,9 @@ module.exports = function(app, Route) {
 
         res.end("success");
       })
+    });
+    User.findById(req.user._id, function(err, riderUser) {
+      console.log('rider', riderUser);
     });
   });
 }
