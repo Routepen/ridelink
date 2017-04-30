@@ -62,7 +62,7 @@ module.exports = {
     haveSameUser: haveSameUser
   },
 
-  newUser: {
+  user: {
     couldHaveDriverlessRoutes: function(user) {
       return new Promise(function(resolve, reject) {
         DriverlessRoute.find({"driverInfo.name" : user.facebook.name}, function(err, routes) {

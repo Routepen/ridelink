@@ -19,6 +19,14 @@ module.exports = {
       });
     });
 
+    function checkForDriverLessRoutes(user, done) {
+      util.user.couldHaveDriverlessRoutes(user).then(function(has) {
+        done(null, user, {couldHaveDriverlessRoutes:has});
+      }).catch(function(err) {
+        done(err);
+      });
+    }
+
 
     passport.use('facebook', new FacebookStrategy({
         clientID: process.env.FB_AUTH_CLIENT_ID,
@@ -32,7 +40,7 @@ module.exports = {
             if (err)
               return done(err);
             else if (user) {
-              return done(null, user);
+              checkForDriverLessRoutes(user, done);
             } else {
               console.log(profile);
               var newUser = new User({
@@ -48,13 +56,9 @@ module.exports = {
                 }
               });
 
-              util.newUser.couldHaveDriverlessRoutes(newUser).then(function(has) {
-                newUser.save(function(err) {
-                  if (err) { return done(err); } // TODO Better error handling
-                  done(null, newUser, {couldHaveDriverlessRoutes:has});
-                });
-              }).catch(function(err) {
-                done(err);
+              newUser.save(function(err) {
+                if (err) { done(err); }
+                else { checkForDriverLessRoutes(newUser, done); }
               });
 
             }
@@ -88,7 +92,7 @@ module.exports = {
           if (user) {
             req.login(user, function() {
               if (message.couldHaveDriverlessRoutes) { // there might be some driverless rotues to for this user to claim
-                return res.redirect("/routes/claim&redirect=" + encodeURIComponent(req.query.redirect));
+                return res.redirect("/route/claim?redirect=" + encodeURIComponent(req.query.redirect));
               }
 
               res.redirect(req.query.redirect);
