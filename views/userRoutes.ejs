@@ -144,11 +144,11 @@
   }
 
 
-  console.log(data[0].driver);
   console.log(user._id);
 
   function unsignup(){
     var counter = 0;
+    var array = [];
     $('.myCheckbox').each(function(route){
         if(this.checked){
             counter++;
@@ -156,11 +156,12 @@
                 //TODO delete route - make date 1/1/1900
             }
             else{
-              http.prototype.removeRider(user._id, data[route]._id);
+              array.push(data[route]._id);
             }
         }
       });
-      //TODO delete the tds and dynamically load success alert or negative alert
+      http.prototype.removeRiderEntirely(user._id, array, function(){});
+      setTimeout(function(){ window.location.href = window.location.href;}, 300);
   }
 
 
@@ -198,20 +199,22 @@
 
     tbody.innerHTML = "";
     if (data.length == 0) {
-      tbody.innerHTML = '<tr><td style="color: white; font-size:18px">You have no routes. Why don\'t you <a href="/route/new" style="color:lightgray">create one</a>';
+      tbody.innerHTML = '<tr><td style="color: white; font-size:18px">You have no routes. Why don\'t you <a href="/route/new" style="color:lightgray">create one</a> or signup for one';
     }
     else {
       for (var i = 0; i < data.length; i++) {
-        var onclick = "clicked('" + (data[i].shortId || data[i]._id) + "')";
-        tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable"">' +
-          '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
-          '<td onclick="' + onclick + '">' + (i+1) + '</td>' +
-          '<td onclick="' + onclick + '">' + ("<%= user._id%>" == data[i].driver ? "Driver" : "Rider") + '</td>' +
-          '<td onclick="' + onclick + '">' + data[i].origin + '</td>' +
-          '<td onclick="' + onclick + '">' + data[i].destination + '</td>' +
-          '<td onclick="' + onclick + '">$' + data[i].inconvenience + '</td>' +
-          '<td onclick="' + onclick + '">' +  (1 + new Date(data[i].date).getMonth()) + '/' + new Date(data[i].date).getDate() + '</td>' +
-          '</tr>';
+        if(data[i] != null){
+          var onclick = "clicked('" + (data[i].shortId || data[i]._id) + "')";
+          tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable"">' +
+            '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
+            '<td onclick="' + onclick + '">' + (i+1) + '</td>' +
+            '<td onclick="' + onclick + '">' + ("<%= user._id%>" == data[i].driver ? "Driver" : "Rider") + '</td>' +
+            '<td onclick="' + onclick + '">' + data[i].origin + '</td>' +
+            '<td onclick="' + onclick + '">' + data[i].destination + '</td>' +
+            '<td onclick="' + onclick + '">$' + data[i].inconvenience + '</td>' +
+            '<td onclick="' + onclick + '">' +  (1 + new Date(data[i].date).getMonth()) + '/' + new Date(data[i].date).getDate() + '</td>' +
+            '</tr>';
+          }
       }
     }
   }

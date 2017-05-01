@@ -4,7 +4,7 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 
   require("./add_rider")(app, Route, User, mail);
 
-  require("./remove_rider")(app, Route, mail);
+  require("./remove_rider")(app, Route, User);
 
   require("./cancel_request")(app, Route, User);
 
@@ -29,6 +29,8 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
   require("./notifications")(app, NotificationRequests, User, gmAPI, geocode);
 
   require("./claim")(app, Route, DriverlessRoute);
+
+  require('./remove_rider_entirely')(app, Route, User);
 
   app.get('/profile', function(req, res){
   	res.render('profile');

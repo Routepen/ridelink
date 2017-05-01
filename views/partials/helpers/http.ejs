@@ -60,6 +60,18 @@ http.prototype.removeRider = function(riderId, routeData, callback) {
   });
 }
 
+http.prototype.removeRiderEntirely = function(riderId, routeIds, callback) {
+  var post = {
+    userId: riderId,
+    routeIds: routeIds
+  };
+
+  var me = this;
+  $.post("/route/removeriderentirely", post, function(data, textStatus) {
+    callback();
+  });
+}
+
 
 http.prototype.cancelRiderRequest = function(routeData, callback) {
   var post = {

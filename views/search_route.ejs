@@ -326,7 +326,6 @@
 
     function baggageModal(){
         if(user == null){
-            //TODO send Routes signing up, closeRoutes, origin, destination, baggage,
             window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href);
         }
         else{
@@ -360,7 +359,6 @@
 
     //Signup Process for batch sending
     function addOrUpdateRider(){
-      //TODO don't allow users to signup for the routes again and for their own routes
         var number = 0;
         $('.myCheckbox').each(function(route){
             if(this.checked){
