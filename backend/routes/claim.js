@@ -1,6 +1,7 @@
 const util = require("../helpers/util");
 const mongoose = require("mongoose");
 const Promise = require("bluebird");
+const _ = require("lodash");
 
 module.exports = function(app, Route, DriverlessRoute) {
   app.post('/route/claim', function(req, res) {
@@ -21,12 +22,16 @@ module.exports = function(app, Route, DriverlessRoute) {
 
 
     console.log("ids", ids);
-    DriverlessRoute.find({"driverInfo.name" : req.user.facebook.name}, function(err, routes) {
+    DriverlessRoute.find({"date" : {"$gte": new Date(Date.now())}}, function(err, routes) {
       if (err) {
         console.log(err);
         res.status(500);
         return res.end("db error");
       }
+
+      routes = routes.filter(function(route) {
+        return util.profilePicture.haveSameUser(route.driverInfo.profilePicture, _.get(req.user, "facebook.photos[0].value"));
+      });
 
 
       var promises = [];

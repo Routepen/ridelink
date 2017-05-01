@@ -65,7 +65,7 @@ module.exports = {
   user: {
     couldHaveDriverlessRoutes: function(user) {
       return new Promise(function(resolve, reject) {
-        DriverlessRoute.find({"driverInfo.name" : user.facebook.name}, function(err, routes) {
+        DriverlessRoute.find({"date": {"$gte": new Date(Date.now())}}, function(err, routes) {
           if (err) { console.log(err); return reject(err); }
 
           if (!routes) { return resovle(false); }
