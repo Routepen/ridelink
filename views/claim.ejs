@@ -71,8 +71,10 @@
 </div>
 
 <div id="content" class="fill">
-  <center style="margin-top: 50px;"><span style="font-size:20px">Are any of these yours?</span></center>
-  <div style="width: 50%; margin-left: 5%">
+  <div class="col-md-7" style="overflow: scroll; height:100%; padding-left: 20px">
+    <center style="margin-top: 50px; margin-bottom: 20px"><span style="font-size:20px;">
+      Do you plan on driving for any of these routes?
+    </span></center>
     <table class="table" style="margin-top: 50px">
         <thead>
           <tr class="riderElement-inverse" >
@@ -87,7 +89,7 @@
         </thead>
         <tbody id="tbody">
           <% for (var i = 0; i < routes.length; i++) { %>
-              <tr class="closeRoutesRow riderElement riderElement-inverse clickable">
+              <tr class="closeRoutesRow riderElement riderElement-inverse">
                   <td> <input class="myCheckbox" type="checkbox"> </td>
                   <td> <%= i+1 %> </td>
                   <td> </td>
@@ -102,14 +104,21 @@
      </table>
 
      <br/>
-     <button class="btn btn-success" onclick="clicked()">Save</button>
+     <button class="btn btn-success" onclick="submit()">Save</button>
+  </div>
+  <div class="col-md-5" style="overflow: scroll; height:100%;">
+    <div id="map"></div>
   </div>
 </div>
 
 </body>
 
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer>
+</script>
 <script type="text/javascript">
-  function clicked() {
+
+  function submit() {
 
     var ids = [];
     $("tbody>tr").each(function(i, elem) {
@@ -128,7 +137,59 @@
       console.log("data, text:", data, text);
 
       window.location.href = data;
-    })
+    });
   }
+
+  function initMap() {
+    NavBarAutocompleteHandler();
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+      mapTypeControl: false,
+      center: {lat: 34.4140, lng: -119.8489},
+      zoom: 13
+    });
+
+    new showRoute(map);
+  }
+
+
+  var routes = <%- JSON.stringify(routes) %>;
+  function showRoute(map) {
+      this.map = map;
+      this.originPlaceId = null;
+      this.destinationPlaceId = null;
+      this.travelMode = 'DRIVING';
+      this.directionsService = new google.maps.DirectionsService;
+      this.geocoder = new google.maps.Geocoder();
+
+      var me = this;
+      routes.forEach(function(route) {
+        addRoute.call(me, route.origin, route.destination, route.waypoints, me.map);
+      });
+  }
+
+  function addRoute(origin, destination, waypoints, map, callback) {
+    var directionsDisplay = new google.maps.DirectionsRenderer;
+    directionsDisplay.setMap(map);
+
+    this.directionsService.route({
+      origin: origin,
+      destination:  destination,
+      travelMode: this.travelMode,
+    }, function(response, status) {
+      if (status === 'OK') {
+        directionsDisplay.setDirections(response);
+        if (callback) callback();
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    });
+  }
+
+  function trClicked(tr) {
+    var checkbox = $(tr).find('input')[0];
+    checkbox.checked = !checkbox.checked;
+  }
+
 </script>
 </html>
