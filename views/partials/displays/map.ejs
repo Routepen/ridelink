@@ -26,6 +26,8 @@ function mapManager(map, routeData) {
 mapManager.prototype.drawMap = function(callback) {
   var routeData = this.routeData;
 
+  if (!routeData) return;
+
   var waypoints = [];
   for (var i = 0; i < routeData.confirmedRiders.length; i++) {
     waypoints.push({

@@ -31,20 +31,19 @@ module.exports = function(app, Route, DriverlessRoute) {
 
       var promises = [];
 
-      for (var i = 0; i < routes.length; i++) {
+      routes.forEach(function(route) {
         var found = false;
         for (var j = 0; j < ids.length; j++) {
-          if (ids[j] == routes[i]._id) {
+          if (ids[j] == route._id) {
             found = true;
             break;
           }
         }
 
         if (found) {
-          console.log("adding route ", routes[i]._id);
-          var routeData = routes[i];
+          console.log("adding route ", route._id);
 
-          var r = Route(routeData);
+          var r = Route(route);
           r._id = mongoose.Types.ObjectId();
           r.driver = req.user._id;
           r.isNew = true;
@@ -60,10 +59,10 @@ module.exports = function(app, Route, DriverlessRoute) {
         else {
           console.log("doing nothing with ", routes[i]._id);
         }
-        routes[i].remove(function(err) {
+        route.remove(function(err) {
           if (err) { console.log(err); }
         });
-      }
+      });
 
       Promise.all(promises).then(function(newIds) {
         newIds.forEach(function(id) {
