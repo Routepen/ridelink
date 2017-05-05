@@ -26,6 +26,8 @@
     <!-- Custom styles for this template -->
     <link href="/css/main.css" rel="stylesheet">
 
+    <script src="/js/alert.js"> </script>
+
     <script type="text/javascript">  <% include ./partials/helpers/http %> </script>
 
 
@@ -42,6 +44,8 @@
 <body style="background-color:#0c84e4; overflow: hidden">
 
 <% include ./partials/displays/navbar %>
+
+<div id="bootstrap-alert"> </div>
 
 <div style="padding-top: 40px"></div>
 
@@ -147,21 +151,15 @@
   console.log(user._id);
 
   function unsignup(){
-    var counter = 0;
     var array = [];
     $('.myCheckbox').each(function(route){
         if(this.checked){
-            counter++;
-            if(data[route].driver == user._id){
-                //TODO delete route - make date 1/1/1900
-            }
-            else{
               array.push(data[route]._id);
-            }
         }
       });
       http.prototype.removeRiderEntirely(user._id, array, function(){});
-      setTimeout(function(){ window.location.href = window.location.href;}, 300);
+
+      setTimeout(function(){ window.location.href = window.location.href;}, 700);
   }
 
 

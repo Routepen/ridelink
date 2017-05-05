@@ -1,0 +1,47 @@
+<div class="col-md-4 core-container" >
+    <div style="padding-left:10px; padding-top:10px;">
+        <h3 style="padding-bottom:10px; padding-top:10px; color: #3367D6">
+            Victor's Route
+        </h3>
+
+        <div class="panel panel-default" >
+            <div class="panel-heading" id="link-panel">
+                <div class="col-md-6">
+                    Get shareable link  <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px; padding-top:10px"> </span>
+                </div>
+                <div class="col-md-push-3" id="copy-link">
+                    <a class="btn btn-md"> Copy link </a>
+                </div>
+            </div>
+            <div class="panel-body getlink-container">
+                <input onClick="select()"  class=" form-control" readonly="readonly" value="https://maps.com/127"> </input>
+            </div>
+        </div>
+
+        <!--             <span class="glyphicon glyphicon-paperclip" style="padding-right: 5px;"> </span>  Share your route:  <a href="/">  https://maps.com/127 </a>-->
+        <form class="row" action="/addroute/">
+            <div >
+                <i class="material-icons" style="padding-left:10px ">adjust</i><input id="origin-input" class="controls" type="text" placeholder="Enter an origin location...">
+            </div>
+                <!--<input id="origin" type="text" name='origin' class="form-control" placeholder="Origin"> -->
+            <div>
+                <i class="material-icons" style = "padding-left:10px">place</i><input id="destination-input" class="controls" type="text" placeholder="Enter a destination location...">
+            </div>
+                <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
+           <!--  <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a> -->
+
+          <hr>
+          <div class="col-md-6">
+              <i class=""></i> <input id="num-seats" class="controls" type="text" placeholder="Enter number of seats...">
+
+              <input id="date" class="controls" type="text" placeholder="Date...">
+              <br><br>
+              <input type="submit" class="btn btn-md" value="Create Route">
+          </div>
+        </form>
+        <hr>
+
+        <br>
+
+    </div>
+</div>

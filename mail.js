@@ -119,9 +119,10 @@ function sendMail(options) {
     }
     if (options.notifyDriver.routeCreated) {
       subject = "Route Created";
-      text = mail_templates.notifyDriverRouteCreated_txt();
+      var herelink = "<a href=\"" + domain + "/route?id=" + options.route._id + "\">" +  domain + "/route?id=" + options.route._id + "</a>"
+      text = mail_templates.notifyDriverRouteCreated_txt(herelink);
 
-      html = mail_templates.notifyDriverRouteCreated_html();
+      html = mail_templates.notifyDriverRouteCreated_html(herelink);
     }
   }
 

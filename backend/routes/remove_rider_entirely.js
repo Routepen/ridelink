@@ -13,59 +13,57 @@ app.post('/route/removeriderentirely', function(req, res) {
     }
 
     Route.find(data, function(err, routes) {
-
-      for(var i = 0; i < routes.length; i++){
-        if ( !((routes[i].riders.indexOf(req.user._id.toString()) > -1) || (routes[i].confirmedRiders.indexOf(req.user._id.toString())) > -1)) {
-          console.log("hacking");
-          return res.end("failure");
-        }
-      }
-
       for(var k = 0; k < routes.length; k++){
-        for (var i = 0; i < routes[k].confirmedRiders.length; i++) {
-          var rider = routes[k].confirmedRiders[i];
-          if (rider.toString() == removingId) {
-            console.log("removing confirmed rider on routes", routes[k]._id);
-            routes[i].confirmedRiders.splice(i, 1);
-            break;
-          }
+
+        if(routes[k].driver.toString() == req.body.userId.toString()){
+          var outdate = new Date(1900, 01, 01)
+          routes[k].date = outdate.toISOString();
+          console.log("Inside: ", outdate);
         }
-      }
+        else{
+            for(var i = 0; i < routes.length; i++){
+              if ( !((routes[k].riders.indexOf(req.user._id.toString()) > -1) || (routes[k].confirmedRiders.indexOf(req.user._id.toString())) > -1)) {
+                console.log("hacking");
+                return res.end("failure");
+              }
+            }
 
-      for(var k = 0; k < routes.length; k++){
-        for (var i = 0; i < routes[k].riders.length; i++) {
-          var rider = routes[k].riders[i];
-          if (rider.toString() == removingId) {
-            console.log("removing regular rider on routes", routes[k]._id);
-            routes[k].riders.splice(i, 1);
-            break;
-          }
+            for (var i = 0; i < routes[k].confirmedRiders.length; i++) {
+              var rider = routes[k].confirmedRiders[i];
+              if (rider.toString() == removingId) {
+                console.log("removing confirmed rider on routes", routes[k]._id);
+                routes[i].confirmedRiders.splice(i, 1);
+                break;
+              }
+            }
+
+
+            for (var i = 0; i < routes[k].riders.length; i++) {
+              var rider = routes[k].riders[i];
+              if (rider.toString() == removingId) {
+                console.log("removing regular rider on routes", routes[k]._id);
+                routes[k].riders.splice(i, 1);
+                break;
+              }
+            }
+
+            delete routes[k].dropOffs[req.user._id];
+            delete routes[k].pickUps[req.user._id];
+
+
+            if (routes[k].riderStatus[removingId]) {
+              delete routes[k].riderStatus[removingId];
+            }
+
+            routes[k].markModified('dropOffs');
+            routes[k].markModified('pickUps');
+            routes[k].markModified('riderStatus');
         }
-      }
 
-      for(var i = 0; i < routes.length; i++){
-        delete routes[i].dropOffs[req.user._id];
-        delete routes[i].pickUps[req.user._id];
-      }
 
-      for(var i = 0; i < routes.length; i++){
-          if (routes[i].riderStatus[removingId]) {
-            delete routes[i].riderStatus[removingId];
-          }
-      }
-
-      for(var i = 0; i < routes.length; i++){
-        routes[i].markModified('dropOffs');
-        routes[i].markModified('pickUps');
-        routes[i].markModified('riderStatus');
-      }
-
-      for(var i = 0; i < routes.length; i++){
-          routes[i].save(function(err){
-            if (err) { console.log(err); return res.end(err.toString()); }
-
-            res.end("success");
-          });
+        routes[k].save(function(err){
+          if (err) { console.log(err); return res.end(err.toString()); }
+        });
       }
     });
 

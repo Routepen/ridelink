@@ -46,6 +46,8 @@
     <!-- Custom styles for this template -->
     <link href="/css/main.css" rel="stylesheet">
 
+    <script src="/js/alert.js"> </script>
+
     <link type="text/css" href="/css/bootstrap-timepicker.min.css" />
     <script type="text/javascript" src="/js/bootstrap-timepicker.min.js"></script>
 
@@ -91,16 +93,10 @@
 
 <% include ./partials/displays/navbar %>
 
-<div id="alertbox" style="display:none; position: fixed; top:10px; width: 20%; z-index:1000000; margin-left: 40%" class="alert alert-danger" role="alert">
-  <center>
-    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-    <span class="sr-only">Error:</span>
-    <span id="errorMessage"></span>
-  </center>
-</div>
+<div id="bootstrap-alert"> </div>
 
 <div id="content" class="fill">
- 
+
   <% include ./partials/route_info %>
 
   <div id="map"></div>

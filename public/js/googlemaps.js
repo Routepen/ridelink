@@ -75,4 +75,3 @@ AutocompleteDirectionsHandler.prototype.route = function() {
         }
     });
 };
-
