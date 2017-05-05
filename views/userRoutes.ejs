@@ -147,21 +147,20 @@
   console.log(user._id);
 
   function unsignup(){
-    var counter = 0;
     var array = [];
     $('.myCheckbox').each(function(route){
         if(this.checked){
-            counter++;
-            if(data[route].driver == user._id){
-                //TODO delete route - make date 1/1/1900
-            }
-            else{
+            //if(data[route].driver == user._id){
               array.push(data[route]._id);
-            }
+//            }
+  //          else{
+        //    array.push(data[route]._id);
+    //        }
         }
       });
       http.prototype.removeRiderEntirely(user._id, array, function(){});
-      setTimeout(function(){ window.location.href = window.location.href;}, 300);
+
+      setTimeout(function(){ window.location.href = window.location.href;}, 700);
   }
 
 

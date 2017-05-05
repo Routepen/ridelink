@@ -37,7 +37,6 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
     }
 
     var originCoor, destinationCoor;
-    //TODO geocode the origin and distance (check to see if it's in the cache already), then enter it as total distance
 
     let getOrigin = geocode(req.body.origin, gmAPI);
     let getDestination = geocode(req.body.destination, gmAPI);

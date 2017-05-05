@@ -131,6 +131,7 @@
 </div>
 
 <div id="content" class="fill">
+    <div id="bootstrap-alert"> </div>
     <div class="col-md-7">
         <div class="row" style="padding-top: 10px">
             <div class="row origin-destination-display">
@@ -205,6 +206,7 @@
     var signup = <%- JSON.stringify(signup) %>;
 
     var me = this;
+
 /*
     if(user == null){
       window.location.href = '/auth/facebook?redirect=' + encodeURIComponent(window.location.href) + '&notifications=true';
@@ -370,6 +372,18 @@
         $("#baggageModal").modal('toggle');
         window.alert("Congrats you've successfully signed up for " + number + " rides. " + "We don't want you to miss out on future rides, so be sure to signup for notifications!");
         /*
+
+        $("#bootstrap-alert").html('<div class="alert alert-success"><button type="button" class="close">×</button>Successfully updated record!</div>');
+         window.setTimeout(function() {
+               $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                   $(this).remove();
+               });
+           }, 5000);
+         $('.alert .close').on("click", function(e){
+               $(this).parent().fadeTo(500, 0).slideUp(500);
+            });
+
+
         if(number == 0){
           document.getElementById('content').innerHTML = "<div class="'alert alert-danger fade in'">" +
           "<a href="'#'" class="'close'" data-dismiss="'alert'">&times;</a>" +
