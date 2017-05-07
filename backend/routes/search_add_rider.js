@@ -58,6 +58,16 @@ module.exports = function(app, Route, User, mail) {
       route.markModified('pickUps');
       route.markModified('riderStatus');
 
+      User.findById(userId, function(err, riderUser) {
+        console.log('rider', riderUser);
+        riderUser.confirmedEmail = req.body.email;
+        riderUser.markModified('email');
+        riderUser.save(function(err){
+          if (err) { console.log(err); return res.end(err.toString()); }
+          res.end("Changed Rider's email");
+        });
+      });
+
       if (!riderFound) { // rider added
         req.user.routes = req.user.routes || [];
         req.user.routes.push(route);
@@ -74,6 +84,7 @@ module.exports = function(app, Route, User, mail) {
         else {
           User.findById(userId, function(err, riderUser) {
             console.log('rider', riderUser);
+
             mail.sendMail({
               recipient: route.driver,
               route: route,

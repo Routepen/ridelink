@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="/css/jquery-ui.css">
     <link href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css' rel='stylesheet'type='text/css'>
 
-
+    <script src="/js/alert.js"> </script>
     <!--<link href="/css/new_landing.css" rel="stylesheet"> -->
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -95,6 +95,9 @@
             <option>More than two bags</option>
           </select>
         </div>
+        <b>Email: </b>
+        <input id="email-notification-baggage" class="controls" type="text" placeholder="Email..." value=<%- user ? user.facebook.confirmedEmail : "" %>>
+        <br/>
       </div>
       <div class="modal-footer">
         <input type="submit" class="btn btn-success" onclick="addOrUpdateRider(this)" value="Join">
@@ -341,8 +344,9 @@
               $("#baggageModal").modal('toggle');
             }
             else{
-              window.alert("Please check the rides you want to sign up for");
+              dangerAlert("Try clicking me after youve checked off a ride. ");
             }
+            $("#email-notification-baggage").val(user.confirmedEmail || '');
         }
     }
 
@@ -351,11 +355,19 @@
       var origin = "<%= origin %>";
       var destination = "<%= destination %>";
       var confirmedEmail = $('#email-notification').val();
-
       var dateRange = [$('#date-start-notification').val(), $('#date-end-notification').val()];
 
-      http.prototype.requestNotifications(origin, destination, dateRange, confirmedEmail, function(result, data) {
+      if(confirmedEmail == ''){
+        window.alert("Please fill in an email");
+        return;
+      }
+      if(dateRange[0] == "" || dateRange[1] == ""){
+        window.alert("Please fill in a date range");
+        return;
+      }
 
+      http.prototype.requestNotifications(origin, destination, dateRange, confirmedEmail, function(result, data) {
+        successAlert("Youve successfully signed up for notifications from " + dateRange[0] + " to " + dateRange[1] + "!");
       });
     });
 
@@ -364,41 +376,19 @@
         var number = 0;
         $('.myCheckbox').each(function(route){
             if(this.checked){
-                http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val());
+                http.prototype.searchAddRider(closeRoutes[route]._id, user.id, origin, destination, $('#sel1').val(), $('#email-notification-baggage').val());
                 number++
             }
         });
 
         $("#baggageModal").modal('toggle');
-        window.alert("Congrats you've successfully signed up for " + number + " rides. " + "We don't want you to miss out on future rides, so be sure to signup for notifications!");
-        /*
-
-        $("#bootstrap-alert").html('<div class="alert alert-success"><button type="button" class="close">×</button>Successfully updated record!</div>');
-         window.setTimeout(function() {
-               $(".alert").fadeTo(500, 0).slideUp(500, function(){
-                   $(this).remove();
-               });
-           }, 5000);
-         $('.alert .close').on("click", function(e){
-               $(this).parent().fadeTo(500, 0).slideUp(500);
-            });
-
 
         if(number == 0){
-          document.getElementById('content').innerHTML = "<div class="'alert alert-danger fade in'">" +
-          "<a href="'#'" class="'close'" data-dismiss="'alert'">&times;</a>" +
-          "<strong>Error!</strong> A problem has been occurred while submitting your data." +
-          "</div>";
-          window.alert("Please signup for a ride!");
+          dangerAlert("Try clicking me after youve checked off a ride. ");
         }
-        */
-          /*
-          document.getElementById('content').innerHTML = "<div class="'alert alert-success fade in'">" +
-          "<a href="'#'" class="'close'" data-dismiss="'alert'">&times;</a>" +
-          "<strong>Congrats!</strong> You've successfully signed up for " + number + " rides" +
-          "</div>";
-          */
-          // id = alert-placeholder
+        else{
+          successAlert("Congrats! Youve successfully signed up for " + number + " rides.");
+        }
       }
 
 
@@ -447,7 +437,7 @@
           directionsDisplay.setDirections(response);
           if (callback) callback();
         } else {
-          window.alert('Directions request failed due to ' + status);
+          dangerAlert("Directions request failed due to " + status);
         }
       });
     }
