@@ -5,7 +5,9 @@ const request = require('request');
 module.exports = function(app, Route, User, gmAPI, geocode) {
 
   app.get('/search', (req, res) => {
-
+    if (!req.query.origin || !req.query.destination || req.query.origin == "" || req.query.origin == "") {
+      return res.status(401).send("The fuck are you trying to do?");
+    }
   	//TODO do error handling on user sending in invalid origin/destination
     let getOrigin = geocode(req.query.origin, gmAPI);
     let getDestination = geocode(req.query.destination, gmAPI);
