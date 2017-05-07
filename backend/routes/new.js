@@ -23,7 +23,7 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
   app.post('/route/new', function (req, res) {
     if (!req.user) {
       // TODO Allow user to be informed their session has timed out
-      return res.redirect("/youveBeenLoggedOut");
+      return res.status(401).send("You need to be logged in.");
     }
 
     var rightNow = new Date(Date.now());
