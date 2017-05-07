@@ -3,7 +3,7 @@ thead, tbody {
 }
 tbody{
   overflow-y: scroll;
-  height: 200px;
+  height: 300px;
   overflow-x: hidden;
 }
 /*
