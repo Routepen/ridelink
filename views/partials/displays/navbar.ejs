@@ -14,13 +14,20 @@
                 <div class="col-md-6">
                     <input type="text" name="origin" id="search-origin" class="form-control" size="20" placeholder="Enter your origin"
                            onPaste="" onkeydown="if (event.keyCode == 13) { return false;}"
-                           <% if (url == '/') { %>
-                           autofocus
-                           <% } %>>
+                          <% if (locals.origin) { %>
+                            value = "<%= origin %>"
+                          <% } %>
+                         <%  if (url == '/') { %>
+                         autofocus
+                         <% } %>>
+
                 </div>
                 <div class="col-md-6">
                     <input type="text" name="destination" id="search-destination" class="form-control" size="20" placeholder="Enter your destination"  onPaste=""
-                           onkeydown="if (event.keyCode == 13) { return false;}">
+                           onkeydown="if (event.keyCode == 13) { return false;}"
+                           <% if (locals.destination) { %>
+                            value = "<%= destination %>"
+                           <% } %>>
                 </div>
                 <div class="input-group-btn">
                     <button class="btn btn-default" id="search-button" type="submit">
