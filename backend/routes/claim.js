@@ -96,13 +96,15 @@ module.exports = function(app, Route, DriverlessRoute) {
         return res.end("db error");
       }
 
-      var data = {
-		user: req.user,
-		url: req.url,
-		redirect: req.query.redirect,
-		view: "",
-		action: "",
-		routes: routes
+    var data = {
+      data: {
+        user: req.user,
+        url: req.url,
+        redirect: req.query.redirect,
+        view: "",
+        action: "",
+        routes: routes
+      }
 		};
 
       res.render("claim", data);

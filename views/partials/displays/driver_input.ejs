@@ -9,7 +9,7 @@
             <form action="javascript:confirmEmail()">
                 <div class="modal-body">
                     Send me notifications at
-                    <input id="email-input" type="email" class="form-control" id="emailInput" value="<%= user.confirmedEmail || user.facebook.email %>"
+                    <input id="email-input" type="email" class="form-control" id="emailInput" value="<%= data.user.confirmedEmail || data.user.facebook.email %>"
                            placeholder="Email">
                 </div>
                 <div class="modal-footer">
@@ -88,6 +88,8 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=initMap"
         async defer></script>
 
+<script src="/js/stops.js"></script>
+
 <script type="text/javascript">
 
     var mapInputsCorrect = false;
@@ -101,7 +103,6 @@
       origin: originInput.value
     };
 
-    <% include ./stops %>
 
     var mapHandler, stopsManager;
     function initMap() {
@@ -163,7 +164,7 @@
     function submitForm() {
         if (validateFields()) return;
 
-        if ("<% user.confirmEmail %>" == "") {
+        if (data.user.confirmEmail == "") {
           $("#emailModal").modal('show');
           setTimeout(function() {
             $("#email-input").focus();

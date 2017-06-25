@@ -150,14 +150,16 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
   	}
 
   	var data = {
-  		user: req.user,
-  		routeId: false,
-  		routeData: false,
-  		url: req.url,
-      creatingRoute: true,
-      isDriver: false,
-      view: "",
-      action: ""
+      data: {
+        user: req.user,
+        routeId: false,
+        routeData: false,
+        url: req.url,
+        creatingRoute: true,
+        isDriver: false,
+        view: "",
+        action: ""
+      }
   	};
 
 	   res.render('new_route', data);

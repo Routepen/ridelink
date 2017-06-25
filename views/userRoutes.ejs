@@ -28,7 +28,7 @@
 
     <script src="/js/alert.js"> </script>
 
-    <script type="text/javascript">  <% include ./partials/helpers/http %> </script>
+    <script src="/js/helpers/http"></script>
 
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
@@ -98,9 +98,9 @@
 </div>
 
 <script type="text/javascript">
-  var data = <%- JSON.stringify(routes) %>;
-  var user = <%- JSON.stringify(user || null) %>;
-  data = data.map(function(d) { d.date = new Date(d.date); return d; });
+  var routes = <%- JSON.stringify(data.routes) %>;
+  var user = <%- JSON.stringify(data.user || null) %>;
+  routes = routes.map(function(d) { d.date = new Date(d.date); return d; });
 
   var tbody = document.getElementById('tbody');
   var s = document.getElementsByTagName('select')[0]
@@ -154,7 +154,7 @@
     var array = [];
     $('.myCheckbox').each(function(route){
         if(this.checked){
-              array.push(data[route]._id);
+              array.push(routes[route]._id);
         }
       });
       http.prototype.removeRiderEntirely(user._id, array, function(){});
@@ -163,12 +163,12 @@
   }
 
 
-  function sort(data, sortBy) {
+  function sort(routes, sortBy) {
     var func;
     if (sortBy == "Role") {
       func = function(a, b) {
-        var role1 = ("<%= user._id%>" == a.driver._id ? 1 : 0);
-        var role2 = ("<%= user._id%>" == b.driver._id ? 1 : 0);
+        var role1 = (user._id == a.driver._id ? 1 : 0);
+        var role2 = (user._id == b.driver._id ? 1 : 0);
         return role1 - role2;
       }
     }
@@ -188,29 +188,29 @@
       }
     }
 
-    data.sort(func);
+    routes.sort(func);
   }
 
   function setUpTable(sortBy) {
 
-    sort(data, sortBy);
+    sort(routes, sortBy);
 
     tbody.innerHTML = "";
-    if (data.length == 0) {
+    if (routes.length == 0) {
       tbody.innerHTML = '<tr><td style="color: white; font-size:18px">You have no routes. Why don\'t you <a href="/route/new" style="color:lightgray">create one</a> or signup for one';
     }
     else {
-      for (var i = 0; i < data.length; i++) {
-        if(data[i] != null){
-          var onclick = "clicked('" + (data[i].shortId || data[i]._id) + "')";
+      for (var i = 0; i < routes.length; i++) {
+        if(routes[i] != null){
+          var onclick = "clicked('" + (routes[i].shortId || routes[i]._id) + "')";
           tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable"">' +
             '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
             '<td onclick="' + onclick + '">' + (i+1) + '</td>' +
-            '<td onclick="' + onclick + '">' + ("<%= user._id%>" == data[i].driver ? "Driver" : "Rider") + '</td>' +
-            '<td onclick="' + onclick + '">' + data[i].origin + '</td>' +
-            '<td onclick="' + onclick + '">' + data[i].destination + '</td>' +
-            '<td onclick="' + onclick + '">$' + data[i].inconvenience + '</td>' +
-            '<td onclick="' + onclick + '">' +  (1 + new Date(data[i].date).getMonth()) + '/' + new Date(data[i].date).getDate() + '</td>' +
+            '<td onclick="' + onclick + '">' + (user._id == routes[i].driver ? "Driver" : "Rider") + '</td>' +
+            '<td onclick="' + onclick + '">' + routes[i].origin + '</td>' +
+            '<td onclick="' + onclick + '">' + routes[i].destination + '</td>' +
+            '<td onclick="' + onclick + '">$' + routes[i].inconvenience + '</td>' +
+            '<td onclick="' + onclick + '">' +  (1 + new Date(routes[i].date).getMonth()) + '/' + new Date(routes[i].date).getDate() + '</td>' +
             '</tr>';
           }
       }

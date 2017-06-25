@@ -88,6 +88,7 @@
           </tr>
         </thead>
         <tbody id="tbody">
+          <% var routes = data.routes; %>
           <% for (var i = 0; i < routes.length; i++) { %>
               <tr class="closeRoutesRow riderElement riderElement-inverse">
                   <td> <input class="myCheckbox" type="checkbox"> </td>
@@ -129,7 +130,7 @@
 
     var data = {
       ids: ids.map(function(id) { return id.trim(); }),
-      redirect: "<%= redirect %>"
+      redirect: "<%= data.redirect %>"
     }
 
     console.log("sending", data);
@@ -153,7 +154,7 @@
   }
 
 
-  var routes = <%- JSON.stringify(routes) %>;
+  var routes = <%- JSON.stringify(data.routes) %>;
   function showRoute(map) {
       this.map = map;
       this.originPlaceId = null;
