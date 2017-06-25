@@ -64,32 +64,6 @@
 
 <body style="overflow:hidden;">
 
-<script>
-/*
-    function checkLoginState() {
-        FB.getLoginStatus(function (response) {
-            statusChangeCallback(response);
-        });
-    }
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId      : '1122786494515943',
-            cookie     : true,
-            xfbml      : true,
-            version    : 'v2.8'
-        });
-        FB.AppEvents.logPageView();
-    };
-
-    (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-*/
-</script>
 
 <% include ./partials/displays/navbar %>
 
@@ -97,26 +71,29 @@
 
 <div id="content" class="fill">
 
-  <% include ./partials/route_info %>
+  <% include ./partials/displays/route_info %>
 
-  <div id="map"></div>
+  <% include ./partials/displays/map %>
 </div>
 
 
-<script type="text/javascript">
-<% if (user) { %>
-  console.log("loggeddsf in");
-<% } else { %>
-  console.log("not logged in");
-<% } %>
-</script>
+<% if (data.routeId) { %>
+  <script type="text/javascript">
+    var data = <%- JSON.stringify(data) %>;
 
-<% if (routeId) { %>
-  <% include ./partials/route_js %>
-<% } %>
+  </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer>
-</script>
+  <script src="/js/table.js"></script>
+  <script src="/js/info_display.js"></script>
+  <script src="/js/clock.js"></script>
+  <script src="/js/helpers/http.js"></script>
+  <script src="/js/helpers/route_data_updater.js"></script>
+  <script src="/js/heading.js"></script>
+  <script src="/js/modals/join_ride.js"></script>
+  <script src="/js/modals/facebook.js"></script>
+  <script src="/js/route.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer></script>
+<% } %>
 
 
 </body>

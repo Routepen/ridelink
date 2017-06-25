@@ -62,53 +62,21 @@
 
 <body style="overflow:hidden;">
 
-<script>
-/*
-    function checkLoginState() {
-        FB.getLoginStatus(function (response) {
-            statusChangeCallback(response);
-        });
-    }
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId      : '1122786494515943',
-            cookie     : true,
-            xfbml      : true,
-            version    : 'v2.8'
-        });
-        FB.AppEvents.logPageView();
-    };
-    (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-*/
-</script>
+  <% include ./partials/displays/navbar %>
 
-<% include ./partials/displays/navbar %>
+  <div id="bootstrap-alert"> </div>
 
-<div id="bootstrap-alert"> </div>
+  <div id="content" class="fill">
 
-<div id="content" class="fill">
+    <% include ./partials/displays/driver_input %>
 
-  <% include ./partials/displays/driver_input %>
-
-  <div id="map"></div>
-</div>
-
-
-<script type="text/javascript">
-<% if (user) { %>
-  console.log("loggeddsf in");
-<% } else { %>
-  console.log("not logged in");
-<% } %>
-</script>
-
-
+    <% include ./partials/displays/map %>
+  </div>
 
 </body>
+
+<script src="/js/map.js"></script>
+
+
+
 </html>
