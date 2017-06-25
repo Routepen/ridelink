@@ -1,9 +1,3 @@
-<% include ./location_display %>
-<% include ./date_display %>
-<% include ./seats_display %>
-<% include ./time_display %>
-<% include ./stops %>
-
 
 function InfoDisplay(routeData, userStatus, mapHandler) {
   this.routeData = routeData;

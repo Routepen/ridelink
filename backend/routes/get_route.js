@@ -38,20 +38,22 @@ module.exports = function(app, Route) {
       }
 
   		var data = {
-  			routeId: route._id,
-  			user: req.user,
-        		userId: userId,
-  			routeData: route,
-  			routeDataString: JSON.stringify(route, null, 4),
-  			url: req.url,
-  			isDriver: isDriver,
-  			isRider: isRider,
-  			confirmedRider: confirmedRider,
-  			opened: opened,
-        view: req.query.view || "",
-        action: req.query.action || "",
-        riderId: req.query.riderId || "",
-        paymentConfirmed: req.query.status == "paymentConfirmed"
+        data: {
+          routeId: route._id,
+          user: req.user,
+              userId: userId,
+          routeData: route,
+          routeDataString: JSON.stringify(route, null, 4),
+          url: req.url,
+          isDriver: isDriver,
+          isRider: isRider,
+          confirmedRider: confirmedRider,
+          opened: opened,
+          view: req.query.view || "",
+          action: req.query.action || "",
+          riderId: req.query.riderId || "",
+          paymentConfirmed: req.query.status == "paymentConfirmed"
+        }
   		};
 
   		res.render('route', data);

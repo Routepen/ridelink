@@ -52,13 +52,15 @@ module.exports = function(app, Route, User, gmAPI, geocode) {
         //render
         // TODO Fill in Maps API call and send JSON to front end to parse
         var credentials = {
-          user: req.user,
-          notifications: req.query.notifications || null,
-          signup: req.query.signup || null,
-          url: req.url,
-          origin: req.query.origin,
-          destination: req.query.destination,
-          closeRoutes: closeRoutes // An array of all relevant routes
+          data: {
+            user: req.user,
+            notifications: req.query.notifications || null,
+            signup: req.query.signup || null,
+            url: req.url,
+            origin: req.query.origin,
+            destination: req.query.destination,
+            closeRoutes: closeRoutes // An array of all relevant routes
+          }
         };
         res.render("search_route", credentials);
       });

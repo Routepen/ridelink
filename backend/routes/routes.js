@@ -38,8 +38,10 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 
   app.get('/', function (req, res) {
   	var data = {
-  		user: req.user,
-  		url: req.url
+      data: {
+        user: req.user,
+        url: req.url
+      }
   	};
 
   	res.render('landing', data);
@@ -64,9 +66,11 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 
   	Route.find({ _id: {$in:req.user.routes}}, function(err, routes) {
   		var data = {
-  			user: req.user || false,
-  			url: req.url,
-  			routes: routes
+        data: {
+          user: req.user || false,
+          url: req.url,
+          routes: routes
+        }
   		};
 
   		res.render('userRoutes', data);

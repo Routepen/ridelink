@@ -32,13 +32,13 @@ function msToTime(ms) {
 }
 
 function updateClock() {
-  <% if (confirmedRider) { %>
-    var d = new Date(routeData.riderStatus["<%= user._id %>"].confirmedOn);
+  if (data.confirmedRider) {
+    var d = new Date(routeData.riderStatus[data.user._id].confirmedOn);
     d.setDate(d.getDate() + 1);
     d.setHours(d.getHours() - 6);
     var ms = d - Date.now();
 
     $("#countDown").html(msToTime(ms));
     setTimeout(updateClock, 1000);
-  <% } %>
+  }
 }

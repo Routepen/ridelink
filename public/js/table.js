@@ -63,11 +63,11 @@ table.prototype.setUpTable = function() {
   });
 
   routeData.confirmedRiders.forEach(function(rider) {
-    <% if (isDriver && view != "rider") { %>
+    if (data.isDriver && data.view != "rider") {
       if (status != "Paid") {
         me.initializeTdElement(rider, status);
       }
-    <% } %>
+    }
   });
 
 
@@ -100,11 +100,11 @@ table.prototype.setUpTable = function() {
     tbody.append(tr);
   });
 
-  <% if (isDriver && view != "rider") { %>
+  if (data.isDriver && data.view != "rider") {
     routeData.riders.forEach(function(rider) {
       if (routeData.confirmedRiders.length < routeData.seats) { me.initializeTdElement(rider, status); }
     });
-  <% } %>
+  }
 }
 
 table.prototype.getTdElement = function(rider, status, waitlisted) {
@@ -144,7 +144,7 @@ table.prototype.getTdElement = function(rider, status, waitlisted) {
     });
   }
 
-  var spanClass = "<%= isDriver  && view != "rider" ? "editableInput" : "" %>";
+  var spanClass = data.isDriver && data.view != "rider" ? "editableInput" : "";
   if (!clickable) { spanClass = ""; }
 
   if (!routeData.requireInitialDeposit && status == "Awaiting payment") {
