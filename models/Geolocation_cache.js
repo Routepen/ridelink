@@ -1,19 +1,19 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const geo_cache = new Schema({
-  location_name: {
-    type: String,
-    required: true
-  },
-  lat: {
-    type: Number,
-    required: true
-  },
-  lng: {
-    type: Number,
-    required: true
-  }
+	location_name: {
+		type: String,
+		required: true
+	},
+	lat: {
+		type: Number,
+		required: true
+	},
+	lng: {
+		type: Number,
+		required: true
+	}
 });
 
 
