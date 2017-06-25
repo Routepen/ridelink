@@ -32,6 +32,13 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 
   require('./remove_rider_entirely')(app, Route, User);
 
+  app.get('/newlanding', function(req,res){
+    var data = {
+      user: req.user,
+      url: req.url
+    }
+    res.render('newlanding', data)
+  });
   app.get('/profile', function(req, res){
   	res.render('profile');
   });
