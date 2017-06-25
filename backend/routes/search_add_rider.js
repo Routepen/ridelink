@@ -86,26 +86,25 @@ module.exports = function(app, Route, User, mail) {
 					User.findById(userId, function(err, riderUser) {
 						console.log('rider', riderUser);
 
-						mail.sendMail({
-							recipient: route.driver,
-							route: route,
-							rider: riderUser,
-							notifyDriver: {
-								riderAdded: true
-							}
-						});
-					});
-
-					mail.sendMail({
-						recipient: req.user,
-						route: route,
-						notifyRider: {
-							signedUp: true
-						}
-					});
-				}
-			}
-			else {// info edited
+            mail.sendMail({
+              recipient: route.driver,
+              route: route,
+              rider: riderUser,
+              notifyDriver: {
+                riderAdded: true
+              }
+            });
+          });
+          mail.sendMail({
+            recipient: req.user,
+            route: route,
+            notifyRider: {
+              signedUp: true
+            }
+          });
+        }
+      }
+      else {// info edited
 
 			}
 
