@@ -1,5 +1,3 @@
-<% include ./drop_off %>
-
 function heading(user, userStatus, routeData) {
   this.callbacks = {};
 

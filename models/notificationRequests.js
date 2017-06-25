@@ -6,25 +6,25 @@ var Schema = mongoose.Schema;
 
 
 var notificationRequestSchema = new Schema({
-  user:{
-      type:Schema.ObjectId,
-      ref:'users'
-  },
-  origin: String,
-  destination: String,
-  originCoor: {"lat": Number, "lng": Number},
-  destinationCoor: {"lat": Number, "lng" : Number},
-  dateRangeStart: Date,
-  dateRangeEnd: Date,
+	user:{
+		type:Schema.ObjectId,
+		ref:'users'
+	},
+	origin: String,
+	destination: String,
+	originCoor: {'lat': Number, 'lng': Number},
+	destinationCoor: {'lat': Number, 'lng' : Number},
+	dateRangeStart: Date,
+	dateRangeEnd: Date,
 });
 
 notificationRequestSchema.pre('save', function(next) {
-    // if created_at doesn't exist, add to that field
-    if (!this.created_at)
-        var currentDate = new Date();
-    this.created_at = currentDate;
+	// if created_at doesn't exist, add to that field
+	if (!this.created_at)
+		var currentDate = new Date();
+	this.created_at = currentDate;
 
-    next();
+	next();
 });
 
 var notificationRequests = mongoose.model('notificationRequest', notificationRequestSchema);

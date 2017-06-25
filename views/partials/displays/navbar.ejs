@@ -15,10 +15,10 @@
                     <input type="text" name="origin" id="search-origin" class="form-control" size="20" placeholder="Enter your origin"
                            onPaste="" onkeydown="if (event.keyCode == 13) { return false;}"
                           <% if (locals.origin) { %>
-                            value = "<%= origin %>"
+                            value = "<%= data.origin %>"
                           <% } %>
-                         <%  if (url == '/') { %>
-                         autofocus
+                         <%  if (data.url == '/') { %>
+                           autofocus
                          <% } %>>
 
                 </div>
@@ -26,7 +26,7 @@
                     <input type="text" name="destination" id="search-destination" class="form-control" size="20" placeholder="Enter your destination"  onPaste=""
                            onkeydown="if (event.keyCode == 13) { return false;}"
                            <% if (locals.destination) { %>
-                            value = "<%= destination %>"
+                            value = "<%= data.destination %>"
                            <% } %>>
                 </div>
                 <div class="input-group-btn">
@@ -47,22 +47,21 @@
                         <span class="glyphicon glyphicon-plus" id="newride"></span> Create Route
                     </a>
                 </li>
-                <% if (user) { %>
+                <% if (data.user) { %>
                 <li>
                     <a href="/route/mine" class="btn newroute btn-md">My Routes</a>
                 </li>
                 <% } %>
-                <% if (user) { %>
+                <% if (data.user) { %>
                 <li><a href="/auth/logout" data-size="xlarge" class="btn "><span class="fa fa-facebook"></span> Logout</a></li>
                 <% } else { %>
-                <li><a href="/auth/facebook?redirect=<%= encodeURIComponent(url) %>" data-size="xlarge" class="loginbtn btn "><span class="fa fa-facebook"></span> Login Facebook</a></li>
+                <li><a href="/auth/facebook?redirect=<%= encodeURIComponent(data.url) %>" data-size="xlarge" class="loginbtn btn "><span class="fa fa-facebook"></span> Login Facebook</a></li>
                 <% } %>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
 </nav>
 
-<!--<div style="margin-top:100px"></div> -->
 
 <script type="text/javascript">
 
@@ -88,31 +87,5 @@
           alert("Please input your origin and destination");
         }
     }
-/*
-    var posted = false;
-    function post(){
-        if(validateFields()){
-            return;
-        }
-        if(posted) return;
-        posted = true;
-
-        var data = {
-            origin : originInput.value,
-            destination : destinationInput.value
-        }
-
-        $.get('/search', data, function(data, status){
-            console.log(data, status);
-            if (status == "success") {
-               //document.body.innerHTML = data;
-            }
-            else {
-                posted = false;
-            }
-        })
-         .error(function() { alert("Request failed."); });
-    }
-    */
 
 </script>

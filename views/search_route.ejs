@@ -38,7 +38,7 @@
     <link href="/css/search_route.css" rel="stylesheet">
 
 
-    <script type="text/javascript">  <% include ./partials/helpers/http %> </script>
+    <script src="/js/helpers/http.js"></script>
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
@@ -71,7 +71,7 @@
                 <h4 class="modal-title" style="margin: auto"> Please login before you signup for rides! </h4>
             </div>
             <div class="modal-footer">
-                <a href="/auth/facebook?redirect=<%= encodeURIComponent(url) %>" data-size="xlarge" class="btn btn-primary" style="float: left"><span class="fa fa-facebook"></span> Login Facebook</a>
+                <a href="/auth/facebook?redirect=<%= encodeURIComponent(data.url) %>" data-size="xlarge" class="btn btn-primary" style="float: left"><span class="fa fa-facebook"></span> Login Facebook</a>
                 <!--<input type="submit" id="fb-login" class="btn btn-primary" data-dismiss="modal" value="Login to Facebook"> -->
             </div>
         </div>
@@ -96,7 +96,7 @@
           </select>
         </div>
         <b>Email: </b>
-        <input id="email-notification-baggage" class="controls" type="text" placeholder="Email..." value=<%- user ? user.facebook.confirmedEmail : "" %>>
+        <input id="email-notification-baggage" class="controls" type="text" placeholder="Email..." value=<%- data.user ? data.user.facebook.confirmedEmail : "" %>>
         <br/>
       </div>
       <div class="modal-footer">
@@ -117,7 +117,7 @@
             </div>
             <div class="modal-body">
               <b>Email: </b>
-              <input id="email-notification" class="controls" type="text" placeholder="Email..." value=<%- user ? user.facebook.confirmedEmail : "" %>>
+              <input id="email-notification" class="controls" type="text" placeholder="Email..." value=<%- data.user ? data.user.facebook.confirmedEmail : "" %>>
               <br/>
                 <b>For rides leaving between</b>
                 <input id="date-start-notification" class="controls" type="text" placeholder="Date...">
@@ -137,12 +137,6 @@
     <div id="bootstrap-alert"> </div>
     <div class="col-md-7">
         <div class="row" style="padding-top: 10px">
-            <!---<div class="row origin-destination-display">
-                 <span style="font-size:20px; color: black">From: <%= origin %></span>
-             </div>
-             <div class="row origin-destination-display">
-                  <span style="font-size:20px; color: black">To:  <%= destination %></span>
-             </div> -->
          </div>
           <div class"row">
             <div class="panels">
@@ -180,15 +174,15 @@
                   </thead>
                   <tbody id="tbody">
                     <!--
-                        <% for (var i = 0; i < closeRoutes.length; i++) { %>
-                            <tr class="closeRoutesRow riderElement riderElement-inverse clickable" onclick="'+ onclick + '">
+                        <% for (var i = 0; i < data.closeRoutes.length; i++) { %>
+                            <tr class="data.closeRoutesRow riderElement riderElement-inverse clickable" onclick="'+ onclick + '">
                                 <td> <input class="myCheckbox" type="checkbox"> </td>
                                 <td> <%= i+1 %> </td>
-                                <td> <%= closeRoutes[i].driver.facebook.name %> </td>
-                                <td> <%= closeRoutes[i].origin %> </td>
-                                <td> <%= closeRoutes[i].destination %> </td>
-                                <td> <%= closeRoutes[i].inconvenience %> </td>
-                                <td> <%= closeRoutes[i].date.getMonth()+1 +  '/' + closeRoutes[i].date.getDate() %> </td>
+                                <td> <%= data.closeRoutes[i].driver.facebook.name %> </td>
+                                <td> <%= data.closeRoutes[i].origin %> </td>
+                                <td> <%= data.closeRoutes[i].destination %> </td>
+                                <td> <%= data.closeRoutes[i].inconvenience %> </td>
+                                <td> <%= data.closeRoutes[i].date.getMonth()+1 +  '/' + data.closeRoutes[i].date.getDate() %> </td>
                             </tr>
                           <% } %> -->
                    </tbody>
@@ -201,12 +195,12 @@
 
 <script type="text/javascript">
 
-    var closeRoutes = <%- JSON.stringify(closeRoutes) %>;
-    var origin = <%- JSON.stringify(origin) %>;
-    var destination = <%- JSON.stringify(destination) %>;
-    var user = <%- JSON.stringify(user || null) %>;
-    var notifications = <%- JSON.stringify(notifications) %>;
-    var signup = <%- JSON.stringify(signup) %>;
+    var closeRoutes = <%- JSON.stringify(data.closeRoutes) %>;
+    var origin = <%- JSON.stringify(data.origin) %>;
+    var destination = <%- JSON.stringify(data.destination) %>;
+    var user = <%- JSON.stringify(data.user || null) %>;
+    var notifications = <%- JSON.stringify(data.notifications) %>;
+    var signup = <%- JSON.stringify(data.signup) %>;
 
     var me = this;
 
@@ -352,8 +346,8 @@
 
     // Sign up process for notifications
     $('#requestNotificationsButton').click(function() {
-      var origin = "<%= origin %>";
-      var destination = "<%= destination %>";
+      var origin = "<%= data.origin %>";
+      var destination = "<%= data.destination %>";
       var confirmedEmail = $('#email-notification').val();
       var dateRange = [$('#date-start-notification').val(), $('#date-end-notification').val()];
 
@@ -416,7 +410,7 @@
         this.directionsService = new google.maps.DirectionsService;
         this.geocoder = new google.maps.Geocoder();
 
-        addRoute.call(this, "<%= origin %>", "<%= destination %>", [], this.map);
+        addRoute.call(this, "<%= data.origin %>", "<%= data.destination %>", [], this.map);
 
         var me = this;
         closeRoutes.forEach(function(route) {

@@ -1,5 +1,5 @@
 module.exports.confirm_text = require('./confirm_txt.js');
-module.exports.confirm_html = require('./confirm_html.js')
+module.exports.confirm_html = require('./confirm_html.js');
 module.exports.paid_txt = require('./paid_txt.js');
 module.exports.paid_html = require('./paid_html.js');
 module.exports.infoChanged_txt = require('./infoChanged_txt.js');
