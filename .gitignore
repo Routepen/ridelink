@@ -2,6 +2,9 @@ node_modules/
 .idea/
 *log
 .env
+test/*.jar
+test/geckodriver
+errorShots/
 package-lock.json
 *bundle*.js
 _DS_Store
