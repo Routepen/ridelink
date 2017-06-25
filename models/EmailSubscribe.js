@@ -5,8 +5,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var emailSubscribe = new Schema({
-    email: String,
-    date: Date
+	email: String,
+	date: Date
 });
 
 

@@ -2,9 +2,7 @@
  *  on 2/25/2017.
  */
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-
-var routeSchema = require("./routeSchema");
+var routeSchema = require('./routeSchema');
 /*
 routeSchema.pre('save', function(next) {
     // if created_at doesn't exist, add to that field
