@@ -20,7 +20,7 @@ Stops.prototype.setUpStops = function() {
   for (var i = 0; i < this.count; i++) {
     var div = $('<div></div>');
 
-    <% if (isDriver && view != "rider") { %>
+    if (data.isDriver && data.view != "rider") {
       var cancel = $('<i class="material-icons clickable" style="padding-right:10px; font-size:18px">remove_circle</i>');
       var stop = $('<span style="font-size:18px" class="">' + this.stops[i] + '</span>');
 
@@ -29,10 +29,10 @@ Stops.prototype.setUpStops = function() {
       cancel.click(function() {
           me.removeStop(toRemove);
       });
-    <% } else {%>
+    } else {
       var cancel = '';
       var stop = $('<span style="margin-left: 22px; font-size:18px">' + this.stops[i] + '</span>');
-    <% } %>
+    }
 
     this.stopLocations[i] = div;
 
@@ -98,7 +98,7 @@ Stops.prototype.stopChanged = function(i) {
   var div = $('<div></div>');
   var newLocation = stopDiv.find('input').val();
 
-  <% if (isDriver && view != "rider") { %>
+  if (data.isDriver && data.view != "rider") {
     var cancel = $('<i class="material-icons clickable" style="padding-right:10px; font-size:18px">remove_circle</i>');
     var stop = $('<span style="font-size:18px">' + newLocation + '</span>');
 
@@ -107,10 +107,10 @@ Stops.prototype.stopChanged = function(i) {
     cancel.click(function() {
       me.removeStop(toRemove);
     })
-  <% } else {%>
+  } else {
     var cancel = '<i class="material-icons" style="padding-right:10px; font-size:18px">remove_circle</i>';
     var stop = $('<span style="font-size:18px">' + newLocation + '</span>');
-  <% } %>
+  }
 
   div.attr('id', 'stop' + i);
 

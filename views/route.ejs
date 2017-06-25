@@ -80,11 +80,16 @@
 <% if (data.routeId) { %>
   <script type="text/javascript">
     var data = <%- JSON.stringify(data) %>;
-
   </script>
 
+  <script src="/js/map.js"></script>
   <script src="/js/table.js"></script>
-  <script src="/js/info_display.js"></script>
+  <script src="/js/stops.js"></script>
+  <script src="/js/displays/seats_display.js"></script>
+  <script src="/js/displays/date_display.js"></script>
+  <script src="/js/displays/time_display.js"></script>
+  <script src="/js/displays/location_display.js"></script>
+  <script src="/js/displays/info_display.js"></script>
   <script src="/js/clock.js"></script>
   <script src="/js/helpers/http.js"></script>
   <script src="/js/helpers/route_data_updater.js"></script>
