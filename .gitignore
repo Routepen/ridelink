@@ -3,5 +3,8 @@ node_modules/
 *log
 .env
 package-lock.json
-*bundle*.js
+test/*.jar
+test/geckodriver
+errorShots/
+bundle*.js
 _DS_Store
