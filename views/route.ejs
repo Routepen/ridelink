@@ -10,40 +10,23 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <!--<link rel="icon" href="../../favicon.ico"> -->
-
     <title>Routepen</title>
 
 
     <!-- JQUERY LIRARIES -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"> </script>
     <link rel="stylesheet" href="/css/jquery-ui.css">
 
 
-    <script src="https://code.jquery.com/jquery-1.12.4.js"> </script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"> </script>
-    <!--
-    <script type="text/javascript" src="/js/jquery.timepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="/css/jquery.timepicker.css" />
-
-    <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap-datepicker.css" />
-
--->
-
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-    <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.css" rel="stylesheet">
 
     <!-- editable text -->
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
 
-    <!-- Custom styles for this template -->
     <link href="/css/main.css" rel="stylesheet">
 
     <script src="/js/alert.js"> </script>
@@ -51,45 +34,10 @@
     <link type="text/css" href="/css/bootstrap-timepicker.min.css" />
     <script type="text/javascript" src="/js/bootstrap-timepicker.min.js"></script>
 
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-   <!-- <script src="../../assets/js/ie-emulation-modes-warning.js"></script> -->
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    [endif]-->
 </head>
 
 <body style="overflow:hidden;">
 
-<script>
-/*
-    function checkLoginState() {
-        FB.getLoginStatus(function (response) {
-            statusChangeCallback(response);
-        });
-    }
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId      : '1122786494515943',
-            cookie     : true,
-            xfbml      : true,
-            version    : 'v2.8'
-        });
-        FB.AppEvents.logPageView();
-    };
-
-    (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-*/
-</script>
 
 <% include ./partials/displays/navbar %>
 
@@ -97,26 +45,34 @@
 
 <div id="content" class="fill">
 
-  <% include ./partials/route_info %>
+  <% include ./partials/displays/route_info %>
 
-  <div id="map"></div>
+  <% include ./partials/displays/map %>
 </div>
 
 
-<script type="text/javascript">
-<% if (user) { %>
-  console.log("loggeddsf in");
-<% } else { %>
-  console.log("not logged in");
-<% } %>
-</script>
+<% if (data.routeId) { %>
+  <script type="text/javascript">
+    var data = <%- JSON.stringify(data) %>;
+  </script>
 
-<% if (routeId) { %>
-  <% include ./partials/route_js %>
+  <script src="/js/map.js"></script>
+  <script src="/js/table.js"></script>
+  <script src="/js/stops.js"></script>
+  <script src="/js/displays/seats_display.js"></script>
+  <script src="/js/displays/date_display.js"></script>
+  <script src="/js/displays/time_display.js"></script>
+  <script src="/js/displays/location_display.js"></script>
+  <script src="/js/displays/info_display.js"></script>
+  <script src="/js/clock.js"></script>
+  <script src="/js/helpers/http.js"></script>
+  <script src="/js/helpers/route_data_updater.js"></script>
+  <script src="/js/heading.js"></script>
+  <script src="/js/modals/join_ride.js"></script>
+  <script src="/js/modals/facebook.js"></script>
+  <script src="/js/route.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer></script>
 <% } %>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&callback=initMap&libraries=places"  async defer>
-</script>
 
 
 </body>
