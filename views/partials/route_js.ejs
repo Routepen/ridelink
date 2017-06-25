@@ -91,7 +91,7 @@
 
 
     var pickUpAddress, dropOffAddress;
-    headingManager.addListener('requestRideButtonClicked', function(pickUpAutocomplete, dropOffAutocomplete) {
+    headingManager.addListener('ButButtonClicked', function(pickUpAutocomplete, dropOffAutocomplete) {
       pickUpAddress = pickUpAutocomplete.getPlace().name;
       dropOffAddress = dropOffAutocomplete.getPlace().name;
       console.log("clicked", pickUpAddress, dropOffAddress)

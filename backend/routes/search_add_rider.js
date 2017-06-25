@@ -94,7 +94,6 @@ module.exports = function(app, Route, User, mail) {
               }
             });
           });
-
           mail.sendMail({
             recipient: req.user,
             route: route,
