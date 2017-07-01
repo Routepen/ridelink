@@ -39,9 +39,10 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
     }
     res.render('newlanding', data)
   });
-  app.get('/profile', function(req, res){
-  	res.render('profile');
-  });
+
+	app.get('/profile', function(req, res){
+		res.render('profile');
+	});
 
 	app.get('/', function (req, res) {
 		var data = {
