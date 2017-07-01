@@ -15,11 +15,22 @@ const app = express();
 const GoogleMapsAPI = require('googlemaps');
 // const async = require('async');
 
+const ENV = require('./backend/helpers/env');
+
 const auth = require('./auth');
 
 mongoose.Promise = require('bluebird');
 
-var mongo_url = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ridelink';
+ENV.printMode();
+
+var mongo_url;
+if (ENV.isDev()) {
+	 mongo_url = 'mongodb://127.0.0.1:27017/ridelink';
+}
+else {
+	mongo_url = process.env.MONGODB_URI;
+}
+
 console.log(mongo_url);
 mongoose.connect(mongo_url,  {
 	server: {
