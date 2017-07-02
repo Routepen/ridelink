@@ -32,6 +32,8 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 
 	require('./remove_rider_entirely')(app, Route, User);
 
+	require('../test/testRoutes')(app, User);
+
   app.get('/newlanding', function(req,res){
     var data = {
       user: req.user,
