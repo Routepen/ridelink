@@ -9,7 +9,7 @@ const ENVS = ["PROD", "DEV", "TEST"];
 // test endpoints
 
 function getRealEnv() {
-  let env = process.env.NODE_ENV || "DEV";
+  let env = process.env.NODE_ENV || "PROD";
 
   if (env == "production") { env = "PROD"; } // for heroku
 
