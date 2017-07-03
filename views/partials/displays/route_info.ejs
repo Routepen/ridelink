@@ -14,7 +14,7 @@ Use javascript to input into textarea
           <label for="comment">Post to Facebook:</label>
           <textarea class="form-control" rows="7" id="comment">
             <div>
-            <div>Driving to <%= data.routeData.destination %> on <%= days[data.routeData.date.getDay()] + " " + (data.routeData.date.getMonth() + 1) + "/" + data.routeData.date.getDate() %> around <%= data.routeData.time %>. <%= data.routeData.seats %> spots available, $<%= data.routeData.inconvenience %> per seat.</div>
+            <div>Driving to <%= data.routeData.destination.name %> on <%= days[data.routeData.date.getDay()] + " " + (data.routeData.date.getMonth() + 1) + "/" + data.routeData.date.getDate() %> around <%= data.routeData.time %>. <%= data.routeData.seats %> spots available, $<%= data.routeData.inconvenience %> per seat.</div>
             <br>
             <div>To all interested riders, enter your drop-off location in the link below and I'll confirm you if I see a fit! Otherwise you'll be added to the waitlist. PM me if you have any questions!</div>
           </div>
@@ -22,7 +22,7 @@ Use javascript to input into textarea
         </div>
         -->
         <div contenteditable="true" id="contentEditableMessageDiv">
-          <div>Driving to <%= data.routeData.destination %> on <%= days[data.routeData.date.getDay()] + " " + (data.routeData.date.getMonth() + 1) + "/" + data.routeData.date.getDate() %> around <%= data.routeData.time %>. <%= data.routeData.seats %> spots available, $<%= data.routeData.inconvenience %> per seat.</div>
+          <div>Driving to <%= data.routeData.destination.name %> on <%= days[data.routeData.date.getDay()] + " " + (data.routeData.date.getMonth() + 1) + "/" + data.routeData.date.getDate() %> around <%= data.routeData.time %>. <%= data.routeData.seats %> spots available, $<%= data.routeData.inconvenience %> per seat.</div>
           <br>
           <div>To all interested riders, enter your drop-off location in the link below and I'll confirm you if I see a fit! Otherwise you'll be added to the waitlist. PM me if you have any questions!</div>
           <br>
@@ -30,7 +30,7 @@ Use javascript to input into textarea
         </div>
 
         <!--<textarea>
-          Driving to <%= data.routeData.destination %> on <%= days[data.routeData.date.getDay()] + " " + (data.routeData.date.getMonth() + 1) + "/" + data.routeData.date.getDate() %> around <%= data.routeData.time %>. <%= data.routeData.seats %> spots available, $<%= data.routeData.inconvenience %> per seat.
+          Driving to <%= data.routeData.destination.name %> on <%= days[data.routeData.date.getDay()] + " " + (data.routeData.date.getMonth() + 1) + "/" + data.routeData.date.getDate() %> around <%= data.routeData.time %>. <%= data.routeData.seats %> spots available, $<%= data.routeData.inconvenience %> per seat.
 
           To all interested riders, enter your drop-off location in the link below and I'll confirm you if I see a fit! Otherwise you'll be added to the waitlist. PM me if you have any questions!
 
@@ -270,7 +270,7 @@ Use javascript to input into textarea
         <div class="form-inline editableform">
           <div id="originTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">my_location</i>
-            <input id="editOriginInput" type="text" class="form-control input-sm" style="width:60%" value="<%= data.routeData.origin %>">
+            <input id="editOriginInput" type="text" class="form-control input-sm" style="width:60%" value="<%= data.routeData.origin.name %>">
             <button id="originTextButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
@@ -280,21 +280,14 @@ Use javascript to input into textarea
           </div>
           <div id="originText" style="font-size:18px">
             <i class="material-icons" style="font-size:18px">my_location</i>
-            <span class="<%= data.isDriver && data.view != "rider" ?'editableInput' : '' %>"><%= data.routeData.origin %></span>
+            <span class="<%= data.isDriver && data.view != "rider" ?'editableInput' : '' %>"><%= data.routeData.origin.name %></span>
           </div>
         </div>
-
-        <div id="stops"></div>
-        <% if (data.isDriver && data.view != "rider") { %>
-          <button id="addStopButton" class="btn btn-primary" style="width:200px; margin-left: 12px;">
-            Add Stop
-          </button>
-        <% } %>
 
         <div class="form-inline editableform">
           <div id="destinationTextEditable" style="display:none">
             <i class="material-icons" style="font-size:18px">my_location</i>
-            <input id="editDestinationInput" type="text" class="form-control input-sm" style="width:60%" value="<%= data.routeData.destination %>">
+            <input id="editDestinationInput" type="text" class="form-control input-sm" style="width:60%" value="<%= data.routeData.destination.name %>">
             <button id="destinationTextButtonConfirm" type="button" class="btn btn-primary btn-sm editable-submit">
               <i class="glyphicon glyphicon-ok"></i>
             </button>
@@ -304,7 +297,7 @@ Use javascript to input into textarea
           </div>
           <div id="destinationText" style="font-size:18px">
             <i class="material-icons" style="font-size:18px">place</i>
-            <span class="<%= data.isDriver && data.view != "rider" ?'editableInput' : '' %>"><%= data.routeData.destination %></span>
+            <span class="<%= data.isDriver && data.view != "rider" ?'editableInput' : '' %>"><%= data.routeData.destination.name %></span>
           </div>
         </div>
 

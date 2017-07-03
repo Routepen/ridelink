@@ -13,7 +13,7 @@
                            placeholder="Email">
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Save">
+                    <input id="submitEmailButton" type="submit" class="btn btn-primary" value="Save">
                 </div>
             </form>
         </div>
@@ -43,9 +43,9 @@
                     <div id="destination-error" style="display:none"></div>
                 </div>
                 <div id="editRouteButtons" style="display:none">
-                  <button class="btn btn-secondary" id="acceptRouteButton" onclick="acceptRoute()">This looks good</button><br/>
-                  <button class="btn btn-secondary" id="resetMapButton" onclick="resetMap()" style="display:none">Reset Map</button><br/>
-                  <button class="btn btn-secondary" id="changeRouteButton" onclick="changeRoute()">I'll be taking different route</button>
+                  <button class="btn btn-default" id="acceptRouteButton" onclick="acceptRoute()">This looks good</button><br/>
+                  <button class="btn btn-default" id="resetMapButton" onclick="resetMap()" style="display:none">Reset Map</button><br/>
+                  <button class="btn btn-default" id="changeRouteButton" onclick="changeRoute()">I'll be taking different route</button>
                 </div>
             </div>
             <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
@@ -99,7 +99,11 @@
     var routeData = {
       confirmedRiders: [],
       riders: [],
-      origin: originInput.value
+      stops: [],
+      origin: {
+        place_id: "ChIJN0sx82c_6YARws62XH5rlU4",
+        name: "UCSB, Santa Barbara, CA, United States"
+      }
     };
 
     function placify(place, callback) {
@@ -156,22 +160,26 @@
         var originAutocomplete = new google.maps.places.Autocomplete(originInput, {placeIdOnly: true});
         var destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput, {placeIdOnly: true});
 
-        originAutocomplete.addListener("place_changed", function() {
-          routeData.origin = originAutocomplete.getPlace().name;
-          mapHandler.drawMap(onMapDisplaysRoute);
-        });
 
         var me = this;
-        destinationAutocomplete.addListener("place_changed", function() {
-          const givenPlace = destinationAutocomplete.getPlace();
-          me.placify(givenPlace, function(place) {
-            if (!place) {
-              return invalidInputLocation('destination', givenPlace.name);
-            }
-            routeData.destination = place;
-            mapHandler.drawMap(onMapDisplaysRoute);
-          });
-        });
+        function getPlaceChangedHandler(OriginOrDestination, autocomplete) {
+          return function() {
+            const givenPlace = autocomplete.getPlace();
+            me.placify(givenPlace, function(place) {
+              if (!place) {
+                return invalidInputLocation(OriginOrDestination, givenPlace.name);
+              }
+              routeData[OriginOrDestination] = place;
+              mapHandler.drawMap(onMapDisplaysRoute);
+            });
+          }
+        }
+
+        originAutocomplete.addListener("place_changed",
+          getPlaceChangedHandler('origin', originAutocomplete));
+
+        destinationAutocomplete.addListener("place_changed",
+          getPlaceChangedHandler('destination', destinationAutocomplete));
 
         mapHandler.bindAutocompleteToMap(originAutocomplete);
         mapHandler.bindAutocompleteToMap(destinationAutocomplete);
@@ -240,10 +248,11 @@
 
     var posted = false;
     function post() {
-        if (validateFields()) return;
-
-      if (posted) return;
-      posted = true;
+      // if (validateFields()) return;
+      //
+      // if (posted) return;
+      // posted = true;
+      console.log("posting");
       $('#create-route').button('loading');
 
       var seats = document.getElementById("num-seats");
@@ -252,9 +261,9 @@
       var date = document.getElementById("date");
       var time = document.getElementById("time");
       var email = document.getElementById("confirmed_email_input");
-      var origin = document.getElementById("origin-input");
-      var destination = document.getElementById("destination-input");
       var distance = mapHandler.getDistance();
+
+      console.log("posting 2");
 
       var data = {
           seats: seats.value,
@@ -262,16 +271,29 @@
           //requireInitialDeposit: requireInitialDeposit.checked,
           date: date.value,
           time: time.value,
-          origin: origin.value,
-          destination: destination.value,
+          routeData: {
+            origin: {
+              name: routeData.origin.name,
+              place_id: routeData.origin.place_id
+            },
+            destination: {
+              name: routeData.destination.name,
+              place_id: routeData.destination.place_id
+            },
+          },
+          stops: mapHandler.getRouteWayPoints().map(function(point) {
+            return {'lat': point.lat(), 'lng': point.lng()};
+          }),
           distance: distance
       };
+
 
       var confirmedEmail = email.value;
       if (confirmedEmail) {
         data.confirmedEmail = confirmedEmail;
       }
 
+      console.log("posting 3");
       $.post('/route/new/', data, function(data, status){
         console.log(data, status);
         if (status == "success") {

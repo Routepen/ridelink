@@ -35,7 +35,13 @@ module.exports = {
 
   createUser: function() {
     browser.timeouts("script", 5*1000);
-    var result = browser.executeAsync(makeRequest, BASE_URL + '/test/createUser', "POST", {});
+    var result = browser.executeAsync(makeRequest, BASE_URL + '/test/createUser', "POST", {
+      user: {
+        facebook: {
+          name: "User McUserface"
+        }
+      }
+    });
 
     var user = JSON.parse(result.value)
     return user;

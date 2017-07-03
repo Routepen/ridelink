@@ -12,8 +12,10 @@ function mapManager(map, routeData) {
   this.markers = {};
   this.infoWindows = {};
   this.routeData = routeData;
-
-  this.additionalWaypoints = [];
+  this.additionalWaypoints = routeData.stops.map(function(point) {
+    console.log(point);
+    return new google.maps.LatLng(point);
+  })
 
   this.distance = routeData.distance;
 
@@ -45,68 +47,25 @@ mapManager.prototype.drawMap = function(callback) {
   this.additionalWaypoints.forEach(function(waypoint) {
     console.log(waypoint);
     waypoints.push({
-      location: waypoint.latLng,
+      location: waypoint,
       stopover: true
     });
   });
 
   me = this;
 
-  function decodePolyline(encoded) {
-    function returner(a) { return a; }
-      if (!encoded) {
-          return [];
-      }
-      var poly = [];
-      var index = 0, len = encoded.length;
-      var lat = 0, lng = 0;
-
-      while (index < len) {
-          var b, shift = 0, result = 0;
-
-          do {
-              b = encoded.charCodeAt(index++) - 63;
-              result = result | ((b & 0x1f) << shift);
-              shift += 5;
-          } while (b >= 0x20);
-
-          var dlat = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-          lat += dlat;
-
-          shift = 0;
-          result = 0;
-
-          do {
-              b = encoded.charCodeAt(index++) - 63;
-              result = result | ((b & 0x1f) << shift);
-              shift += 5;
-          } while (b >= 0x20);
-
-          var dlng = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-          lng += dlng;
-
-          var p = {
-              lat: returner.bind(null, lat / 1e5),
-              lng: returner.bind(null, lng / 1e5),
-          };
-          poly.push(p);
-      }
-      return poly;
-  }
-
   if (!routeData.origin || !routeData.destination) { return; }
 
   console.log(routeData.destination);
   this.directionsService.route({
-    origin: routeData.origin,
+    origin: {placeId: routeData.origin.place_id},
     destination:  {placeId: routeData.destination.place_id},
     travelMode: this.travelMode,
     waypoints: waypoints,
     optimizeWaypoints: true
   }, function(response, status) {
     if (status === 'OK') {
-      var poly = decodePolyline(response.routes[0].overview_polyline);
-      me.distance = google.maps.geometry.spherical.computeLength(poly);
+      me.distance = google.maps.geometry.spherical.computeLength(response.routes[0].overview_path);
       console.log(me.distance + " meters");
       me.directionsDisplay.setDirections(response);
       if (callback) callback();
@@ -136,12 +95,16 @@ mapManager.prototype.getDistance = function() {
 
 mapManager.prototype.mapClicked = function(latLng) {
   console.log('clicked', latLng);
-  this.addWayPoint({latLng: latLng});
+  this.addWayPoint(latLng);
 }
 
 mapManager.prototype.addWayPoint = function(location) {
   this.additionalWaypoints.push(location);
   this.drawMap();
+}
+
+mapManager.prototype.getRouteWayPoints = function() {
+  return this.additionalWaypoints;
 }
 
 mapManager.prototype.clearExtraWaypoints = function() {

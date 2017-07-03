@@ -1,5 +1,6 @@
 const Promise = require('bluebird');
 const NotificationManager = require('../notifications/notification_manager');
+const _ = require("lodash");
 
 module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocode) {
 
@@ -20,10 +21,38 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
 		return a.join('');
 	}
 
+	function validatePostBody(body) {
+		if (!_.get(body, "routeData.origin.place_id")) { throw new Error("missing routeData.origin.place_id"); }
+		if (!_.get(body, "routeData.destination.place_id")) { throw new Error("missing routeData.destination.place_id"); }
+
+		if (!_.get(body, "routeData.origin.name")) { throw new Error("missing routeData.origin.name"); }
+		if (!_.get(body, "routeData.destination.name")) { throw new Error("missing routeData.destination.name"); }
+
+		let stops = body.stops || [];
+		if (!Array.isArray(stops)) { stops = [stops]; }
+
+		stops.forEach(function(stop) {
+			if (!_.get(stop, "lat")) { throw new Error("missing place_id in a stop element"); }
+			if (!_.get(stop, "lng")) { throw new Error("missing lng in a stop element"); }
+		});
+
+		body.stops = stops;
+	}
+
 	app.post('/route/new', function (req, res) {
 		if (!req.user) {
 			// TODO Allow user to be informed their session has timed out
 			return res.status(401).send('You need to be logged in.');
+		}
+
+		console.log(req.body);
+
+		try {
+			validatePostBody(req.body)
+		} catch (e) {
+			console.log("400 Bad request");
+			console.log(e);
+			return res.status(400).end("Invalid post body " + e.message);
 		}
 
 		var rightNow = new Date(Date.now());
@@ -38,18 +67,7 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
 
 		// var originCoor, destinationCoor;
 
-		let getOrigin = geocode(req.body.origin, gmAPI);
-		let getDestination = geocode(req.body.destination, gmAPI);
-		let promises = [getOrigin, getDestination];
-
-		let stops = req.body['stops[]'] || [];
-		if (typeof(stops) == 'string') { stops = [stops]; }
-
-		console.log(stops);
-		for (var i = 0; i < stops.length; i++) {
-			console.log(stops[i]);
-			promises.push(geocode(stops[i], gmAPI));
-		}
+		console.log(req.body);
 
 		var driver, driverInfo; // should only store one
 		if (req.body.driverInfo) {
@@ -61,17 +79,19 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
 			driverInfo = undefined;
 		}
 
-		Promise.all(promises).then(data => {
-			let originCoor = data[0];
-			let destinationCoor = data[1];
-			let stopsCoor = data.splice(2);
+		promises = [
+			geocode(req.body.routeData.origin),
+			geocode(req.body.routeData.destination)
+		];
+
+		Promise.all(promises).then(function(data) {
 			var newRoute;
 			var routeData = {
 				shortId: random(5),
-				origin: req.body.origin,
-				destination: req.body.destination,
-				originCoor: originCoor,
-				destinationCoor: destinationCoor,
+				origin: req.body.routeData.origin,
+				destination: req.body.routeData.destination,
+				originCoor: data[0],
+				destinationCoor: data[1],
 				seats: req.body.seats,
 				date: date,
 				time: req.body.time,
@@ -84,8 +104,7 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
 				inconvenience: req.body.charge,
 				requireInitialDeposit: false,//req.body.requireInitialDeposit,
 				isWaitlisted: false,
-				stops: req.body['stops[]'],
-				stopsCoor: stopsCoor,
+				stops: req.body.stops,
 				distance: req.body.distance
 			};
 
@@ -100,8 +119,7 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
 			}
 			catch(e) {
 				console.log(e);
-				res.status(400);
-				return res.end();
+				return res.status(400).end(e.message);
 			}
 
 			if (req.body.confirmedEmail) {

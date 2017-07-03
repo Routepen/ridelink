@@ -27,7 +27,7 @@ describe('Front end', function() {
       browser.refresh();
       expect(browser.hasFocus("#destination-input")).to.equal(true);
 
-      browser.keys("sdfjaslkfj\uE007".split('')); // last key is enter
+      browser.keys("sdfjaslkfj\uE007"); // last key is enter
 
       browser.executeAsync(function(done) {
         setTimeout(done, 1000);
@@ -41,7 +41,7 @@ describe('Front end', function() {
 
     it("autocompletes", function() {
       browser.refresh();
-      browser.keys("San F".split(''));
+      browser.keys("San F");
 
 
       browser.executeAsync(function(done) {
@@ -62,7 +62,7 @@ describe('Front end', function() {
 
     it("works if destination wasn't autocompleted", function() {
       browser.refresh();
-      browser.keys("San Fransisco\uE007".split(''));
+      browser.keys("San Fransisco\uE007");
 
       browser.waitForVisible("#changeRouteButton");
       browser.waitForVisible("#acceptRouteButton");
@@ -141,7 +141,7 @@ describe('Front end', function() {
       $("#acceptRouteButton").click();
     });
 
-    var date, seats = 3, charge = 30, time = "9:00 AM";
+    var date, seats = 3, charge = 30, time = "9:00 AM", finalDistance;
 
     it("fills out the info", function() {
       $('#num-seats').setValue("" + seats);
@@ -155,10 +155,23 @@ describe('Front end', function() {
       const currentURL = browser.getUrl();
       $('#create-route-button').click();
 
+      finalDistance = util.getMapDistance();
+
+      browser.waitForVisible("#email-input");
+      expect(browser.hasFocus("#email-input")).to.equal(true);
+
+      browser.keys("fakeemail@fakedomain.com");
+      $("#submitEmailButton").click();
+
       browser.waitUntil(function () {
        return browser.getUrl() !== currentURL
       }, 5000, 'expected url to be different after 5s');
 
+    });
+
+    it("should have the same values", function() {
+      const dist = util.getMapDistance();
+      expect(dist).to.equal(finalDistance);
     });
 
     it("waits", function() {
