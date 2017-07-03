@@ -36,14 +36,14 @@
                            placeholder="Enter an origin location..."
                            value="UCSB, Santa Barbara, CA, United States">
                 </div>
-                <div id="stops"></div>
-                <button id="addStopButton" class="btn" style="width:200px; margin-left: 46px; background-color: white; color: #0c84e4">
-                  Add Stop
-                </button>
                 <div>
                     <i class="material-icons" style="padding-left:10px">place</i>
                     <input autofocus id="destination-input" name="destination" class="controls" type="text"
                            placeholder="Enter a destination location...">
+                </div>
+                <div id="editRouteButtons" style="display:none">
+                  <button class="btn btn-secondary" id="acceptRouteButton" onclick="acceptRoute()">This looks good</button><br/>
+                  <button class="btn btn-secondary" id="changeRouteButton" onclick="changeRoute()">I'll be taking different route</button>
                 </div>
             </div>
             <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
@@ -88,8 +88,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=initMap"
         async defer></script>
 
-<script src="/js/stops.js"></script>
-
 <script type="text/javascript">
 
     var mapInputsCorrect = false;
@@ -98,13 +96,23 @@
 
     var routeData = {
       confirmedRiders: [],
-      stops: [],
       riders: [],
       origin: originInput.value
     };
 
 
-    var mapHandler, stopsManager;
+    function onMapDisplaysRoute() {
+      mapInputsCorrect = true;
+
+      $('#editRouteButtons').show();
+    }
+
+    function changeRoute() {
+      $("#mapInstructionsText").html("Click anywhere to add a stop");
+      $("#mapInstructions").css('visibility', 'visible');
+    }
+
+    var mapHandler;
     function initMap() {
       new NavBarAutocompleteHandler();
 
@@ -115,25 +123,18 @@
         });
 
         mapHandler = new mapManager(map, routeData);
-        stopsManager = new Stops(routeData.stops, mapHandler);
-        stopsManager.setUpStops();
-
-        stopsManager.addListener('valueChanged', function(newStops) {
-          routeData.stops = newStops;
-          mapHandler.drawMap();
-        });
 
         var originAutocomplete = new google.maps.places.Autocomplete(originInput, {placeIdOnly: true});
         var destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput, {placeIdOnly: true});
 
         originAutocomplete.addListener("place_changed", function() {
           routeData.origin = originAutocomplete.getPlace().name;
-          mapHandler.drawMap(function () { mapInputsCorrect = true; });
+          mapHandler.drawMap(onMapDisplaysRoute);
         });
 
         destinationAutocomplete.addListener("place_changed", function() {
           routeData.destination = destinationAutocomplete.getPlace().name;
-          mapHandler.drawMap(function () { mapInputsCorrect = true; });
+          mapHandler.drawMap(onMapDisplaysRoute);
         });
 
         mapHandler.bindAutocompleteToMap(originAutocomplete);
@@ -218,7 +219,6 @@
       var email = document.getElementById("confirmed_email_input");
       var origin = document.getElementById("origin-input");
       var destination = document.getElementById("destination-input");
-      var stops = stopsManager.getStops();
       var distance = mapHandler.getDistance();
 
       var data = {
@@ -229,7 +229,6 @@
           time: time.value,
           origin: origin.value,
           destination: destination.value,
-          stops: stops,
           distance: distance
       };
 

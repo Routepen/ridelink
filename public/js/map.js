@@ -4,13 +4,15 @@ function mapManager(map, routeData) {
   this.destinationPlaceId = null;
   this.travelMode = 'DRIVING';
   this.directionsService = new google.maps.DirectionsService;
-  this.directionsDisplay = new google.maps.DirectionsRenderer;
+  this.directionsDisplay = new google.maps.DirectionsRenderer();
   this.directionsDisplay.setMap(map);
   this.geocoder = new google.maps.Geocoder();
 
   this.markers = {};
   this.infoWindows = {};
   this.routeData = routeData;
+
+  this.additionalWaypoints = [];
 
   this.distance = routeData.distance;
 
@@ -21,6 +23,9 @@ function mapManager(map, routeData) {
     me.setMarkers();
   });
 
+  google.maps.event.addListener(map, 'click', function(event) {
+    me.mapClicked(event.latLng);
+  });
 }
 
 mapManager.prototype.drawMap = function(callback) {
@@ -34,16 +39,12 @@ mapManager.prototype.drawMap = function(callback) {
       location: routeData.dropOffs[routeData.confirmedRiders[i]._id],
       stopover: true,
     });
-
-    waypoints.push({
-      location: routeData.pickUps[routeData.confirmedRiders[i]._id],
-      stopover: true,
-    });
   }
 
-  routeData.stops.forEach(function(stop) {
+  this.additionalWaypoints.forEach(function(waypoint) {
+    console.log(waypoint);
     waypoints.push({
-      location: stop,
+      location: waypoint.latLng,
       stopover: true
     });
   });
@@ -116,6 +117,17 @@ mapManager.prototype.drawMap = function(callback) {
 mapManager.prototype.getDistance = function() {
   return this.distance;
 }
+
+mapManager.prototype.mapClicked = function(latLng) {
+  console.log('clicked', latLng);
+  this.addWayPoint({latLng: latLng});
+}
+
+mapManager.prototype.addWayPoint = function(location) {
+  this.additionalWaypoints.push(location);
+  this.drawMap();
+}
+
 
 mapManager.prototype.setMarkers = function(map) {
   var map = this.map;
