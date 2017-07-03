@@ -3,7 +3,8 @@ function mapManager(map, routeData) {
   this.originPlaceId = null;
   this.destinationPlaceId = null;
   this.travelMode = 'DRIVING';
-  this.directionsService = new google.maps.DirectionsService;
+  this.placesService = new google.maps.places.PlacesService(map);
+  this.directionsService = new google.maps.DirectionsService();
   this.directionsDisplay = new google.maps.DirectionsRenderer();
   this.directionsDisplay.setMap(map);
   this.geocoder = new google.maps.Geocoder();
@@ -95,9 +96,10 @@ mapManager.prototype.drawMap = function(callback) {
 
   if (!routeData.origin || !routeData.destination) { return; }
 
+  console.log(routeData.destination);
   this.directionsService.route({
     origin: routeData.origin,
-    destination:  routeData.destination,
+    destination:  {placeId: routeData.destination.place_id},
     travelMode: this.travelMode,
     waypoints: waypoints,
     optimizeWaypoints: true
@@ -114,6 +116,20 @@ mapManager.prototype.drawMap = function(callback) {
   });
 }
 
+mapManager.prototype.getPlaceId = function(locationName, callback) {
+  this.placesService.textSearch({
+    location: this.map.getCenter(),
+    query: locationName
+  }, function(results, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      callback(results[0]);
+    }
+    else {
+      callback(null);
+    }
+  });
+}
+
 mapManager.prototype.getDistance = function() {
   return this.distance;
 }
@@ -125,6 +141,11 @@ mapManager.prototype.mapClicked = function(latLng) {
 
 mapManager.prototype.addWayPoint = function(location) {
   this.additionalWaypoints.push(location);
+  this.drawMap();
+}
+
+mapManager.prototype.clearExtraWaypoints = function() {
+  this.additionalWaypoints = [];
   this.drawMap();
 }
 

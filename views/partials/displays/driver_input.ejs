@@ -40,9 +40,11 @@
                     <i class="material-icons" style="padding-left:10px">place</i>
                     <input autofocus id="destination-input" name="destination" class="controls" type="text"
                            placeholder="Enter a destination location...">
+                    <div id="destination-error" style="display:none"></div>
                 </div>
                 <div id="editRouteButtons" style="display:none">
                   <button class="btn btn-secondary" id="acceptRouteButton" onclick="acceptRoute()">This looks good</button><br/>
+                  <button class="btn btn-secondary" id="resetMapButton" onclick="resetMap()" style="display:none">Reset Map</button><br/>
                   <button class="btn btn-secondary" id="changeRouteButton" onclick="changeRoute()">I'll be taking different route</button>
                 </div>
             </div>
@@ -100,6 +102,14 @@
       origin: originInput.value
     };
 
+    function placify(place, callback) {
+      if (place.place_id) {
+        return callback(place);
+      }
+
+      mapHandler.getPlaceId(place.name, callback);
+    }
+
 
     function onMapDisplaysRoute() {
       mapInputsCorrect = true;
@@ -107,9 +117,28 @@
       $('#editRouteButtons').show();
     }
 
+    function acceptRoute() {
+
+    }
+
+    function resetMap() {
+      $("#resetMapButton").hide();
+      $("#changeRouteButton").show();
+
+      mapHandler.clearExtraWaypoints();
+    }
+
     function changeRoute() {
+      $("#resetMapButton").show();
+      $("#changeRouteButton").hide();
+
       $("#mapInstructionsText").html("Click anywhere to add a stop");
       $("#mapInstructions").css('visibility', 'visible');
+    }
+
+    function invalidInputLocation(OriginOrDestination, location) {
+      $("#" + OriginOrDestination + "-error").show();
+      $("#" + OriginOrDestination + "-error").html("Couldn't find " + location);
     }
 
     var mapHandler;
@@ -132,14 +161,20 @@
           mapHandler.drawMap(onMapDisplaysRoute);
         });
 
+        var me = this;
         destinationAutocomplete.addListener("place_changed", function() {
-          routeData.destination = destinationAutocomplete.getPlace().name;
-          mapHandler.drawMap(onMapDisplaysRoute);
+          const givenPlace = destinationAutocomplete.getPlace();
+          me.placify(givenPlace, function(place) {
+            if (!place) {
+              return invalidInputLocation('destination', givenPlace.name);
+            }
+            routeData.destination = place;
+            mapHandler.drawMap(onMapDisplaysRoute);
+          });
         });
 
         mapHandler.bindAutocompleteToMap(originAutocomplete);
         mapHandler.bindAutocompleteToMap(destinationAutocomplete);
-
     }
 
     $(function () {
@@ -165,7 +200,7 @@
     function submitForm() {
         if (validateFields()) return;
 
-        if (data.user.confirmEmail == "") {
+        if ("<%= data.user.confirmEmail %>" == "") {
           $("#emailModal").modal('show');
           setTimeout(function() {
             $("#email-input").focus();
