@@ -3,8 +3,26 @@ var Schema = mongoose.Schema;
 
 var routeSchema = new Schema({
 	shortId: {type: String, unique: true},
-	origin: String,
-	destination: String,
+	origin: {
+		name: {
+			type: String,
+			required: true
+		},
+		place_id: {
+			type: String,
+			required: true
+		}
+	},
+	destination: {
+		name: {
+			type: String,
+			required: true
+		},
+		place_id: {
+			type: String,
+			required: true
+		}
+	},
 	originCoor: {'lat': Number, 'lng': Number},
 	destinationCoor: {'lat': Number, 'lng' : Number},
 	seats: Number,
@@ -27,7 +45,7 @@ var routeSchema = new Schema({
 		ref:'users'
 	}],
 	stopsCoor: [{'lat':Number, 'lng': Number}],
-	stops: [String],
+	stops: [{'lat': Number, 'lng': Number}],
 	pickUps: Schema.Types.Mixed,
 	dropOffs: Schema.Types.Mixed,
 	riderStatus: Schema.Types.Mixed,

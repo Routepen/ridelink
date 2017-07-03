@@ -11,7 +11,7 @@ function geocode(place, gmAPI) {
 function geocodeHelper(place, gmAPI, resFunct, rejFunct){
 	return new Promise((resolve, reject) => {
 		//Is origin or destination coordinate in the json file?
-		Geo_cache.findOne({ location_name: place }, (err, location) => {
+		Geo_cache.findOne({ location_name: place.name }, (err, location) => {
 			if(err) {
 				reject(err);
 			}
@@ -21,7 +21,7 @@ function geocodeHelper(place, gmAPI, resFunct, rejFunct){
 		return new Promise((resolve, reject)=>{
 			// If the place was not found in the cache
 			if(data == undefined){
-				gmAPI.geocode( { 'address': place }, (err, result) => {
+				gmAPI.geocode( place, (err, result) => {
 					console.log(place, err, result);
 					if(err) {
 						console.log(err);

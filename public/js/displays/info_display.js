@@ -46,13 +46,6 @@ InfoDisplay.prototype.setUpEditability = function() {
       me.valueChanged("time", newValue, false);
     });
 
-    var stops = new Stops(this.routeData.stops, this.mapHandler);
-    stops.setUpStops();
-    stops.addListener('valueChanged', function(newValue) {
-      me.routeData.stops = newValue;
-      me.valueChanged("stops[]", newValue, true);
-    });
-
   }
 }
 
