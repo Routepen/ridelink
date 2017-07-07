@@ -73,20 +73,20 @@ describe('Front end', function() {
       expect(distance).to.exist;
       expect(distance).to.be.above(5000); // from sb to sf
 
+    });
+
+    it('adds a stop', function() {
       $('#changeRouteButton').click();
 
       browser.waitForVisible("#mapInstructions");
       expect($('#mapInstructions').getText()).to.equal("Click anywhere to add a stop");
 
-    });
-
-    it('adds a stop', function() {
       // click
       const size = browser.getElementSize("#map");
       expect(size.width).to.exist;
       expect(size.height).to.exist;
 
-      browser.leftClick("#map", size.width/2, size.height/2);
+      browser.leftClick("#map", size.width * .55, size.height * .4); // rando place on map
 
 
       util.waitFor(
@@ -97,6 +97,8 @@ describe('Front end', function() {
         if (isNaN(newDistance)) { return false; }
         return newDistance != distance;
       });
+
+      expect($('#mapInstructions').getText()).to.equal("Drag the marker to change it");
     });
 
 
@@ -108,9 +110,9 @@ describe('Front end', function() {
       expect($("#changeRouteButton").isVisible()).to.equal(false);
 
       $("#resetMapButton").click();
-      expect($("#resetMapButton").isVisible()).to.equal(false);
+      expect($("#resetMapButton").isVisible()).to.equal(true);
       expect($("#acceptRouteButton").isVisible()).to.equal(true);
-      expect($("#changeRouteButton").isVisible()).to.equal(true);
+      expect($("#changeRouteButton").isVisible()).to.equal(false);
       util.waitFor(
       function() {
         return util.getMapDistance();
@@ -139,6 +141,9 @@ describe('Front end', function() {
       });
 
       $("#acceptRouteButton").click();
+
+      expect($("#editRouteButton").isVisible()).to.equal(true);
+      expect($("#num-seats").hasFocus()).to.equal(true);
     });
 
     var date, seats = 3, charge = 30, time = "9:00 AM", finalDistance;
@@ -174,9 +179,6 @@ describe('Front end', function() {
       expect(dist).to.equal(finalDistance);
     });
 
-    it("waits", function() {
-      browser.executeAsync(function(done) { setTimeout(done, 2000);});
-    });
 
   });
 });

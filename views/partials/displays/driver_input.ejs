@@ -29,25 +29,7 @@
         </div>
 
         <div id="driver_input_container" class="row">
-            <div id="form-color-box" class="color-box">
-                <div>
-                    <i class="material-icons" style="padding-left:10px ">adjust</i>
-                    <input id="origin-input" name="origin" class="controls" type="text"
-                           placeholder="Enter an origin location..."
-                           value="UCSB, Santa Barbara, CA, United States">
-                </div>
-                <div>
-                    <i class="material-icons" style="padding-left:10px">place</i>
-                    <input autofocus id="destination-input" name="destination" class="controls" type="text"
-                           placeholder="Enter a destination location...">
-                    <div id="destination-error" style="display:none"></div>
-                </div>
-                <div id="editRouteButtons" style="display:none">
-                  <button class="btn btn-default" id="acceptRouteButton" onclick="acceptRoute()">This looks good</button><br/>
-                  <button class="btn btn-default" id="resetMapButton" onclick="resetMap()" style="display:none">Reset Map</button><br/>
-                  <button class="btn btn-default" id="changeRouteButton" onclick="changeRoute()">I'll be taking different route</button>
-                </div>
-            </div>
+            <% include ./routePathInput.ejs %>
             <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
             <!--  <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a> -->
 
@@ -90,6 +72,8 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=initMap"
         async defer></script>
 
+<script src="/js/routePathInput.js"></script>
+
 <script type="text/javascript">
 
     var mapInputsCorrect = false;
@@ -121,29 +105,12 @@
       $('#editRouteButtons').show();
     }
 
-    function acceptRoute() {
-
-    }
-
-    function resetMap() {
-      $("#resetMapButton").hide();
-      $("#changeRouteButton").show();
-
-      mapHandler.clearExtraWaypoints();
-    }
-
-    function changeRoute() {
-      $("#resetMapButton").show();
-      $("#changeRouteButton").hide();
-
-      $("#mapInstructionsText").html("Click anywhere to add a stop");
-      $("#mapInstructions").css('visibility', 'visible');
-    }
-
     function invalidInputLocation(OriginOrDestination, location) {
       $("#" + OriginOrDestination + "-error").show();
       $("#" + OriginOrDestination + "-error").html("Couldn't find " + location);
     }
+
+    var routePathInput = new RoutePathInput();
 
     var mapHandler;
     function initMap() {
@@ -155,13 +122,13 @@
             zoom: 13
         });
 
-        mapHandler = new mapManager(map, routeData);
+        mapHandler = new NewRouteMapManager(map, routeData);
 
         var originAutocomplete = new google.maps.places.Autocomplete(originInput, {placeIdOnly: true});
         var destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput, {placeIdOnly: true});
 
-
         var me = this;
+
         function getPlaceChangedHandler(OriginOrDestination, autocomplete) {
           return function() {
             const givenPlace = autocomplete.getPlace();

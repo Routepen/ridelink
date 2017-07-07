@@ -192,8 +192,13 @@ nav.navbar-no-landing a.btn.newroute:active {
     margin-left: 12px;
     padding: 0 11px 0 13px;
     text-overflow: ellipsis;
-    width: 200px;
+    width: 250px;
     margin-bottom: 12px;
+}
+
+.editRouteButtons > div > button{
+  width: 250px;
+  margin-left: 12px;
 }
 
 #origin-input:focus,
@@ -455,6 +460,17 @@ select.form-control>option:hover {
   color: white;
   font-size: 24px;
   opacity: 1;
+}
+
+.white, .white:hover {
+  color: white
+}
+
+.locationDisplay {
+  font-size: 16px;
+  padding-left: 15px;
+  position: relative;
+  top: -6px;
 }
 
 /* For route_info buttons */

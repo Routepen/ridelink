@@ -1,3 +1,72 @@
+function Marker(map, options) {
+  this.map = map;
+  this.marker = new google.maps.Marker({map: map});
+  this.marker.setOptions(options);
+}
+
+Marker.prototype.getGoogleMarker = function() {
+  return this.marker;
+}
+
+Marker.prototype.getPosition = function() {
+  return this.marker.getPosition();
+}
+
+
+Marker.prototype.hide = function() {
+  this.marker.setMap(null);
+}
+
+Marker.prototype.show = function() {
+  this.marker.setMap(this.map);
+}
+
+function MarkerManager(map, mapManager) {
+  this.map = map;
+  this.count = 0;
+  this.markers = [];
+  this.mapManager = mapManager;
+}
+
+MarkerManager.prototype.addMarker = function(options) {
+
+  var marker = new Marker(this.map, options);
+  this.markers.push(marker);
+
+  var me = this;
+  google.maps.event.addListener(marker.getGoogleMarker(), 'dragend', function() {
+    me.mapManager.drawMap();
+  });
+
+  return marker;
+}
+
+MarkerManager.prototype.removeAll = function() {
+  this.hideAllMarkers();
+  this.markers = [];
+}
+
+MarkerManager.prototype.hideAllMarkers = function() {
+  this.markers.forEach(function(marker) {
+    marker.hide();
+  });
+}
+
+MarkerManager.prototype.showAllMarkers = function() {
+  this.markers.forEach(function(marker) {
+    marker.show();
+  });
+}
+
+MarkerManager.prototype.getWayPoints = function() {
+  var waypoints = this.markers.map(function(m) {
+    return m.getPosition();
+  });
+
+  return waypoints;
+}
+
+
 function mapManager(map, routeData) {
   this.map = map;
   this.originPlaceId = null;
@@ -5,19 +74,19 @@ function mapManager(map, routeData) {
   this.travelMode = 'DRIVING';
   this.placesService = new google.maps.places.PlacesService(map);
   this.directionsService = new google.maps.DirectionsService();
-  this.directionsDisplay = new google.maps.DirectionsRenderer();
+  this.directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
   this.directionsDisplay.setMap(map);
   this.geocoder = new google.maps.Geocoder();
 
-  this.markers = {};
   this.infoWindows = {};
   this.routeData = routeData;
-  this.additionalWaypoints = routeData.stops.map(function(point) {
-    console.log(point);
-    return new google.maps.LatLng(point);
-  })
 
+  this.loadMarkers();
+
+  this.routeEditable = false;
+  this.tutorialStep = 0;
   this.distance = routeData.distance;
+  this.cachedGoogleMapsRoute = null;
 
   this.callbacks = {};
 
@@ -27,8 +96,16 @@ function mapManager(map, routeData) {
   });
 
   google.maps.event.addListener(map, 'click', function(event) {
+    if (!me.routeEditable) { return; }
     me.mapClicked(event.latLng);
   });
+
+  this.directionsDisplay.addListener('directions_changed', function() {
+    console.log(me.directionsDisplay.directions.routes[0].legs[0].via_waypoint);
+    me.cachedGoogleMapsRoute = me.directionsDisplay.directions;
+    me.updateTutorial();
+  });
+
 }
 
 mapManager.prototype.drawMap = function(callback) {
@@ -44,7 +121,7 @@ mapManager.prototype.drawMap = function(callback) {
     });
   }
 
-  this.additionalWaypoints.forEach(function(waypoint) {
+  this.markers.getWayPoints().forEach(function(waypoint) {
     console.log(waypoint);
     waypoints.push({
       location: waypoint,
@@ -68,11 +145,18 @@ mapManager.prototype.drawMap = function(callback) {
       me.distance = google.maps.geometry.spherical.computeLength(response.routes[0].overview_path);
       console.log(me.distance + " meters");
       me.directionsDisplay.setDirections(response);
+      me.cachedGoogleMapsRoute = response;
       if (callback) callback();
     } else {
       window.alert('Directions request failed due to ' + status);
     }
   });
+}
+
+mapManager.prototype.redrawMap = function() {
+  if (!this.cachedGoogleMapsRoute) { return; }
+
+  this.directionsDisplay.setDirections(this.cachedGoogleMapsRoute);
 }
 
 mapManager.prototype.getPlaceId = function(locationName, callback) {
@@ -99,17 +183,62 @@ mapManager.prototype.mapClicked = function(latLng) {
 }
 
 mapManager.prototype.addWayPoint = function(location) {
-  this.additionalWaypoints.push(location);
+  this.markers.addMarker({
+    position: location,
+    draggable: true,
+  });
+
+
+
   this.drawMap();
 }
 
 mapManager.prototype.getRouteWayPoints = function() {
-  return this.additionalWaypoints;
+  return this.markers.getWayPoints();
 }
 
 mapManager.prototype.clearExtraWaypoints = function() {
-  this.additionalWaypoints = [];
+  this.markers.removeAll();
   this.drawMap();
+}
+
+mapManager.prototype.hideAllMarkers = function() {
+  this.markers.hideAllMarkers();
+}
+
+mapManager.prototype.showAllMarkers = function() {
+  this.markers.showAllMarkers();
+}
+
+mapManager.prototype.setRouteEditable = function(routeEditable) {
+  this.routeEditable = routeEditable;
+
+  this.tutorialStep = 0;
+  if (this.routeEditable) {
+    this.updateTutorial();
+  }
+  else {
+    $("#mapInstructionsText").html("");
+    $("#mapInstructions").css('visibility', 'hidden');
+  }
+}
+
+mapManager.prototype.updateTutorial = function() {
+  if (!this.routeEditable) { return; }
+  if (this.tutorialStep == 0) {
+    $("#mapInstructionsText").html("Click anywhere to add a stop");
+    $("#mapInstructions").css('visibility', 'visible');
+  }
+  else if (this.tutorialStep == 1) {
+    $("#mapInstructionsText").html("Drag the marker to change it");
+    $("#mapInstructions").css('visibility', 'visible');
+  }
+  else { // tutorial done
+    $("#mapInstructionsText").html("");
+    $("#mapInstructions").css('visibility', 'hidden');
+  }
+
+  this.tutorialStep++;
 }
 
 
@@ -201,13 +330,7 @@ mapManager.prototype.setMarkers = function(map) {
 }
 
 mapManager.prototype.removeMarker = function(id) {
-  if (this.markers[id]) {
-    this.markers[id].setMap(null);
-    this.infoWindows[id].close();
-
-    delete this.markers[id];
-    delete this.infoWindows[id];
-  }
+  this.markers.removeMarker(id);
 }
 
 mapManager.prototype.closeDisplay = function(riderId) {
