@@ -1,0 +1,54 @@
+<div id="form-color-box" class="color-box">
+
+    <div>
+      <div id="originInputContainer" style="display:none">
+          <i class="material-icons" style="padding-left:10px">adjust</i>
+          <input id="origin-input" name="origin" class="controls" type="text"
+                 placeholder="Enter an origin location..."
+                 value="UCSB, Santa Barbara, CA, United States">
+      </div>
+
+      <div id="originDisplayContainer" style="display: none">
+        <br/>
+        <i class="material-icons" style="padding-left:10px">adjust</i>
+        <span class="locationDisplay" id="originDisplaySpan" class="editableInput"></span>
+      </div>
+
+    </div>
+
+    <div>
+      <div id="destinationInputContainer" style="display:none">
+          <i class="material-icons" style="padding-left:10px">place</i>
+          <input autofocus id="destination-input" name="destination" class="controls" type="text"
+                 placeholder="Enter a destination location...">
+      </div>
+
+      <div id="destinationDisplayContainer" style="font-size:18px; display: none">
+        <i class="material-icons" style="padding-left:10px">place</i>
+        <span class="locationDisplay" id="destinationDisplaySpan" class="editableInput"></span>
+      </div>
+
+
+    </div>
+
+
+    <div id="destination-error" style="display:none"></div>
+
+    <div id="editRouteButtons" class="editRouteButtons" style="display:none">
+      <div id="acceptRouteDiv">
+        <i class="material-icons" style="padding-left:10px; visibility: hidden">place</i>
+        <button class="btn btn-default" id="acceptRouteButton" onclick="routePathInput.acceptRoute()">This looks good</button><br/><br/>
+      </div>
+      <div id="resetMapDiv" style="display:none">
+        <i class="material-icons" style="padding-left:10px; visibility: hidden">place</i>
+        <button class="btn btn-default" id="resetMapButton" onclick="routePathInput.resetMap()">Reset Map</button><br/><br/>
+      </div>
+      <div id="changeRouteDiv">
+        <i class="material-icons" style="padding-left:10px; visibility: hidden">place</i>
+        <button class="btn btn-default" id="changeRouteButton" onclick="routePathInput.changeRoute()">I'll be taking different route</button><br/>
+      </div>
+      <div id="editRouteDiv" style="display:none">
+        <a class="clickable white" id="editRouteButton" onclick="routePathInput.editRoute()">Edit Route</a><br/><br/>
+      </div>
+    </div>
+</div>
