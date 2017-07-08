@@ -9,7 +9,7 @@ function heading(user, userStatus, routeData) {
 }
 
 heading.prototype.setUpHeading = function() {
-  if (!this.userStatus.isDriver || this.userStatus.view == "rider") {
+  if (this.user && (!this.userStatus.isDriver || this.userStatus.view == "rider")) {
 
     this.dropOff = new DropOff(this.routeData.dropOffs[this.user._id], this.userStatus);
     this.dropOff.show();

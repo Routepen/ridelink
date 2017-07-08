@@ -13,7 +13,7 @@
                            placeholder="Email">
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Save">
+                    <input id="submitEmailButton" type="submit" class="btn btn-primary" value="Save">
                 </div>
             </form>
         </div>
@@ -29,23 +29,7 @@
         </div>
 
         <div id="driver_input_container" class="row">
-            <div id="form-color-box" class="color-box">
-                <div>
-                    <i class="material-icons" style="padding-left:10px ">adjust</i>
-                    <input id="origin-input" name="origin" class="controls" type="text"
-                           placeholder="Enter an origin location..."
-                           value="UCSB, Santa Barbara, CA, United States">
-                </div>
-                <div id="stops"></div>
-                <button id="addStopButton" class="btn" style="width:200px; margin-left: 46px; background-color: white; color: #0c84e4">
-                  Add Stop
-                </button>
-                <div>
-                    <i class="material-icons" style="padding-left:10px">place</i>
-                    <input autofocus id="destination-input" name="destination" class="controls" type="text"
-                           placeholder="Enter a destination location...">
-                </div>
-            </div>
+            <% include ./routePathInput.ejs %>
             <!--<input id="destination" type="text" name = 'destination' class="form-control" placeholder="Destination"> -->
             <!--  <a class="btn btn-lg btn-success" type="submit" value="Submit" href="#" role="button">Route</a> -->
 
@@ -88,7 +72,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=initMap"
         async defer></script>
 
-<script src="/js/stops.js"></script>
+<script src="/js/routePathInput.js"></script>
 
 <script type="text/javascript">
 
@@ -98,13 +82,37 @@
 
     var routeData = {
       confirmedRiders: [],
-      stops: [],
       riders: [],
-      origin: originInput.value
+      stops: [],
+      origin: {
+        place_id: "ChIJN0sx82c_6YARws62XH5rlU4",
+        name: "UCSB, Santa Barbara, CA, United States"
+      }
     };
 
+    function placify(place, callback) {
+      if (place.place_id) {
+        return callback(place);
+      }
 
-    var mapHandler, stopsManager;
+      mapHandler.getPlaceId(place.name, callback);
+    }
+
+
+    function onMapDisplaysRoute() {
+      mapInputsCorrect = true;
+
+      $('#editRouteButtons').show();
+    }
+
+    function invalidInputLocation(OriginOrDestination, location) {
+      $("#" + OriginOrDestination + "-error").show();
+      $("#" + OriginOrDestination + "-error").html("Couldn't find " + location);
+    }
+
+    var routePathInput = new RoutePathInput();
+
+    var mapHandler;
     function initMap() {
       new NavBarAutocompleteHandler();
 
@@ -114,31 +122,34 @@
             zoom: 13
         });
 
-        mapHandler = new mapManager(map, routeData);
-        stopsManager = new Stops(routeData.stops, mapHandler);
-        stopsManager.setUpStops();
-
-        stopsManager.addListener('valueChanged', function(newStops) {
-          routeData.stops = newStops;
-          mapHandler.drawMap();
-        });
+        mapHandler = new NewRouteMapManager(map, routeData);
 
         var originAutocomplete = new google.maps.places.Autocomplete(originInput, {placeIdOnly: true});
         var destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput, {placeIdOnly: true});
 
-        originAutocomplete.addListener("place_changed", function() {
-          routeData.origin = originAutocomplete.getPlace().name;
-          mapHandler.drawMap(function () { mapInputsCorrect = true; });
-        });
+        var me = this;
 
-        destinationAutocomplete.addListener("place_changed", function() {
-          routeData.destination = destinationAutocomplete.getPlace().name;
-          mapHandler.drawMap(function () { mapInputsCorrect = true; });
-        });
+        function getPlaceChangedHandler(OriginOrDestination, autocomplete) {
+          return function() {
+            const givenPlace = autocomplete.getPlace();
+            me.placify(givenPlace, function(place) {
+              if (!place) {
+                return invalidInputLocation(OriginOrDestination, givenPlace.name);
+              }
+              routeData[OriginOrDestination] = place;
+              mapHandler.drawMap(onMapDisplaysRoute);
+            });
+          }
+        }
+
+        originAutocomplete.addListener("place_changed",
+          getPlaceChangedHandler('origin', originAutocomplete));
+
+        destinationAutocomplete.addListener("place_changed",
+          getPlaceChangedHandler('destination', destinationAutocomplete));
 
         mapHandler.bindAutocompleteToMap(originAutocomplete);
         mapHandler.bindAutocompleteToMap(destinationAutocomplete);
-
     }
 
     $(function () {
@@ -164,7 +175,7 @@
     function submitForm() {
         if (validateFields()) return;
 
-        if (data.user.confirmEmail == "") {
+        if ("<%= data.user.confirmEmail %>" == "") {
           $("#emailModal").modal('show');
           setTimeout(function() {
             $("#email-input").focus();
@@ -204,10 +215,11 @@
 
     var posted = false;
     function post() {
-        if (validateFields()) return;
-
-      if (posted) return;
-      posted = true;
+      // if (validateFields()) return;
+      //
+      // if (posted) return;
+      // posted = true;
+      console.log("posting");
       $('#create-route').button('loading');
 
       var seats = document.getElementById("num-seats");
@@ -216,10 +228,9 @@
       var date = document.getElementById("date");
       var time = document.getElementById("time");
       var email = document.getElementById("confirmed_email_input");
-      var origin = document.getElementById("origin-input");
-      var destination = document.getElementById("destination-input");
-      var stops = stopsManager.getStops();
       var distance = mapHandler.getDistance();
+
+      console.log("posting 2");
 
       var data = {
           seats: seats.value,
@@ -227,17 +238,29 @@
           //requireInitialDeposit: requireInitialDeposit.checked,
           date: date.value,
           time: time.value,
-          origin: origin.value,
-          destination: destination.value,
-          stops: stops,
+          routeData: {
+            origin: {
+              name: routeData.origin.name,
+              place_id: routeData.origin.place_id
+            },
+            destination: {
+              name: routeData.destination.name,
+              place_id: routeData.destination.place_id
+            },
+          },
+          stops: mapHandler.getRouteWayPoints().map(function(point) {
+            return {'lat': point.lat(), 'lng': point.lng()};
+          }),
           distance: distance
       };
+
 
       var confirmedEmail = email.value;
       if (confirmedEmail) {
         data.confirmedEmail = confirmedEmail;
       }
 
+      console.log("posting 3");
       $.post('/route/new/', data, function(data, status){
         console.log(data, status);
         if (status == "success") {

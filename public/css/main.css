@@ -192,8 +192,13 @@ nav.navbar-no-landing a.btn.newroute:active {
     margin-left: 12px;
     padding: 0 11px 0 13px;
     text-overflow: ellipsis;
-    width: 200px;
+    width: 250px;
     margin-bottom: 12px;
+}
+
+.editRouteButtons > div > button{
+  width: 250px;
+  margin-left: 12px;
 }
 
 #origin-input:focus,
@@ -430,7 +435,42 @@ select.form-control>option:hover {
   background-color: lightblue;
 }
 
+.mapContainer {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  z-index: 0;
+}
 
+#map {
+  position: relative;
+  top: -100px;
+  z-index: -1;
+}
 
+#mapInstructions {
+  background:rgba(125,125,125,0.5);;
+  width: 100%;
+  height: 100px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.mapInstructionsText {
+  color: white;
+  font-size: 24px;
+  opacity: 1;
+}
+
+.white, .white:hover {
+  color: white
+}
+
+.locationDisplay {
+  font-size: 16px;
+  padding-left: 15px;
+  position: relative;
+  top: -6px;
+}
 
 /* For route_info buttons */

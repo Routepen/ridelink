@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const mail_templates = require('./backend/mailer_templates/mail_head.js');
+const _ = require('lodash');
 
 const transporter = nodemailer.createTransport({
 	service: 'gmail',
@@ -15,8 +16,8 @@ function sendMail(options) {
 	var subject = '', text = '', html='';
 
 
-	var recipientName = options.recipient.facebook.name.split(' ')[0];
-	var driversName = options.route.driver.facebook.name.split(' ')[0];
+	var recipientName = _.get(options, 'recipient.facebook.name', "").split(' ')[0];
+	var driversName = _.get(options, 'route.driver.facebook.name', "").split(' ')[0];
 	// var date = days[options.route.date.getDay()] + ' ' + (options.route.date.getMonth() + 1) + '/' + options.route.date.getDate();
 	// var time = options.route.time;
 
@@ -91,7 +92,7 @@ function sendMail(options) {
 	} // end notify Rider
 	if (options.notifyDriver) {
 		if (options.notifyDriver.riderAdded) {
-			let riderName = options.rider.facebook.name.split(' ')[0];
+			let riderName = _.get(options, 'rider.facebook.name', "").split(' ')[0];
 			// TODO add confirm buttons
 			subject = 'A rider has joined';
 
@@ -102,7 +103,7 @@ function sendMail(options) {
 			html = mail_templates.notifyDriverRiderAdded_html(driversName, riderName, here);
 		}
 		if (options.notifyDriver.riderPaid) {
-			let riderName = options.rider.facebook.name.split(' ')[0];
+			let riderName = _.get(options, 'rider.facebook.name', "").split(' ')[0];
 			// We'll send you an email once the rider is completed,
 			// and you'll recieve your payment then
 			subject = text = 'A rider has paid';

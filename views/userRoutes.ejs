@@ -207,8 +207,8 @@
             '<td> <input class="myCheckbox" type="checkbox"/> </td>' +
             '<td onclick="' + onclick + '">' + (i+1) + '</td>' +
             '<td onclick="' + onclick + '">' + (user._id == routes[i].driver ? "Driver" : "Rider") + '</td>' +
-            '<td onclick="' + onclick + '">' + routes[i].origin + '</td>' +
-            '<td onclick="' + onclick + '">' + routes[i].destination + '</td>' +
+            '<td onclick="' + onclick + '">' + routes[i].origin.name + '</td>' +
+            '<td onclick="' + onclick + '">' + routes[i].destination.name + '</td>' +
             '<td onclick="' + onclick + '">$' + routes[i].inconvenience + '</td>' +
             '<td onclick="' + onclick + '">' +  (1 + new Date(routes[i].date).getMonth()) + '/' + new Date(routes[i].date).getDate() + '</td>' +
             '</tr>';

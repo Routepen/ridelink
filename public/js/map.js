@@ -1,24 +1,109 @@
+function Marker(map, options) {
+  this.map = map;
+  this.marker = new google.maps.Marker({map: map});
+  this.marker.setOptions(options);
+}
+
+Marker.prototype.getGoogleMarker = function() {
+  return this.marker;
+}
+
+Marker.prototype.getPosition = function() {
+  return this.marker.getPosition();
+}
+
+
+Marker.prototype.hide = function() {
+  this.marker.setMap(null);
+}
+
+Marker.prototype.show = function() {
+  this.marker.setMap(this.map);
+}
+
+function MarkerManager(map, mapManager) {
+  this.map = map;
+  this.count = 0;
+  this.markers = [];
+  this.mapManager = mapManager;
+}
+
+MarkerManager.prototype.addMarker = function(options) {
+
+  var marker = new Marker(this.map, options);
+  this.markers.push(marker);
+
+  var me = this;
+  google.maps.event.addListener(marker.getGoogleMarker(), 'dragend', function() {
+    me.mapManager.drawMap();
+  });
+
+  return marker;
+}
+
+MarkerManager.prototype.removeAll = function() {
+  this.hideAllMarkers();
+  this.markers = [];
+}
+
+MarkerManager.prototype.hideAllMarkers = function() {
+  this.markers.forEach(function(marker) {
+    marker.hide();
+  });
+}
+
+MarkerManager.prototype.showAllMarkers = function() {
+  this.markers.forEach(function(marker) {
+    marker.show();
+  });
+}
+
+MarkerManager.prototype.getWayPoints = function() {
+  var waypoints = this.markers.map(function(m) {
+    return m.getPosition();
+  });
+
+  return waypoints;
+}
+
+
 function mapManager(map, routeData) {
   this.map = map;
   this.originPlaceId = null;
   this.destinationPlaceId = null;
   this.travelMode = 'DRIVING';
-  this.directionsService = new google.maps.DirectionsService;
-  this.directionsDisplay = new google.maps.DirectionsRenderer;
+  this.placesService = new google.maps.places.PlacesService(map);
+  this.directionsService = new google.maps.DirectionsService();
+  this.directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
   this.directionsDisplay.setMap(map);
   this.geocoder = new google.maps.Geocoder();
 
-  this.markers = {};
   this.infoWindows = {};
   this.routeData = routeData;
 
+  this.loadMarkers();
+
+  this.routeEditable = false;
+  this.tutorialStep = 0;
   this.distance = routeData.distance;
+  this.cachedGoogleMapsRoute = null;
 
   this.callbacks = {};
 
   var me = this;
   this.drawMap(function() {
     me.setMarkers();
+  });
+
+  google.maps.event.addListener(map, 'click', function(event) {
+    if (!me.routeEditable) { return; }
+    me.mapClicked(event.latLng);
+  });
+
+  this.directionsDisplay.addListener('directions_changed', function() {
+    console.log(me.directionsDisplay.directions.routes[0].legs[0].via_waypoint);
+    me.cachedGoogleMapsRoute = me.directionsDisplay.directions;
+    me.updateTutorial();
   });
 
 }
@@ -34,78 +119,33 @@ mapManager.prototype.drawMap = function(callback) {
       location: routeData.dropOffs[routeData.confirmedRiders[i]._id],
       stopover: true,
     });
-
-    waypoints.push({
-      location: routeData.pickUps[routeData.confirmedRiders[i]._id],
-      stopover: true,
-    });
   }
 
-  routeData.stops.forEach(function(stop) {
+  this.markers.getWayPoints().forEach(function(waypoint) {
+    console.log(waypoint);
     waypoints.push({
-      location: stop,
+      location: waypoint,
       stopover: true
     });
   });
 
   me = this;
 
-  function decodePolyline(encoded) {
-    function returner(a) { return a; }
-      if (!encoded) {
-          return [];
-      }
-      var poly = [];
-      var index = 0, len = encoded.length;
-      var lat = 0, lng = 0;
-
-      while (index < len) {
-          var b, shift = 0, result = 0;
-
-          do {
-              b = encoded.charCodeAt(index++) - 63;
-              result = result | ((b & 0x1f) << shift);
-              shift += 5;
-          } while (b >= 0x20);
-
-          var dlat = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-          lat += dlat;
-
-          shift = 0;
-          result = 0;
-
-          do {
-              b = encoded.charCodeAt(index++) - 63;
-              result = result | ((b & 0x1f) << shift);
-              shift += 5;
-          } while (b >= 0x20);
-
-          var dlng = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-          lng += dlng;
-
-          var p = {
-              lat: returner.bind(null, lat / 1e5),
-              lng: returner.bind(null, lng / 1e5),
-          };
-          poly.push(p);
-      }
-      return poly;
-  }
-
   if (!routeData.origin || !routeData.destination) { return; }
 
+  console.log(routeData.destination);
   this.directionsService.route({
-    origin: routeData.origin,
-    destination:  routeData.destination,
+    origin: {placeId: routeData.origin.place_id},
+    destination:  {placeId: routeData.destination.place_id},
     travelMode: this.travelMode,
     waypoints: waypoints,
     optimizeWaypoints: true
   }, function(response, status) {
     if (status === 'OK') {
-      var poly = decodePolyline(response.routes[0].overview_polyline);
-      me.distance = google.maps.geometry.spherical.computeLength(poly);
+      me.distance = google.maps.geometry.spherical.computeLength(response.routes[0].overview_path);
       console.log(me.distance + " meters");
       me.directionsDisplay.setDirections(response);
+      me.cachedGoogleMapsRoute = response;
       if (callback) callback();
     } else {
       window.alert('Directions request failed due to ' + status);
@@ -113,9 +153,94 @@ mapManager.prototype.drawMap = function(callback) {
   });
 }
 
+mapManager.prototype.redrawMap = function() {
+  if (!this.cachedGoogleMapsRoute) { return; }
+
+  this.directionsDisplay.setDirections(this.cachedGoogleMapsRoute);
+}
+
+mapManager.prototype.getPlaceId = function(locationName, callback) {
+  this.placesService.textSearch({
+    location: this.map.getCenter(),
+    query: locationName
+  }, function(results, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      callback(results[0]);
+    }
+    else {
+      callback(null);
+    }
+  });
+}
+
 mapManager.prototype.getDistance = function() {
   return this.distance;
 }
+
+mapManager.prototype.mapClicked = function(latLng) {
+  console.log('clicked', latLng);
+  this.addWayPoint(latLng);
+}
+
+mapManager.prototype.addWayPoint = function(location) {
+  this.markers.addMarker({
+    position: location,
+    draggable: true,
+  });
+
+
+
+  this.drawMap();
+}
+
+mapManager.prototype.getRouteWayPoints = function() {
+  return this.markers.getWayPoints();
+}
+
+mapManager.prototype.clearExtraWaypoints = function() {
+  this.markers.removeAll();
+  this.drawMap();
+}
+
+mapManager.prototype.hideAllMarkers = function() {
+  this.markers.hideAllMarkers();
+}
+
+mapManager.prototype.showAllMarkers = function() {
+  this.markers.showAllMarkers();
+}
+
+mapManager.prototype.setRouteEditable = function(routeEditable) {
+  this.routeEditable = routeEditable;
+
+  this.tutorialStep = 0;
+  if (this.routeEditable) {
+    this.updateTutorial();
+  }
+  else {
+    $("#mapInstructionsText").html("");
+    $("#mapInstructions").css('visibility', 'hidden');
+  }
+}
+
+mapManager.prototype.updateTutorial = function() {
+  if (!this.routeEditable) { return; }
+  if (this.tutorialStep == 0) {
+    $("#mapInstructionsText").html("Click anywhere to add a stop");
+    $("#mapInstructions").css('visibility', 'visible');
+  }
+  else if (this.tutorialStep == 1) {
+    $("#mapInstructionsText").html("Drag the marker to change it");
+    $("#mapInstructions").css('visibility', 'visible');
+  }
+  else { // tutorial done
+    $("#mapInstructionsText").html("");
+    $("#mapInstructions").css('visibility', 'hidden');
+  }
+
+  this.tutorialStep++;
+}
+
 
 mapManager.prototype.setMarkers = function(map) {
   var map = this.map;
@@ -205,13 +330,7 @@ mapManager.prototype.setMarkers = function(map) {
 }
 
 mapManager.prototype.removeMarker = function(id) {
-  if (this.markers[id]) {
-    this.markers[id].setMap(null);
-    this.infoWindows[id].close();
-
-    delete this.markers[id];
-    delete this.infoWindows[id];
-  }
+  this.markers.removeMarker(id);
 }
 
 mapManager.prototype.closeDisplay = function(riderId) {

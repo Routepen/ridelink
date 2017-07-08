@@ -12,8 +12,6 @@ var userStatus = {
 
 var mapHandler;
 
-
-
 function initMap() {
   NavBarAutocompleteHandler();
 
@@ -23,7 +21,7 @@ function initMap() {
     zoom: 13
   });
 
-  mapHandler = new mapManager(map, routeData);
+  mapHandler = new ViewRouteMapManager(map, routeData);
   var tableManager = new table(document.getElementById("tableDiv"), routeData);
   var httpManager = new http(routeData);
   var headingManager = new heading(user, userStatus, routeData);
