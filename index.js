@@ -101,7 +101,7 @@ app.get('/testing2', function(req, res) {
 });
 
 app.get('/test3', function(req, res) {
-	User.findById('58f5931ef5a31b2723a7696f', function(err, user) {
+	User.findById('5959de157abd218b71f03a0c', function(err, user) {
 		req.logIn(user, function(err) {
 			if (err) { console.log(err); }
 			return res.redirect('/');
