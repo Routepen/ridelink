@@ -2,7 +2,7 @@
 
 Fill this in later
 
-#Tests
+## Tests
 
 Run `test/install.sh` to download the selenium jar.
 
