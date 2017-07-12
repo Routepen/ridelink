@@ -6,7 +6,7 @@ Fill this in later
 
 Run `test/install.sh` to download the selenium jar.
 
-Download a driver from [here](selenium-server.sh)
+Download a driver from [here](http://chromedriver.storage.googleapis.com/index.html?path=2.25/)
 
 Run `test/selenium-server.sh` to start the selenium server.
 
