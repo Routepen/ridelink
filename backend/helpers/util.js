@@ -35,7 +35,7 @@ module.exports = {
 
 		areClose: function(origCoor1, destCoor1, origCoor2, destCoor2, originalDistance) {
 			return new Promise(function(resolve, reject) {
-				var requestURL = `http://45.79.65.63:5000/route/v1/driving/${origCoor1.lng},${origCoor1.lat};` +
+				var requestURL = `http://router.project-osrm.org/route/v1/driving/${origCoor1.lng},${origCoor1.lat};` +
 								`${origCoor2.lng},${origCoor2.lat};${destCoor2.lng},${destCoor2.lat};` +
 								`${destCoor1.lng},${destCoor1.lat}?steps=false`;
 				console.log(requestURL);

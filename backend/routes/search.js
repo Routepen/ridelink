@@ -7,8 +7,8 @@ module.exports = function(app, Route, User, gmAPI, geocode) {
 			return res.status(401).send('What are you trying to do?');
 		}
 		//TODO do error handling on user sending in invalid origin/destination
-		let getOrigin = geocode({name: req.query.origin}, gmAPI);
-		let getDestination = geocode({name: req.query.destination}, gmAPI);
+		let getOrigin = geocode(req.query.origin, gmAPI);
+		let getDestination = geocode(req.query.destination, gmAPI);
 
 		Promise.all([getOrigin, getDestination])
 			.then((data) => {
@@ -83,7 +83,7 @@ module.exports = function(app, Route, User, gmAPI, geocode) {
 			console.log(result.results[0].geometry.location);
 		});
 		*/
-		
+
 
 	});
 };
