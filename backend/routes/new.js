@@ -80,8 +80,8 @@ module.exports = function(app, Route, DriverlessRoute, User, mail, gmAPI, geocod
 		}
 
 		promises = [
-			geocode(req.body.routeData.origin),
-			geocode(req.body.routeData.destination)
+			geocode(req.body.routeData.origin, gmAPI),
+			geocode(req.body.routeData.destination, gmAPI)
 		];
 
 		Promise.all(promises).then(function(data) {
