@@ -66,10 +66,7 @@ module.exports = {
   isLoggedIn: function() {
     const url = browser.getUrl();
     browser.url(BASE_URL + "/test/isLoggedIn");
-    var text = browser.getHTML("#json");
-
-    // <div id="json">The JSON</div>
-    text = text.substring(text.indexOf('{'), text.indexOf('}') + 1);
+    var text = browser.getText("body");
 
     browser.url(url);
     return JSON.parse(text).loggedIn;

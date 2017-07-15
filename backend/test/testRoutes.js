@@ -1,6 +1,7 @@
+const ENV = require('../helpers/env')
 
 module.exports = function(app, User) {
-	if(process.env.NODE_ENV != "test") return;
+	if(!ENV.isTest()) return;
 
 	require("./createUser")(app, User);
 
