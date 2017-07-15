@@ -34,13 +34,13 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 
 	require('../test/testRoutes')(app, User);
 
-  app.get('/newlanding', function(req,res){
-    var data = {
-      user: req.user,
-      url: req.url
-    }
-    res.render('newlanding', data)
-  });
+	app.get('/newlanding', function(req,res) {
+		var data = {
+			user: req.user,
+			url: req.url
+		}
+		res.render('newlanding', data)
+	});
 
 	app.get('/profile', function(req, res){
 		res.render('profile');
@@ -53,13 +53,11 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 				url: req.url
 			}
 		};
-
 		res.render('landing', data);
 	});
 
 	app.get('/route/all', function (req, res) {
 		Route.find({}, function(err, routes) {
-
 
 			var ids = routes.map(function(r) {
 				return r._id;
@@ -86,4 +84,6 @@ module.exports = function(app, Route, DriverlessRoute, User, NotificationRequest
 			res.render('userRoutes', data);
 		});
 	});
+
+	require('./test')(app);
 };
