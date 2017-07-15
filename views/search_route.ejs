@@ -224,6 +224,7 @@
       }
       else {
         for (var i = 0; i < closeRoutes.length; i++) {
+          console.log(closeRoutes[0].origin)
           //var d = new Date(closeRoutes[i].date);
           var onclick = "routeClick('" + (closeRoutes[i].shortId || closeRoutes[i]._id) + "')"
           tbody.innerHTML += '<tr class="riderElement riderElement-inverse clickable" data-value="' + closeRoutes[i]._id + '">' +
@@ -231,8 +232,8 @@
             '<td onclick="' + onclick + '">' + (i+1) + '</td>' +
             '<td onclick="' + onclick + '">' + "<img src='" + closeRoutes[i].driver.facebook.photos[0].value + "'></img> </td>" +
             '<td onclick="' + onclick + '">' + closeRoutes[i].driver.facebook.name + '</td>' +
-            '<td onclick="' + onclick + '">' + closeRoutes[i].origin + '</td>' +
-            '<td onclick="' + onclick + '">' + closeRoutes[i].destination + '</td>' +
+            '<td onclick="' + onclick + '">' + closeRoutes[i].origin.name + '</td>' +
+            '<td onclick="' + onclick + '">' + closeRoutes[i].destination.name + '</td>' +
             '<td onclick="' + onclick + '">$' + closeRoutes[i].inconvenience + '</td>' +
             '<td onclick="' + onclick + '">' +  (1 + new Date(closeRoutes[i].date).getMonth()) + '/' + new Date(closeRoutes[i].date).getDate() + '</td>';
         }
