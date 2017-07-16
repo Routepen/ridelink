@@ -13,12 +13,9 @@ const app = express();
 const GoogleMapsAPI = require('googlemaps');
 
 const auth = require('./auth');
-const ENV = require('./backend/helpers/env');
 
 /* Mongodb connection setup */
 const db = require('./backend/helpers/db-setup');
-
-ENV.printMode();
 
 var gmAPI = new GoogleMapsAPI({
 	key: process.env.GMAPI_KEY,
