@@ -19,7 +19,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.css" rel="stylesheet">
-    <link href="/css/new_landing.css" rel="stylesheet">
+    <link href="/css/landing.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet"> -->
@@ -36,6 +36,8 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script async defer src="https://maps.googleapis.com/maps/api/  js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=onMapsReady">
+    </script>
 </head>
 <body>
 
@@ -46,33 +48,11 @@
     <div class="container" >
         <div class="row" style="margin-top: 0px">
             <h3 class="col-xs-12" style="margin-top:0">
-                <h1 > Rideshare Made Searchable<!--Driver's Paradise for Carpool. --></h1>
-                <h4 class="about"> <b> Riders </b>: Think finding a ride is difficult? We've made a search engine for <b> you </b> to find ALL rides on the way or to your destination. </h4>
-                  <h4 class="about"> <b> Drivers </b> : Give your classmates a chance to find you easier and join your waitlist if your ride’s full! Dw, it takes 30 seconds to create a route and share the link with your Facebook post. </h4>
-                <!--Don't fret about last minute bailing and take studens most convenient for your route-->
-                <!--<iframe width="1000" height="450" style="margin-top: 30px; margin-bottom:150px"
-                        src="https://www.youtube.com/embed/U1ysIfps7cQ?loop=1">
-                </iframe>-->
-
-                <!-- <a href="/" class="action-btn btn">Join the Waitlist</a> -->
-
-                <!-- <div class="process row">
-                     <div class="col-xs-4"><span>1</span> Share your route with your Facebook post. Think sharing a Google doc link. </div>
-                     <div class="col-xs-4"><span>2</span>Riders add their dropoff<br> location <!--+ pay initial deposit </div> -->
-                <!--  <div class="col-xs-4"><span>3</span>Drive students based on<br> route convenience.</div>
-              </div> -->
-                <!--                <div id="custom-search-input">
-                                    <div class="input-group col-md-12">
-                                        <input type="text" class="form-control input-lg" placeholder="Browse drivers..." />
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-info btn-lg" type="button">
-                                            <i class="glyphicon glyphicon-search"></i>
-                                        </button>
-                                    </span>
-                                    </div>
--->
+                <h1 > Rideshare made simple </h1>
+                <iframe width="800" height="400" class="youtube-iframe"
+                src="https://www.youtube.com/embed/XuVLSVUYcAk">
+                </iframe>
             </h3>
-            `
         </div>
     </div>
 </div>
@@ -89,10 +69,10 @@
     </div>
 </div>
 -->
+<!--
+ // NOTE previous version with features
 <section class="features">
-    <h1>Features</h1>
     <div class="container">
-        <!--<h2> Routepen drivers make on average $40 more on their trip back home!</h2> -->
         <br>
         <div class="row">
             <div class="feature feature-waitlist col-xs-12 col-sm-3 col-md-3">
@@ -121,7 +101,7 @@
         </div>
     </div>
 </section>
-
+-->
 <!--
 
 <section id="subscribe" class="subscribe">
@@ -168,19 +148,18 @@
     <h3> ho </h3>
 </div>
 -->
+<!--
 <footer>
     <div id="policy">
-        <!--<div class="block"><a href="#">About</a><a href="#">Policy</a><a href="#">FAQ</a></div> -->
+        <div class="block"><a href="#">About</a><a href="#">Policy</a><a href="#">FAQ</a></div> 
 
         <div class="block" style="padding-top:10px"><p>&#169; Routepen, LLC All rights reserved.</p></div>
     </div>
     <div id="social">
         <a href="#"><img src="/images/facebook.png">
             <p style="display:inline"> Email: admin@routepen.com</p>
-            <!-- <a href="#"><img  src="/images/youtube.png"> -->
-            <!--  <a href="#"><img src="/images/twitter.png"> -->
     </div>
-</footer>
+</footer>-->
 
 <script>
     $('.next').click(function(){
@@ -205,9 +184,6 @@
     function onMapsReady() {
       NavBarAutocompleteHandler();
     }
-</script>
-<script async defer
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeWLtoD-PTsiqaI1QuPR5y1Vas2P3QStA&libraries=places&callback=onMapsReady">
 </script>
 
 </body>
